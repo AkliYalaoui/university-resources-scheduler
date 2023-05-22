@@ -1,0 +1,70 @@
+{% extends 'layouts/auth.html' %} 
+{% block title %}Enseignants{%endblock %} 
+{%block content %}
+
+<button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block" id="openModal">Ajouter un nouvel enseignant</button>
+
+<table class="border-collapse border border-gray-400 w-full">
+    <thead>
+        <tr>
+            <th class="border border-gray-400 px-4 py-2">ID</th>
+            <th class="border border-gray-400 px-4 py-2">Username</th>
+            <th class="border border-gray-400 px-4 py-2">First Name</th>
+            <th class="border border-gray-400 px-4 py-2">Last Name</th>
+            <th class="border border-gray-400 px-4 py-2">Email</th>
+            <th class="border border-gray-400 px-4 py-2">Grade</th>
+            <!-- Add other columns as needed -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for teacher in teachers %}
+            <tr>
+                <td class="border border-gray-400 px-4 py-2">{{ teacher.user.id }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ teacher.user.username }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ teacher.user.first_name }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ teacher.user.last_name }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ teacher.user.email }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ teacher.grade }}</td>
+                <!-- Add other columns as needed -->
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">Aucun enseignant à afficher</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div id="modal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+    <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+        <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white " id="closeModal">X</button>
+        <h2 class="text-lg font-bold mb-4">Ajouter un enseignant</h2>
+        <form action="{% url 'teachers' %}" method="post" class="flex flex-col">
+            {% csrf_token %}
+            <label for="username" class="block mb-2">Username:</label>
+            <input type="text" id="username" name="username" class="border border-gray-400 px-4 py-2 mb-4 rounded" required>
+            <label for="first_name" class="block mb-2">First Name:</label>
+            <input type="text" id="first_name" name="first_name" class="border border-gray-400 px-4 py-2 mb-4 rounded">
+            <label for="last_name" class="block mb-2">Last Name:</label>
+            <input type="text" id="last_name" name="last_name" class="border border-gray-400 px-4 py-2 mb-4 rounded">
+            <label for="email" class="block mb-2">Email:</label>
+            <input type="email" id="email" name="email" class="border border-gray-400 px-4 py-2 mb-4 rounded">
+            <label for="grade" class="block mb-2">Grade:</label>
+            <input type="text" id="grade" name="grade" class="border border-gray-400 px-4 py-2 mb-4 rounded" required>
+            <input type="hidden" id="group" name="group" required value="{{ selected_group.id }}">
+            <input type="hidden" id="password" name="password" required value="azerty123456">
+            <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Ajouter</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document?.getElementById("openModal")?.addEventListener("click", function() {
+        document?.getElementById("modal")?.classList?.remove("hidden");
+    });
+    document?.getElementById("closeModal")?.addEventListener("click", function() {
+        document?.getElementById("modal")?.classList?.add("hidden");
+    });
+</script>
+{% endblock %}

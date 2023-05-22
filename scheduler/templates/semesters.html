@@ -1,0 +1,59 @@
+{% extends 'layouts/auth.html' %} 
+{% block title %}Semestres{%endblock %} 
+{%block content %}
+<button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block" id="openModal">Ajouter un nouveau semestre</button>
+
+<table class="border-collapse border border-gray-400 w-full">
+    <thead>
+        <tr>
+            <th class="border border-gray-400 px-4 py-2">ID</th>
+            <th class="border border-gray-400 px-4 py-2">Name</th>
+            <th class="border border-gray-400 px-4 py-2">Start</th>
+            <th class="border border-gray-400 px-4 py-2">End</th>
+            <!-- Add other columns as needed -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for semester in semesters %}
+            <tr>
+                <td class="border border-gray-400 px-4 py-2">{{ semester.id }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ semester.name }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ semester.start }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ semester.end }}</td>
+                <!-- Add other columns as needed -->
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">Aucun semestre trouvé</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div id="modal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+    <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+        <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white " id="closeModal">X</button>
+        <h2 class="text-lg font-bold mb-4">Ajouter une nouveau semestre</h2>
+        <form action="{% url 'semesters' %}" method="post" class="flex flex-col">
+            {% csrf_token %}
+            <label for="name" class="block mb-2">Name:</label>
+            <input type="text" id="name" name="name" class="border border-gray-400 px-4 py-2 mb-4 rounded" required>
+            <label for="start" class="block mb-2">Start:</label>
+            <input type="date" id="start" name="start" class="border border-gray-400 px-4 py-2 mb-4 rounded" required>
+            <label for="end" class="block mb-2">End:</label>
+            <input type="date" id="end" name="end" class="border border-gray-400 px-4 py-2 mb-4 rounded" required>
+            <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Ajouter</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document?.getElementById("openModal")?.addEventListener("click", function() {
+        document?.getElementById("modal")?.classList?.remove("hidden");
+    });
+    document?.getElementById("closeModal")?.addEventListener("click", function() {
+        document?.getElementById("modal")?.classList?.add("hidden");
+    });
+</script>
+{% endblock %}

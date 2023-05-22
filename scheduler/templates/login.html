@@ -1,0 +1,21 @@
+{% extends 'layouts/base.html' %} 
+{% block title %}Se Connecter{% endblock %} 
+{%block content %} 
+  {% if error %}
+    <p>{{ error }}</p>
+  {% endif %}
+  <section class="max-w-xl mx-auto my-20 shadow-md">
+    <div>
+      <h1 class="text-center text-3xl font-semibold">Acceder à votre EDT</h1>
+      <h2 class="text-center text-lg font-light">connectez vous maintenant pour voir votre edt</h2>
+    </div>
+    <form method="post" class="p-2  my-2 flex flex-col gap-0.5 ">
+      {% csrf_token %}
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required class="p-2 border-2"/><br />
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required class="p-2 border-2"/><br />
+      <input type="submit" value="Login" class="p-2 bg-green-700 cursor-pointer text-white">
+    </form>
+  </section>
+{% endblock %}
