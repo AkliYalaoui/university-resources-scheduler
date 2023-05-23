@@ -1,4 +1,4 @@
-{% extends 'layouts/auth.html' %} {% block title %}Formation{%endblock %}
+{% extends '../layouts/auth.html' %} {% block title %}Formation{%endblock %}
 {%block content %}
 <button
   class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block"
@@ -10,30 +10,57 @@
 <table class="border-collapse border border-gray-400 w-full">
   <thead>
     <tr>
-      <th class="border border-gray-400 px-4 py-2">ID</th>
       <th class="border border-gray-400 px-4 py-2">Name</th>
       <th class="border border-gray-400 px-4 py-2">Niveau</th>
       <th class="border border-gray-400 px-4 py-2">Nombre de semestres</th>
+      <th class="border border-gray-400 px-4 py-2">Actions</th>
       <!-- Add other columns as needed -->
     </tr>
   </thead>
   <tbody>
-    {% for formation in formations %}
+    {% for formation in page_obj %}
     <tr>
-      <td class="border border-gray-400 px-4 py-2">{{ formation.id }}</td>
       <td class="border border-gray-400 px-4 py-2">{{ formation.name }}</td>
       <td class="border border-gray-400 px-4 py-2">{{ formation.niveau }}</td>
       <td class="border border-gray-400 px-4 py-2">{{ formation.nb_semestre }}</td>
-      <!-- Add other columns as needed -->
+      <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+        <form action="{% url 'formation_details' formation_id=formation.id %}"
+              method="post">
+            {% csrf_token %}
+            <input type="hidden" name="_method" value="delete">
+            <input type="submit"
+                   class="text-red-600 hover:underline cursor-pointer"
+                   value="supprimer">
+        </form>
+        <a href="{% url 'formation_details' formation_id=formation.id %}"
+           class="text-blue-600 hover:underline">consulter</a>
+    </td>
     </tr>
     {% empty %}
     <tr>
-      <td colspan="4">Aucune formation frouvée</td>
+      <td colspan="4" class="p-2 text-center">Aucune formation frouvée</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-
+<div class="pagination flex items-center justify-center mt-10">
+    <span class="step-links">
+      {% if page_obj.has_previous %}
+        <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">first</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="text-blue-500 hover:text-blue-700 mr-3">previous</a>
+      {% endif %}
+  
+      <span class="current text-gray-700 font-bold">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+      </span>
+  
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="text-blue-500 hover:text-blue-700 ml-3">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="text-blue-500 hover:text-blue-700 ml-3">last</a>
+      {% endif %}
+    </span>
+  </div>
+  
 <!-- Modal -->
 <div
   id="modal"

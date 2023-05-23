@@ -1,4 +1,4 @@
-{% extends 'layouts/auth.html' %} 
+{% extends '../layouts/auth.html' %} 
 {% block title %}Salles{%endblock %} 
 {%block content %}
 <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block" id="openModal">Ajouter une nouvelle salle</button>
@@ -6,25 +6,34 @@
 <table class="border-collapse border border-gray-400 w-full">
     <thead>
         <tr>
-            <th class="border border-gray-400 px-4 py-2">ID</th>
             <th class="border border-gray-400 px-4 py-2">Name</th>
             <th class="border border-gray-400 px-4 py-2">Type</th>
             <th class="border border-gray-400 px-4 py-2">Capacity</th>
-            <!-- Add other columns as needed -->
+            <th class="border border-gray-400 px-4 py-2">Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for salle in salles %}
             <tr>
-                <td class="border border-gray-400 px-4 py-2">{{ salle.id }}</td>
                 <td class="border border-gray-400 px-4 py-2">{{ salle.name }}</td>
                 <td class="border border-gray-400 px-4 py-2">{{ salle.type }}</td>
                 <td class="border border-gray-400 px-4 py-2">{{ salle.capacity }}</td>
-                <!-- Add other columns as needed -->
+                <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+                    <form action="{% url 'salle_details' salle_id=salle.id %}"
+                          method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="_method" value="delete">
+                        <input type="submit"
+                               class="text-red-600 hover:underline cursor-pointer"
+                               value="supprimer">
+                    </form>
+                    <a href="{% url 'salle_details' salle_id=salle.id %}"
+                       class="text-blue-600 hover:underline">consulter</a>
+                </td>
             </tr>
         {% empty %}
             <tr>
-                <td colspan="4">Aucune salle trouvée</td>
+                <td colspan="4" class="p-2 text-center">Aucune salle trouvée</td>
             </tr>
         {% endfor %}
     </tbody>

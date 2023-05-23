@@ -1,0 +1,70 @@
+{% extends '../layouts/auth.html' %}
+{% block title %}Formation - {{ formation.name }}{% endblock %}
+{% block content %}
+    {% if formation %}
+        <header class="w-6/12 mx-auto">
+            <div class="mb-2 flex flex-row align-center justify-end gap-2">
+                <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+                        id="openModal">Editer</button>
+            </div>
+            <div class="p-2 rounded bg-blue-100 grid grid-cols-2 gap-3 ">
+                <p>
+                    Formation : <b>{{ formation.name }}</b>
+                </p>
+                <p>
+                    Niveau : <b>{{ formation.niveau }}</b>
+                </p>
+                <p>
+                    Nombre de semestres : <b>{{ formation.nb_semestre }}</b>
+                </p>
+            </div>
+        </header>
+        <div id="modal"
+             class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+            <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+                <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                        id="closeModal">X</button>
+                <h2 class="mb-4">
+                    Modifier la formation <b>{{ formation.name }}</b>
+                </h2>
+                <form action="{% url 'formation_details' formation_id=formation.id %}"
+                      method="post"
+                      class="flex flex-col">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="put">
+                    <label for="name" class="block mb-2">Formation:</label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           value="{{ formation.name }}"
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                           required>
+                    <label for="niveau" class="block mb-2">Niveau:</label>
+                    <input type="text"
+                           id="niveau"
+                           name="niveau"
+                           value="{{ formation.niveau }}"
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <label for="nb_semestre" class="block mb-2">Nombre de semestres</label>
+                    <input type="number"
+                           id="nb_semestre"
+                           name="nb_semestre"
+                           value="{{ formation.nb_semestre }}"
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <button type="submit"
+                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        Enregistrer
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+    <script>
+        document?.getElementById("openModal")?.addEventListener("click", function() {
+            document?.getElementById("modal")?.classList?.remove("hidden");
+        });
+        document?.getElementById("closeModal")?.addEventListener("click", function() {
+            document?.getElementById("modal")?.classList?.add("hidden");
+        });
+    </script>
+{% endblock %}
