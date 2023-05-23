@@ -1,4 +1,4 @@
-{% extends 'layouts/auth.html' %} 
+{% extends '../layouts/auth.html' %} 
 {% block title %}Etudiants{%endblock %} 
 {%block content %}
 
@@ -6,9 +6,9 @@
 <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block" id="openModal">Ajouter un nouveau groupe</button>
 {% endif %}
 
-<form method="GET" action="{% url 'students' %}" class="p-1 mt-2 mb-4">
+<form method="get" action="{% url 'students' %}" class="p-1 mt-2 mb-4">
     <label for="formation" class="block text-lg mb-2">Choisir une formation:</label>
-    <select name="formation" id="formation" class="border border-gray-300 rounded px-2 py-1" style="min-width:300px">
+    <select name="formation" id="formation" class="border border-gray-300 rounded px-2 py-1 w-72">
       {% for formation in formations %}
       {% if selected_formation.id == formation.id %}
         <option value="{{ formation.id }}" selected>{{ formation.name }}</option>
@@ -19,7 +19,7 @@
     </select>
     
     {% if selected_formation %}
-    <select name="section" id="section" class="border border-gray-300 rounded px-2 py-1" style="min-width:300px">
+    <select name="section" id="section" class="border border-gray-300 rounded px-2 py-1 w-72">
         {% for section in sections %}
         {% if selected_section.id == section.id %}
           <option value="{{ section.id }}" selected>{{ section.name }}</option>
@@ -31,7 +31,7 @@
     {% endif %}
 
     {% if selected_section %}
-    <select name="group" id="group" class="border border-gray-300 rounded px-2 py-1" style="min-width:300px">
+    <select name="group" id="group" class="border border-gray-300 rounded px-2 py-1 w-72">
         {% for group in groups %}
         {% if selected_group.id == group.id %}
           <option value="{{ group.id }}" selected>{{ group.name }}</option>
@@ -57,23 +57,33 @@
 <table class="border-collapse border border-gray-400 w-full">
     <thead>
         <tr>
-            <th class="border border-gray-400 px-4 py-2">ID</th>
             <th class="border border-gray-400 px-4 py-2">Username</th>
             <th class="border border-gray-400 px-4 py-2">First Name</th>
             <th class="border border-gray-400 px-4 py-2">Last Name</th>
             <th class="border border-gray-400 px-4 py-2">Email</th>
+            <th class="border border-gray-400 px-4 py-2">Action</th>
             <!-- Add other columns as needed -->
         </tr>
     </thead>
     <tbody>
         {% for student in students %}
             <tr>
-                <td class="border border-gray-400 px-4 py-2">{{ student.user.id }}</td>
                 <td class="border border-gray-400 px-4 py-2">{{ student.user.username }}</td>
                 <td class="border border-gray-400 px-4 py-2">{{ student.user.first_name }}</td>
                 <td class="border border-gray-400 px-4 py-2">{{ student.user.last_name }}</td>
                 <td class="border border-gray-400 px-4 py-2">{{ student.user.email }}</td>
-                <!-- Add other columns as needed -->
+                <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+                    <form action="{% url 'student_details' student_id=student.user.id %}"
+                          method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="_method" value="delete">
+                        <input type="submit"
+                               class="text-red-600 hover:underline cursor-pointer"
+                               value="supprimer">
+                    </form>
+                    <a href="{% url 'student_details' student_id=student.user.id %}"
+                       class="text-blue-600 hover:underline">consulter</a>
+                </td>
             </tr>
         {% empty %}
             <tr>

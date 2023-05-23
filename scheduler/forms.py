@@ -1,5 +1,5 @@
 from django import forms
-from .models import Etudiant, Formation, Section, Groupe, Semestre, Salle, Module, Seance
+from .models import Etudiant, Formation, Section, Groupe, Semestre, Salle, Module, Seance, Enseignant
 
 
 class StudentForm(forms.ModelForm):
@@ -13,13 +13,10 @@ class FormationForm(forms.ModelForm):
         model = Formation
         fields = "__all__"
 
-
 class SectionForm(forms.ModelForm):
     class Meta:
         model = Section
-        fields = "__all__"
-
-
+        fields = ("name",)
 class GroupForm(forms.ModelForm):
     class Meta:
         model = Groupe

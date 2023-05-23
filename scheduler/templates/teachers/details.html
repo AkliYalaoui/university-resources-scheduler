@@ -1,0 +1,146 @@
+{% extends '../layouts/auth.html' %}
+{% block title %}Enseignant - {{ teacher.user.username }}{% endblock %}
+{% block content %}
+    {% if teacher %}
+        <header class="w-6/12 mx-auto">
+            <div class="mb-2 flex flex-row align-center justify-end gap-2">
+                <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+                    id="openModal">Editer</button>
+                    <button class="bg-white text-gray-700 hover:text-gray-600 border border-gray-700 font-bold py-2 px-4 rounded"
+                    id="openModules">Modules</button>
+            </div>
+            <div class="p-2 rounded bg-blue-100 grid grid-cols-2 gap-3 ">
+                <p>
+                    Nom d'utilisateur : <b>{{ teacher.user.username }}</b>
+                </p>
+                <p>
+                    Email : <b>{{ teacher.user.email }}</b>
+                </p>
+                <p>
+                    Nom : <b>{{ teacher.user.last_name }}</b>
+                </p>
+                <p>
+                    Prénom : <b>{{ teacher.user.first_name }}</b>
+                </p>
+                <p>
+                    Grade : <b>{{ teacher.grade }}</b>
+                </p>
+                <p>
+                    Crée le : <b>{{ teacher.user.date_joined }}</b>
+                </p>
+            </div>
+        </header>
+        <section class="my-8 w-6/12 mx-auto">
+            <table class="border-collapse border border-gray-400 w-full">
+                <thead>
+                    <tr>
+                        <th class="border border-gray-400 px-4 py-2">ID</th>
+                        <th class="border border-gray-400 px-4 py-2">Name</th>
+                        <th class="border border-gray-400 px-4 py-2">Hourly volume</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for module in teacher_modules %}
+                        <tr>
+                            <td class="border border-gray-400 px-4 py-2">{{ module.id }}</td>
+                            <td class="border border-gray-400 px-4 py-2">{{ module.name }}</td>
+                            <td class="border border-gray-400 px-4 py-2">{{ module.volume }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3" class="p-2 text-center">Aucun module à afficher</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        <div id="modulesModal"
+             class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+            <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+                <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                        id="closeModules">X</button>
+                <h2 class="mb-4">Affecter modules à <b>{{ teacher.user.username }}</b></h2>
+                <form action="{% url 'teacher_details' teacher_id=teacher.user.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="post">
+                    <label for="modules" class="block font-medium mb-1">Modules</label>
+                    <select name="modules" id="modules" multiple class="border-gray-700 border focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-md shadow-sm">
+                        {% for module in modules %}
+                            {% if module in teacher_modules %}
+                                <option value="{{ module.id }}" selected>{{ module.name }}</option>
+                            {% else %}
+                                <option value="{{ module.id }}">{{ module.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <div class="flex justify-end mt-2">
+                        <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md">Affecter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="modal"
+             class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+            <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+                <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                        id="closeModal">X</button>
+                <h2 class="mb-4">Modifier l'enseignant <b>{{ teacher.user.username }}</b></h2>
+                <form action="{% url 'teacher_details' teacher_id=teacher.user.id %}" method="post" class="flex flex-col">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="put">
+                    <label for="username" class="block mb-2">Username:</label>
+                    <input type="text"
+                           id="username"
+                           name="username"
+                           value="{{ teacher.user.username }}"
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                           required>
+                    <label for="first_name" class="block mb-2">First Name:</label>
+                    <input type="text"
+                           id="first_name"
+                           name="first_name"
+                           value="{{ teacher.user.first_name }}"
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <label for="last_name" class="block mb-2">Last Name:</label>
+                    <input type="text"
+                           id="last_name"
+                           name="last_name"
+                           value="{{ teacher.user.last_name }}"
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <label for="email" class="block mb-2">Email:</label>
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           value="{{ teacher.user.email }}"
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <label for="grade" class="block mb-2">Grade:</label>
+                    <input type="text"
+                           id="grade"
+                           name="grade"
+                           value="{{ teacher.grade }}"
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                           required>
+                    <button type="submit"
+                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        Enregistrer
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+    <script>
+        document?.getElementById("openModal")?.addEventListener("click", function() {
+            document?.getElementById("modal")?.classList?.remove("hidden");
+        });
+        document?.getElementById("closeModal")?.addEventListener("click", function() {
+            document?.getElementById("modal")?.classList?.add("hidden");
+        });
+
+        document?.getElementById("openModules")?.addEventListener("click", function() {
+            document?.getElementById("modulesModal")?.classList?.remove("hidden");
+        });
+        document?.getElementById("closeModules")?.addEventListener("click", function() {
+            document?.getElementById("modulesModal")?.classList?.add("hidden");
+        });
+    </script>
+{% endblock %}

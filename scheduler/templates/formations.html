@@ -1,59 +1,96 @@
-{% extends 'layouts/auth.html' %} 
-{% block title %}Formation{%endblock %} 
+{% extends 'layouts/auth.html' %} {% block title %}Formation{%endblock %}
 {%block content %}
-<button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block" id="openModal">Ajouter une nouvelle formation</button>
+<button
+  class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block"
+  id="openModal"
+>
+  Ajouter une nouvelle formation
+</button>
 
 <table class="border-collapse border border-gray-400 w-full">
-    <thead>
-        <tr>
-            <th class="border border-gray-400 px-4 py-2">ID</th>
-            <th class="border border-gray-400 px-4 py-2">Name</th>
-            <th class="border border-gray-400 px-4 py-2">Niveau</th>
-            <th class="border border-gray-400 px-4 py-2">Nombre de semestres</th>
-            <!-- Add other columns as needed -->
-        </tr>
-    </thead>
-    <tbody>
-        {% for formation in formations %}
-            <tr>
-                <td class="border border-gray-400 px-4 py-2">{{ formation.id }}</td>
-                <td class="border border-gray-400 px-4 py-2">{{ formation.name }}</td>
-                <td class="border border-gray-400 px-4 py-2">{{ formation.niveau }}</td>
-                <td class="border border-gray-400 px-4 py-2">{{ formation.nb_semester }}</td>
-                <!-- Add other columns as needed -->
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="4">Aucune formation frouvée</td>
-            </tr>
-        {% endfor %}
-    </tbody>
+  <thead>
+    <tr>
+      <th class="border border-gray-400 px-4 py-2">ID</th>
+      <th class="border border-gray-400 px-4 py-2">Name</th>
+      <th class="border border-gray-400 px-4 py-2">Niveau</th>
+      <th class="border border-gray-400 px-4 py-2">Nombre de semestres</th>
+      <!-- Add other columns as needed -->
+    </tr>
+  </thead>
+  <tbody>
+    {% for formation in formations %}
+    <tr>
+      <td class="border border-gray-400 px-4 py-2">{{ formation.id }}</td>
+      <td class="border border-gray-400 px-4 py-2">{{ formation.name }}</td>
+      <td class="border border-gray-400 px-4 py-2">{{ formation.niveau }}</td>
+      <td class="border border-gray-400 px-4 py-2">{{ formation.nb_semestre }}</td>
+      <!-- Add other columns as needed -->
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4">Aucune formation frouvée</td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 
 <!-- Modal -->
-<div id="modal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-    <div class="bg-white w-1/2 p-6 rounded shadow-lg">
-        <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white " id="closeModal">X</button>
-        <h2 class="text-lg font-bold mb-4">Ajouter une nouvelle formation</h2>
-        <form action="{% url 'formations' %}" method="post" class="flex flex-col">
-            {% csrf_token %}
-            <label for="name" class="block mb-2">Name:</label>
-            <input type="text" id="name" name="name" class="border border-gray-400 px-4 py-2 mb-4 rounded" required>
-            <label for="niveau" class="block mb-2">Niveau:</label>
-            <input type="text" id="niveau" name="niveau" class="border border-gray-400 px-4 py-2 mb-4 rounded" required>
-            <label for="nb_semester" class="block mb-2">Nombre de semestre:</label>
-            <input type="number" id="nb_semester" name="nb_semester" class="border border-gray-400 px-4 py-2 mb-4 rounded" required>
-            <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Ajouter</button>
-        </form>
-    </div>
+<div
+  id="modal"
+  class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75"
+>
+  <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+    <button
+      class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+      id="closeModal"
+    >
+      X
+    </button>
+    <h2 class="text-lg font-bold mb-4">Ajouter une nouvelle formation</h2>
+    <form action="{% url 'formations' %}" method="post" class="flex flex-col">
+      {% csrf_token %}
+      <label for="name" class="block mb-2">Name:</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        class="border border-gray-400 px-4 py-2 mb-4 rounded"
+        required
+      />
+      <label for="niveau" class="block mb-2">Niveau:</label>
+      <input
+        type="text"
+        id="niveau"
+        name="niveau"
+        class="border border-gray-400 px-4 py-2 mb-4 rounded"
+        required
+      />
+      <label for="nb_semestre" class="block mb-2">Nombre de semestres:</label>
+      <input
+        type="number"
+        id="nb_semestre"
+        name="nb_semestre"
+        class="border border-gray-400 px-4 py-2 mb-4 rounded"
+        required
+      />
+      <button
+        type="submit"
+        class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+      >
+        Ajouter
+      </button>
+    </form>
+  </div>
 </div>
 
 <script>
-    document?.getElementById("openModal")?.addEventListener("click", function() {
-        document?.getElementById("modal")?.classList?.remove("hidden");
-    });
-    document?.getElementById("closeModal")?.addEventListener("click", function() {
-        document?.getElementById("modal")?.classList?.add("hidden");
+  document?.getElementById("openModal")?.addEventListener("click", function () {
+    document?.getElementById("modal")?.classList?.remove("hidden");
+  });
+  document
+    ?.getElementById("closeModal")
+    ?.addEventListener("click", function () {
+      document?.getElementById("modal")?.classList?.add("hidden");
     });
 </script>
 {% endblock %}

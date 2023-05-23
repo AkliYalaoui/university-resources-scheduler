@@ -5,48 +5,32 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>{% block title %}{% endblock %}</title>
+    <title>
+      {% block title %}{% endblock %}
+    </title>
   </head>
   <body>
     <div class="shadow-lg">
-      <nav
-        class="flex items-center justify-between px-4 py-3 max-w-7xl mx-auto"
-      >
+      <nav class="flex items-center justify-between px-4 py-3 max-w-7xl mx-auto">
         <div class="flex items-center gap-4">
           <button id="toggleButton" class="text-gray-800 focus:outline-none">
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              ></path>
+            <svg class="w-6 h-6"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </button>
           <a href="">Logo</a>
         </div>
         <div class="relative">
-          <button
-            id="profileMenuButton"
-            class="text-gray-800 focus:outline-none"
-          >
-            profile
-          </button>
-          <div
-            id="profileMenu"
-            class="absolute right-0 mt-2 bg-white text-gray-800 rounded-md shadow-lg hidden"
-          >
+          <button id="profileMenuButton" class="text-gray-800 focus:outline-none">profile</button>
+          <div id="profileMenu"
+               class="absolute right-0 mt-2 bg-white text-gray-800 rounded-md shadow-lg hidden">
             <ul class="py-1">
               <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100"
-                  >Profile</a
-                >
+                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
               </li>
               <li>
                 <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100">Logout</a>
@@ -57,110 +41,90 @@
       </nav>
     </div>
     <main class="flex min-h-screen">
-      <section
-        id="drawer"
-        class="bg-gray-800 text-white w-64 fixed h-full p-4 transform -translate-x-full transition-transform duration-300 ease-in-out"
-      >
-       <article class="bg-gray-700 p-2 rounded mb-6 mt-2">
-        <h1 class="text-lg font-bold mb-2">{{user.username}}</h1>
-        {%if user.user_type %}
-        <h2 class="text-sm mb-2">{{user.user_type}}</h2>
-        {%else%}
-        <h2 class="text-sm">Admin</h2>
-        {%endif%}
-       </article>
+      <section id="drawer"
+               class="bg-gray-800 text-white w-64 fixed h-full p-4 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <article class="bg-gray-700 p-2 rounded mb-6 mt-2">
+          <h1 class="text-lg font-bold mb-2">{{ user.username }}</h1>
+          {% if user.user_type %}
+            <h2 class="text-sm mb-2">{{ user.user_type }}</h2>
+          {% else %}
+            <h2 class="text-sm">Admin</h2>
+          {% endif %}
+        </article>
         <ul class="space-y-2">
           <li>
-            <a href="{% url 'programs' %}" class="block p-3 rounded hover:bg-gray-700"
-              >Emploie des temps</a
-            >
+            <a href="{% url 'teachers' %}"
+               class="block p-3 rounded hover:bg-gray-700">Teachers</a>
           </li>
           <li>
-            <a href="{% url 'teachers' %}" class="block p-3 rounded hover:bg-gray-700"
-              >Teachers</a
-            >
+            <a href="{% url 'students' %}"
+               class="block p-3 rounded hover:bg-gray-700">Etudiants</a>
           </li>
           <li>
-            <a href="{% url 'students' %}" class="block p-3 rounded hover:bg-gray-700"
-              >Etudiants</a
-            >
+            <a href="{% url 'sections' %}"
+               class="block p-3 rounded hover:bg-gray-700">Sections</a>
           </li>
           <li>
-            <a href="{% url 'sections' %}" class="block p-3 rounded hover:bg-gray-700"
-              >Sections</a
-            >
+            <a href="{% url 'groups' %}" class="block p-3 rounded hover:bg-gray-700">Groupes</a>
           </li>
           <li>
-            <a href="{% url 'groups' %}" class="block p-3 rounded hover:bg-gray-700"
-              >Groupes</a
-            >
+            <a href="{% url 'salles' %}" class="block p-3 rounded hover:bg-gray-700">Salles</a>
           </li>
           <li>
-            <a href="{% url 'salles' %}" class="block p-3 rounded hover:bg-gray-700"
-              >Salles</a
-            >
+            <a href="{% url 'formations' %}"
+               class="block p-3 rounded hover:bg-gray-700">Formations</a>
           </li>
           <li>
-            <a href="{% url 'formations' %}" class="block p-3 rounded hover:bg-gray-700"
-              >Formations</a
-            >
+            <a href="{% url 'semesters' %}"
+               class="block p-3 rounded hover:bg-gray-700">Semestres</a>
           </li>
           <li>
-            <a href="{% url 'semesters' %}" class="block p-3 rounded hover:bg-gray-700"
-              >Semestres</a
-            >
-          </li>
-          <li>
-            <a href="{% url 'modules' %}" class="block p-3 rounded hover:bg-gray-700"
-              >Modules</a
-            >
+            <a href="{% url 'modules' %}"
+               class="block p-3 rounded hover:bg-gray-700">Modules</a>
           </li>
         </ul>
       </section>
-
       <section id="content" class="flex-grow p-8 mt-4">
-        {% block content %} {% endblock %}
+        {% block content %}{% endblock %}
       </section>
     </main>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const drawer = document.getElementById("drawer");
-        const toggleButton = document.getElementById("toggleButton");
-        const content = document.getElementById("content");
-        const profileMenuButton = document.getElementById("profileMenuButton");
-        const profileMenu = document.getElementById("profileMenu");
+        document.addEventListener("DOMContentLoaded", function() {
+            const drawer = document.getElementById("drawer");
+            const toggleButton = document.getElementById("toggleButton");
+            const content = document.getElementById("content");
+            const profileMenuButton = document.getElementById("profileMenuButton");
+            const profileMenu = document.getElementById("profileMenu");
 
-        // Function to close the drawer
-        function closeDrawer() {
-          drawer?.classList?.add("-translate-x-full");
-        }
+            // Function to close the drawer
+            function closeDrawer() {
+                drawer?.classList?.add("-translate-x-full");
+            }
 
-        // Toggle drawer when toggle button is clicked
-        toggleButton?.addEventListener("click", function () {
-          drawer?.classList?.toggle("-translate-x-full");
+            // Toggle drawer when toggle button is clicked
+            toggleButton?.addEventListener("click", function() {
+                drawer?.classList?.toggle("-translate-x-full");
+            });
+         
+            document.addEventListener("click", function(event) {
+                const targetElement = event.target;
+                if (
+                    !targetElement?.closest("#drawer") &&
+                    !targetElement?.closest("#toggleButton")
+                ) {
+                    closeDrawer();
+                }
+            });
+            profileMenuButton?.addEventListener("click", function() {
+                profileMenu?.classList?.toggle("hidden");
+            });
+            document.addEventListener("click", function(event) {
+                const targetElement = event.target;
+                if (!targetElement?.closest("#profileMenuButton")) {
+                    profileMenu?.classList?.add("hidden");
+                }
+            });
         });
-
-        // Close drawer when clicking outside the drawer and the toggle button
-        <!-- content.addEventListener("click", closeDrawer); -->
-        document.addEventListener("click", function (event) {
-          const targetElement = event.target;
-          if (
-            !targetElement?.closest("#drawer") &&
-            !targetElement?.closest("#toggleButton")
-          ) {
-            closeDrawer();
-          }
-        });
-        profileMenuButton?.addEventListener("click", function () {
-          profileMenu?.classList?.toggle("hidden");
-        });
-        document.addEventListener("click", function (event) {
-          const targetElement = event.target;
-          if (!targetElement?.closest("#profileMenuButton")) {
-            profileMenu?.classList?.add("hidden");
-          }
-        });
-      });
     </script>
   </body>
 </html>

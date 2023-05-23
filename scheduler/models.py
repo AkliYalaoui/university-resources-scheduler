@@ -1,15 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-class Formation(models.Model):
-    name = models.CharField(max_length=100)
-    niveau = models.CharField(max_length=100)
-    nb_semester = models.IntegerField()
-
 class Semestre(models.Model):
     name = models.CharField(max_length=100)
     start = models.CharField(max_length=100)
     end = models.CharField(max_length=100)
+
+class Formation(models.Model):
+    name = models.CharField(max_length=100)
+    niveau = models.CharField(max_length=100)
+    nb_semestre = models.IntegerField(default=2)
 
 class Module(models.Model):
     name = models.CharField(max_length=100)
@@ -58,6 +58,7 @@ class Seance(models.Model):
         ('jeudi', 'Jeudi'),
     )
     enseignant = models.ForeignKey(Enseignant, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Module, on_delete=models.CASCADE)
     groupe = models.ForeignKey(Groupe, on_delete=models.CASCADE)
     semester = models.ForeignKey(Semestre, on_delete=models.CASCADE)
     salle = models.ForeignKey(Salle, on_delete=models.CASCADE)
