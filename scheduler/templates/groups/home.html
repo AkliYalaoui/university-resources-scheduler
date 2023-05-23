@@ -1,4 +1,4 @@
-{% extends 'layouts/auth.html' %}
+{% extends '../layouts/auth.html' %}
 {% block title %}Groupe{% endblock %}
 {%block content %}
     {% if selected_formation and selected_section %}
@@ -46,26 +46,29 @@
     <table class="border-collapse border border-gray-400 w-full">
         <thead>
             <tr>
-                <th class="border border-gray-400 px-4 py-2">ID</th>
                 <th class="border border-gray-400 px-4 py-2">Name</th>
                 <th class="border border-gray-400 px-4 py-2">Actions</th>
-                <!-- Add other columns as needed -->
             </tr>
         </thead>
         <tbody>
             {% for group in groups %}
                 <tr>
-                    <td class="border border-gray-400 px-4 py-2">{{ group.id }}</td>
                     <td class="border border-gray-400 px-4 py-2">{{ group.name }}</td>
-                    <td class="border border-gray-400 px-4 py-2">
-                        <a href="{% url 'programs' group_id=group.pk %}"
+                    <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+                        <form action="{% url 'group_details' group_id=group.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="_method" value="delete">
+                            <input type="submit"
+                                   class="text-red-600 hover:underline cursor-pointer"
+                                   value="supprimer">
+                        </form>
+                        <a href="{% url 'group_details' group_id=group.id %}"
                            class="text-blue-600 hover:underline">consulter</a>
                     </td>
-                    <!-- Add other columns as needed -->
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="4">Aucun groupe à afficher</td>
+                    <td colspan="2" class="p-2 text-center">Aucun groupe à afficher</td>
                 </tr>
             {% endfor %}
         </tbody>

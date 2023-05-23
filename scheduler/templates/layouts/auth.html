@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+          content="Gérer les emplois des temps des étudiants" />
+    <meta name="keywords" content="étudiants" />
     <script src="https://cdn.tailwindcss.com"></script>
     <title>
       {% block title %}{% endblock %}
@@ -22,15 +25,15 @@
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </button>
-          <a href="">Logo</a>
+          <a href="/">Logo</a>
         </div>
         <div class="relative">
           <button id="profileMenuButton" class="text-gray-800 focus:outline-none">profile</button>
           <div id="profileMenu"
-               class="absolute right-0 mt-2 bg-white text-gray-800 rounded-md shadow-lg hidden">
+               class="absolute right-0 mt-2 bg-white text-gray-800 rounded-md shadow-lg hidden w-36">
             <ul class="py-1">
               <li>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+                <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
               </li>
               <li>
                 <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100">Logout</a>
@@ -41,8 +44,7 @@
       </nav>
     </div>
     <main class="flex min-h-screen">
-      <section id="drawer"
-               class="bg-gray-800 text-white w-64 fixed h-full p-4 transform -translate-x-full transition-transform duration-300 ease-in-out">
+      <section id="drawer" class="bg-gray-800 text-white w-64 p-4">
         <article class="bg-gray-700 p-2 rounded mb-6 mt-2">
           <h1 class="text-lg font-bold mb-2">{{ user.username }}</h1>
           {% if user.user_type %}
@@ -54,7 +56,7 @@
         <ul class="space-y-2">
           <li>
             <a href="{% url 'teachers' %}"
-               class="block p-3 rounded hover:bg-gray-700">Teachers</a>
+               class="block p-3 rounded hover:bg-gray-700">Enseignants</a>
           </li>
           <li>
             <a href="{% url 'students' %}"
@@ -96,16 +98,14 @@
             const profileMenuButton = document.getElementById("profileMenuButton");
             const profileMenu = document.getElementById("profileMenu");
 
-            // Function to close the drawer
-            function closeDrawer() {
-                drawer?.classList?.add("-translate-x-full");
-            }
-
-            // Toggle drawer when toggle button is clicked
             toggleButton?.addEventListener("click", function() {
-                drawer?.classList?.toggle("-translate-x-full");
+                drawer?.classList?.toggle("hidden");
             });
-         
+
+          /*
+            function closeDrawer() {
+                drawer?.classList?.add("hidden");
+            }
             document.addEventListener("click", function(event) {
                 const targetElement = event.target;
                 if (
@@ -115,6 +115,9 @@
                     closeDrawer();
                 }
             });
+            
+            */
+            
             profileMenuButton?.addEventListener("click", function() {
                 profileMenu?.classList?.toggle("hidden");
             });

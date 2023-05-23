@@ -35,4 +35,29 @@ def sections_view(request):
             'selected_formation': selected_formation,
             'sections': sections,
         }
-        return render(request=request, template_name="sections.html", context=formations_context)
+        return render(request=request, template_name="sections/home.html", context=formations_context)
+    
+
+@login_required
+@admin_required
+def section_details_view(request, section_id):
+    section = get_object_or_404(Section, id=section_id)
+    if request.method == 'POST' and request.POST["_method"] == "delete":
+        section.delete()
+        return redirect('sections')
+    elif request.method == 'POST' and request.POST["_method"] == "put":
+        name = request.POST['name']
+        formation_id = request.POST['formation']
+
+        section.name = name
+        section.formation = Formation.objects.get(id=formation_id)
+
+        section.save()
+        return redirect('section_details', section_id=section_id)
+    elif request.method == 'GET':
+        formations = Formation.objects.all()
+        section_context = {
+            'section': section,
+            'formations': formations,
+        }
+        return render(request=request, template_name="sections/details.html", context=section_context)
