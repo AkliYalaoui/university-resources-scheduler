@@ -17,6 +17,11 @@ def semesters_view(request):
 
     else:
         semesters = Semestre.objects.all()
+
+        paginator = Paginator(semesters, 20)
+        page_number = request.GET.get('page')
+        semesters = paginator.get_page(page_number)
+
         semesters_context = {
             "semesters": semesters
         }

@@ -38,7 +38,22 @@
         {% endfor %}
     </tbody>
 </table>
-
+<div class="pagination flex items-center justify-center mt-10">
+    <span class="step-links">
+        {% if semesters.has_previous %}
+            <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">first</a>
+            <a href="?page={{ semesters.previous_page_number }}"
+               class="text-blue-500 hover:text-blue-700 mr-3">previous</a>
+        {% endif %}
+        <span class="current text-gray-700 font-bold">Page {{ semesters.number }} of {{ semesters.paginator.num_pages }}.</span>
+        {% if semesters.has_next %}
+            <a href="?page={{ semesters.next_page_number }}"
+               class="text-blue-500 hover:text-blue-700 ml-3">next</a>
+            <a href="?page={{ semesters.paginator.num_pages }}"
+               class="text-blue-500 hover:text-blue-700 ml-3">last</a>
+        {% endif %}
+    </span>
+</div>
 <!-- Modal -->
 <div id="modal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
     <div class="bg-white w-1/2 p-6 rounded shadow-lg">

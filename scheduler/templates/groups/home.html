@@ -1,52 +1,14 @@
 {% extends '../layouts/auth.html' %}
 {% block title %}Groupe{% endblock %}
-{%block content %}
-    {% if selected_formation and selected_section %}
-        <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block"
-                id="openModal">Ajouter un nouveau groupe</button>
-    {% endif %}
-    <form method="get" action="{% url 'groups' %}" class="p-1 mt-2 mb-4">
-        <label for="formation" class="block text-lg mb-2">Choisir une formation:</label>
-        <select name="formation"
-                id="formation"
-                class="border border-gray-300 rounded px-2 py-1">
-            {% for formation in formations %}
-                {% if selected_formation.id == formation.id %}
-                    <option value="{{ formation.id }}" selected>{{ formation.name }}</option>
-                {% else %}
-                    <option value="{{ formation.id }}">{{ formation.name }}</option>
-                {% endif %}
-            {% endfor %}
-        </select>
-        {% if selected_formation %}
-            <select name="section"
-                    id="section"
-                    class="border border-gray-300 rounded px-2 py-1">
-                {% for section in sections %}
-                    {% if selected_section.id == section.id %}
-                        <option value="{{ section.id }}" selected>{{ section.name }}</option>
-                    {% else %}
-                        <option value="{{ section.id }}">{{ section.name }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-        {% endif %}
-        <button type="submit" class="p-1 bg-gray-700 text-white rounded">show</button>
-    </form>
-    {% if selected_formation %}
-        <h2 class="text-lg my-1">
-            Formation: <b>{{ selected_formation.name }}</b>
-        </h2>
-    {% endif %}
-    {% if selected_section %}
-        <h2 class="text-lg my-1">
-            Section: <b>{{ selected_section.name }}</b>
-        </h2>
-    {% endif %}
+{% block content %}
+    <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block"
+            id="openModal">Ajouter un nouveau groupe</button>
     <table class="border-collapse border border-gray-400 w-full">
         <thead>
             <tr>
                 <th class="border border-gray-400 px-4 py-2">Name</th>
+                <th class="border border-gray-400 px-4 py-2">Section</th>
+                <th class="border border-gray-400 px-4 py-2">Formation</th>
                 <th class="border border-gray-400 px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -54,6 +16,8 @@
             {% for group in groups %}
                 <tr>
                     <td class="border border-gray-400 px-4 py-2">{{ group.name }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ group.section.name }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ group.section.formation.name }}</td>
                     <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
                         <form action="{% url 'group_details' group_id=group.id %}" method="post">
                             {% csrf_token %}
@@ -68,11 +32,27 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="2" class="p-2 text-center">Aucun groupe à afficher</td>
+                    <td colspan="4" class="p-2 text-center">Aucun groupe à afficher</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    <div class="pagination flex items-center justify-center mt-10">
+        <span class="step-links">
+            {% if groups.has_previous %}
+                <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">first</a>
+                <a href="?page={{ groups.previous_page_number }}"
+                   class="text-blue-500 hover:text-blue-700 mr-3">previous</a>
+            {% endif %}
+            <span class="current text-gray-700 font-bold">Page {{ groups.number }} of {{ groups.paginator.num_pages }}.</span>
+            {% if groups.has_next %}
+                <a href="?page={{ groups.next_page_number }}"
+                   class="text-blue-500 hover:text-blue-700 ml-3">next</a>
+                <a href="?page={{ groups.paginator.num_pages }}"
+                   class="text-blue-500 hover:text-blue-700 ml-3">last</a>
+            {% endif %}
+        </span>
+    </div>
     <!-- Modal -->
     <div id="modal"
          class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
@@ -88,11 +68,14 @@
                        name="name"
                        class="border border-gray-400 px-4 py-2 mb-4 rounded"
                        required />
-                <input type="hidden"
-                       id="section"
-                       name="section"
-                       required
-                       value="{{ selected_section.id }}" />
+                <label for="section" class="block mb-2">Section:</label>
+                <select name="section"
+                        id="section"
+                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    {% for section in sections %}
+                        <option value="{{ section.id }}">{{ section.name }} : {{ section.formation.name }}</option>
+                    {% endfor %}
+                </select>
                 <button type="submit"
                         class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Ajouter</button>
             </form>

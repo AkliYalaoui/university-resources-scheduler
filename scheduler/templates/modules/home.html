@@ -1,53 +1,15 @@
 {% extends '../layouts/auth.html' %}
 {% block title %}Modules{% endblock %}
 {% block content %}
-    {% if selected_formation and selected_semester %}
-        <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block"
-                id="openModal">Ajouter un nouveau module</button>
-    {% endif %}
-    <form method="get" action="{% url 'modules' %}" class="p-1 mt-2 mb-4">
-        <label for="formation" class="block text-lg mb-2">Choisir une formation:</label>
-        <select name="formation"
-                id="formation"
-                class="border border-gray-300 rounded px-2 py-1 w-72">
-            {% for formation in formations %}
-                {% if selected_formation.id == formation.id %}
-                    <option value="{{ formation.id }}" selected>{{ formation.name }}</option>
-                {% else %}
-                    <option value="{{ formation.id }}">{{ formation.name }}</option>
-                {% endif %}
-            {% endfor %}
-        </select>
-        {% if selected_formation %}
-            <select name="semester"
-                    id="semester"
-                    class="border border-gray-300 rounded px-2 py-1 w-72">
-                {% for semester in semesters %}
-                    {% if selected_semester.id == semester.id %}
-                        <option value="{{ semester.id }}" selected>{{ semester.name }}</option>
-                    {% else %}
-                        <option value="{{ semester.id }}">{{ semester.name }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-        {% endif %}
-        <button type="submit" class="p-1 bg-gray-700 text-white rounded">show</button>
-    </form>
-    {% if selected_formation %}
-        <h2 class="text-lg my-1">
-            Formation: <b>{{ selected_formation.name }}</b>
-        </h2>
-    {% endif %}
-    {% if selected_semester %}
-        <h2 class="text-lg my-1">
-            Section: <b>{{ selected_semester.name }}</b>
-        </h2>
-    {% endif %}
+    <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block"
+            id="openModal">Ajouter un nouveau module</button>
     <table class="border-collapse border border-gray-400 w-full">
         <thead>
             <tr>
                 <th class="border border-gray-400 px-4 py-2">Name</th>
                 <th class="border border-gray-400 px-4 py-2">Hourly volume</th>
+                <th class="border border-gray-400 px-4 py-2">Semestre</th>
+                <th class="border border-gray-400 px-4 py-2">Formation</th>
                 <th class="border border-gray-400 px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -56,6 +18,8 @@
                 <tr>
                     <td class="border border-gray-400 px-4 py-2">{{ module.name }}</td>
                     <td class="border border-gray-400 px-4 py-2">{{ module.volume }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ module.semester.name }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ module.formation.name }}</td>
                     <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
                         <form action="{% url 'module_details' module_id=module.id %}" method="post">
                             {% csrf_token %}
@@ -70,18 +34,35 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="3" class="p-2 text-center">Aucun module à afficher</td>
+                    <td colspan="5" class="p-2 text-center">Aucun module à afficher</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    <div class="pagination flex items-center justify-center mt-10">
+        <span class="step-links">
+          {% if modules.has_previous %}
+            <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">first</a>
+            <a href="?page={{ modules.previous_page_number }}" class="text-blue-500 hover:text-blue-700 mr-3">previous</a>
+          {% endif %}
+      
+          <span class="current text-gray-700 font-bold">
+            Page {{ modules.number }} of {{ modules.paginator.num_pages }}.
+          </span>
+      
+          {% if modules.has_next %}
+            <a href="?page={{ modules.next_page_number }}" class="text-blue-500 hover:text-blue-700 ml-3">next</a>
+            <a href="?page={{ modules.paginator.num_pages }}" class="text-blue-500 hover:text-blue-700 ml-3">last</a>
+          {% endif %}
+        </span>
+      </div>
     <!-- Modal -->
     <div id="modal"
          class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
         <div class="bg-white w-1/2 p-6 rounded shadow-lg">
             <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
                     id="closeModal">X</button>
-            <h2 class="text-lg font-bold mb-4">Ajouter un groupe</h2>
+            <h2 class="text-lg font-bold mb-4">Ajouter un module</h2>
             <form action="{% url 'modules' %}" method="post" class="flex flex-col">
                 {% csrf_token %}
                 <label for="name" class="block mb-2">Name:</label>
@@ -96,16 +77,18 @@
                        name="volume"
                        class="border border-gray-400 px-4 py-2 mb-4 rounded"
                        required>
-                <input type="hidden"
-                       id="formation"
-                       name="formation"
-                       required
-                       value="{{ selected_formation.id }}">
-                <input type="hidden"
-                       id="semester"
-                       name="semester"
-                       required
-                       value="{{ selected_semester.id }}">
+                <label for="formation" class="block text-lg mb-2">Formation:</label>
+                <select name="formation"
+                        id="formation"
+                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    {% for formation in formations %}<option value="{{ formation.id }}">{{ formation.name }}</option>{% endfor %}
+                </select>
+                <label for="semester" class="block text-lg mb-2">Semestre:</label>
+                <select name="semester"
+                        id="semester"
+                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    {% for semester in semesters %}<option value="{{ semester.id }}">{{ semester.name }} : {{ semester.start }} - {{ semester.end }}</option>{% endfor %}
+                </select>
                 <button type="submit"
                         class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Ajouter</button>
             </form>

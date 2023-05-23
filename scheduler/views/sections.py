@@ -6,6 +6,7 @@ from ..models import Etudiant, Formation, Section, Groupe, Semestre, Salle, Modu
 from ..forms import FormationForm, SectionForm, GroupForm, SemestreForm, SalleForm, ModuleForm, ProgramForm
 from django.core.paginator import Paginator
 
+
 @login_required
 @admin_required
 def sections_view(request):
@@ -21,22 +22,19 @@ def sections_view(request):
             return redirect('sections')
 
     else:
-        selected_formation_id = request.GET.get('formation')
-        selected_formation = None
-        sections = None
-        if selected_formation_id:
-            selected_formation = Formation.objects.get(
-                id=selected_formation_id)
-            sections = Section.objects.filter(formation=selected_formation)
-
         formations = Formation.objects.all()
+        sections = Section.objects.all()
+
+        paginator = Paginator(sections, 20)
+        page_number = request.GET.get('page')
+        sections = paginator.get_page(page_number)
+
         formations_context = {
             'formations': formations,
-            'selected_formation': selected_formation,
             'sections': sections,
         }
         return render(request=request, template_name="sections/home.html", context=formations_context)
-    
+
 
 @login_required
 @admin_required

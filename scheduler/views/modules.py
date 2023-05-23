@@ -24,32 +24,16 @@ def modules_view(request):
             return redirect('modules')
 
     else:
-        selected_formation_id = request.GET.get('formation')
-        selected_semester_id = request.GET.get('semester')
-        selected_formation = None
-        selected_semester = None
-        semesters = None
-        modules = None
-        if selected_formation_id:
-            selected_formation = Formation.objects.get(
-                id=selected_formation_id)
-        if selected_semester_id:
-            selected_semester = Semestre.objects.get(id=selected_semester_id)
-
-        if selected_formation_id and selected_semester_id:
-            try:
-                modules = Module.objects.filter(
-                    formation=selected_formation, semester=selected_semester)
-            except:
-                pass
-
         formations = Formation.objects.all()
         semesters = Semestre.objects.all()
+        modules = Module.objects.all()
+
+        paginator = Paginator(modules, 20)
+        page_number = request.GET.get('page')
+        modules = paginator.get_page(page_number)
 
         modules_context = {
             'formations': formations,
-            'selected_formation': selected_formation,
-            'selected_semester': selected_semester,
             'semesters': semesters,
             'modules': modules,
         }

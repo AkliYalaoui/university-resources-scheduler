@@ -21,25 +21,14 @@ def groups_view(request):
             return redirect('groups')
 
     else:
-        selected_formation_id = request.GET.get('formation')
-        selected_section_id = request.GET.get('section')
-        selected_formation = None
-        selected_section = None
-        sections = None
-        groups = None
-        if selected_formation_id:
-            selected_formation = Formation.objects.get(
-                id=selected_formation_id)
-            sections = Section.objects.filter(formation=selected_formation)
-        if selected_section_id:
-            selected_section = Section.objects.get(id=selected_section_id)
-            groups = Groupe.objects.filter(section=selected_section)
+        sections = Section.objects.all()
+        groups = Groupe.objects.all()
 
-        formations = Formation.objects.all()
+        paginator = Paginator(groups, 20)
+        page_number = request.GET.get('page')
+        groups = paginator.get_page(page_number)
+
         groups_context = {
-            'formations': formations,
-            'selected_formation': selected_formation,
-            'selected_section': selected_section,
             'sections': sections,
             'groups': groups,
         }

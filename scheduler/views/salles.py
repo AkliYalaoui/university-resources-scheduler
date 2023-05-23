@@ -18,6 +18,9 @@ def salles_view(request):
 
     else:
         salles = Salle.objects.all()
+        paginator = Paginator(salles, 20)
+        page_number = request.GET.get('page')
+        salles = paginator.get_page(page_number)
         salles_context = {
             "salles": salles
         }

@@ -43,6 +43,9 @@ def teachers_view(request):
 
     else:
         teachers = Enseignant.objects.all()
+        paginator = Paginator(teachers, 20)
+        page_number = request.GET.get('page')
+        teachers = paginator.get_page(page_number)
         teachers_context = {
             'teachers': teachers,
         }
