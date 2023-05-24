@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: timeschedulersite
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn timeschedulersite.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
