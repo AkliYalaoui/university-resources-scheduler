@@ -40,7 +40,7 @@
                 <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
                         id="closeModal">X</button>
                 <h2 class="mb-4">
-                    Modifier l'enseignant <b>{{ student.user.username }}</b>
+                    Modifier l'étudiant <b>{{ student.user.username }}</b>
                 </h2>
                 <form action="{% url 'student_details' student_id=student.user.id %}"
                       method="post"

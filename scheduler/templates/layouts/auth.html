@@ -16,16 +16,26 @@
     <div class="shadow-lg">
       <nav class="flex items-center justify-between px-4 py-3 max-w-7xl mx-auto">
         <div class="flex items-center gap-4">
-          <button id="toggleButton" class="text-gray-800 focus:outline-none">
-            <svg class="w-6 h-6"
-                 fill="none"
-                 stroke="currentColor"
-                 viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-          <a href="/">Logo</a>
+          {% if user.is_superuser %}
+            <button id="toggleButton" class="text-gray-800 focus:outline-none">
+              <svg class="w-6 h-6"
+                   fill="none"
+                   stroke="currentColor"
+                   viewBox="0 0 24 24"
+                   xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+          {% endif %}
+          {% if user.user_type == "student" %}
+            <a href="{% url 'students_workspaces' %}">Logo</a>
+          {% endif %}
+          {% if user.user_type == "teacher" %}
+            <a href="{% url 'teachers_workspaces' %}">Logo</a>
+          {% endif %}
+          {% if user.is_superuser %}
+            <a href="{% url 'home' %}">Logo</a>
+          {% endif %}
         </div>
         <div class="relative">
           <button id="profileMenuButton" class="text-gray-800 focus:outline-none">profile</button>
@@ -44,52 +54,53 @@
       </nav>
     </div>
     <main class="flex min-h-screen">
-      <section id="drawer" class="bg-gray-800 text-white w-64 p-4">
-        <article class="bg-gray-700 p-2 rounded mb-6 mt-2">
-          <h1 class="text-lg font-bold mb-2">{{ user.username }}</h1>
-          {% if user.user_type %}
-            <h2 class="text-sm mb-2">{{ user.user_type }}</h2>
-          {% else %}
-            <h2 class="text-sm">Admin</h2>
-          {% endif %}
-        </article>
-        <ul class="space-y-2">
-          <li>
-            <a href="{% url 'admins' %}"
-               class="block p-3 rounded hover:bg-gray-700">Administrateurs</a>
-          </li>
-          <li>
-            <a href="{% url 'teachers' %}"
-               class="block p-3 rounded hover:bg-gray-700">Enseignants</a>
-          </li>
-          <li>
-            <a href="{% url 'students' %}"
-               class="block p-3 rounded hover:bg-gray-700">Etudiants</a>
-          </li>
-          <li>
-            <a href="{% url 'sections' %}"
-               class="block p-3 rounded hover:bg-gray-700">Sections</a>
-          </li>
-          <li>
-            <a href="{% url 'groups' %}" class="block p-3 rounded hover:bg-gray-700">Groupes</a>
-          </li>
-          <li>
-            <a href="{% url 'salles' %}" class="block p-3 rounded hover:bg-gray-700">Salles</a>
-          </li>
-          <li>
-            <a href="{% url 'formations' %}"
-               class="block p-3 rounded hover:bg-gray-700">Formations</a>
-          </li>
-          <li>
-            <a href="{% url 'semesters' %}"
-               class="block p-3 rounded hover:bg-gray-700">Semestres</a>
-          </li>
-          <li>
-            <a href="{% url 'modules' %}"
-               class="block p-3 rounded hover:bg-gray-700">Modules</a>
-          </li>
-        </ul>
-      </section>
+      {% if user.is_superuser %}
+        <section id="drawer" class="bg-gray-800 text-white w-64 p-4">
+          <article class="bg-gray-700 p-2 rounded mb-6 mt-2">
+            <h1 class="text-lg font-bold mb-2">{{ user.username }}</h1>
+            {% if user.user_type %}
+              <h2 class="text-sm mb-2">{{ user.user_type }}</h2>
+            {% else %}
+              <h2 class="text-sm">Admin</h2>
+            {% endif %}
+          </article>
+          <ul class="space-y-2">
+            <li>
+              <a href="{% url 'admins' %}" class="block p-3 rounded hover:bg-gray-700">Administrateurs</a>
+            </li>
+            <li>
+              <a href="{% url 'teachers' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Enseignants</a>
+            </li>
+            <li>
+              <a href="{% url 'students' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Etudiants</a>
+            </li>
+            <li>
+              <a href="{% url 'sections' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Sections</a>
+            </li>
+            <li>
+              <a href="{% url 'groups' %}" class="block p-3 rounded hover:bg-gray-700">Groupes</a>
+            </li>
+            <li>
+              <a href="{% url 'salles' %}" class="block p-3 rounded hover:bg-gray-700">Salles</a>
+            </li>
+            <li>
+              <a href="{% url 'formations' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Formations</a>
+            </li>
+            <li>
+              <a href="{% url 'semesters' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Semestres</a>
+            </li>
+            <li>
+              <a href="{% url 'modules' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Modules</a>
+            </li>
+          </ul>
+        </section>
+      {% endif %}
       <section id="content" class="flex-grow p-8 mt-4">
         {% block content %}{% endblock %}
       </section>
@@ -106,22 +117,22 @@
                 drawer?.classList?.toggle("hidden");
             });
 
-          /*
-            function closeDrawer() {
-                drawer?.classList?.add("hidden");
-            }
-            document.addEventListener("click", function(event) {
-                const targetElement = event.target;
-                if (
-                    !targetElement?.closest("#drawer") &&
-                    !targetElement?.closest("#toggleButton")
-                ) {
-                    closeDrawer();
-                }
-            });
-            
-            */
-            
+            /*
+              function closeDrawer() {
+                  drawer?.classList?.add("hidden");
+              }
+              document.addEventListener("click", function(event) {
+                  const targetElement = event.target;
+                  if (
+                      !targetElement?.closest("#drawer") &&
+                      !targetElement?.closest("#toggleButton")
+                  ) {
+                      closeDrawer();
+                  }
+              });
+              
+              */
+
             profileMenuButton?.addEventListener("click", function() {
                 profileMenu?.classList?.toggle("hidden");
             });

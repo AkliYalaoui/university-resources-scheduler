@@ -76,8 +76,6 @@
     {% if selected_semester %}
       <section class="p-2 my-4 w-9/12 mx-auto">
         <div class="mb-4 flex flex-row align-center justify-end gap-2">
-          <button class="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded text-sm"
-                  onclick="downloadPDF()">Download PDF</button>
           <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded text-sm"
                   id="openSeanceModal">Ajouter créneau</button>
         </div>
@@ -244,8 +242,6 @@
       </section>
     {% endif %}
   {% endif %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
   <script>
       document?.getElementById("openModal")?.addEventListener("click", function() {
           document?.getElementById("modal")?.classList?.remove("hidden");
@@ -260,16 +256,5 @@
       document?.getElementById("close-modal-btn")?.addEventListener("click", function() {
           document?.getElementById("seance-modal")?.classList?.add("hidden");
       });
-
-      function downloadPDF() {
-          const doc = new jspdf.jsPDF();
-          const element = document.getElementById('edt');
-          html2canvas(element, {
-              backgroundColor: '#ffffff'
-          }).then((canvas) => {
-              doc.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 15, 15);
-              doc.save('emploie_des_temps.pdf');
-          });
-      }
   </script>
 {% endblock %}
