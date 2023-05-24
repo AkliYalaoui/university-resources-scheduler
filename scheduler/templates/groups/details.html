@@ -81,11 +81,18 @@
           <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded text-sm"
                   id="openSeanceModal">Ajouter créneau</button>
         </div>
-        <div class="grid grid-cols-5 gap-2" id="edt">
+        <div class="grid grid-cols-5 gap-2 bg-white p-2" id="edt">
           {% for day in days %}<div class="font-semibold text-center p-2">{{ day }}</div>{% endfor %}
           <div class="flex flex-col gap-2">
             {% for seance in dimanche %}
-              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1">
+              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative">
+                <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="_method" value="patch">
+                  <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                  <button type="submit"
+                          class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                </form>
                 <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
                 <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
                 <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
@@ -97,7 +104,14 @@
           </div>
           <div class="flex flex-col gap-2">
             {% for seance in lundi %}
-              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1">
+              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative">
+                <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="_method" value="patch">
+                  <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                  <button type="submit"
+                          class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                </form>
                 <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
                 <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
                 <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
@@ -109,7 +123,14 @@
           </div>
           <div class="flex flex-col gap-2">
             {% for seance in mardi %}
-              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1">
+              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative">
+                <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="_method" value="patch">
+                  <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                  <button type="submit"
+                          class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                </form>
                 <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
                 <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
                 <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
@@ -121,7 +142,14 @@
           </div>
           <div class="flex flex-col gap-2">
             {% for seance in mercredi %}
-              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1">
+              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative">
+                <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="_method" value="patch">
+                  <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                  <button type="submit"
+                          class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                </form>
                 <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
                 <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
                 <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
@@ -133,7 +161,14 @@
           </div>
           <div class="flex flex-col gap-2">
             {% for seance in jeudi %}
-              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1">
+              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative">
+                <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="_method" value="patch">
+                  <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                  <button type="submit"
+                          class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                </form>
                 <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
                 <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
                 <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
@@ -209,6 +244,8 @@
       </section>
     {% endif %}
   {% endif %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
   <script>
       document?.getElementById("openModal")?.addEventListener("click", function() {
           document?.getElementById("modal")?.classList?.remove("hidden");
@@ -225,18 +262,14 @@
       });
 
       function downloadPDF() {
-          // Create a new jsPDF instance
-          var doc = new jsPDF();
-
-          // Get the HTML content of the specific div
-          var element = document.getElementById('edt');
-          var html = element.innerHTML;
-
-          // Generate the PDF from the HTML content
-          doc.fromHTML(html, 15, 15);
-
-          // Download the PDF
-          doc.save('emploie_des_temps.pdf');
+          const doc = new jspdf.jsPDF();
+          const element = document.getElementById('edt');
+          html2canvas(element, {
+              backgroundColor: '#ffffff'
+          }).then((canvas) => {
+              doc.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 15, 15);
+              doc.save('emploie_des_temps.pdf');
+          });
       }
   </script>
 {% endblock %}

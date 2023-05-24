@@ -58,6 +58,11 @@ def group_details_view(request, group_id):
         if form.is_valid():
             form.save()
             return redirect('group_details', group_id=group_id)
+    elif request.method == 'POST' and request.POST["_method"] == "patch":
+        seance_id = request.POST["seance"]
+        seance = get_object_or_404(Seance, id=seance_id)
+        seance.delete()
+        return redirect('group_details', group_id=group_id)
     elif request.method == 'GET':
         selected_semester_id = request.GET.get('semester')
         selected_semester = None
@@ -70,14 +75,13 @@ def group_details_view(request, group_id):
         teachers = Enseignant.objects.all()
         seances = Seance.objects.filter(
             groupe=group, semester=selected_semester).order_by('start_time')
-        
 
         dimanche = seances.filter(day="dimanche")
         lundi = seances.filter(day="lundi")
         mardi = seances.filter(day="mardi")
         mercredi = seances.filter(day="mercredi")
         jeudi = seances.filter(day="jeudi")
-        
+
         group_context = {
             'group': group,
             "days": days,
