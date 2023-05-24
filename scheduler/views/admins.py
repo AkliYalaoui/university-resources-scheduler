@@ -17,12 +17,12 @@ def admins_view(request):
         email = request.POST['email']
         password = request.POST['password']
         user = CustomUser.objects.create_user(
-            username=username, password=password, email=email, first_name=first_name, last_name=last_name, is_staff=True, user_type='admin')
+            username=username, password=password, email=email, first_name=first_name, last_name=last_name, is_superuser=True, user_type='admin')
         print(user)
         return redirect('admins')
 
     else:
-        admins = CustomUser.objects.filter(is_staff=True)
+        admins = CustomUser.objects.filter(is_superuser=True)
 
         paginator = Paginator(admins, 20)
         page_number = request.GET.get('page')
