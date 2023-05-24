@@ -39,8 +39,6 @@ def groups_view(request):
 @admin_required
 def group_details_view(request, group_id):
     group = get_object_or_404(Groupe, id=group_id)
-    times = ['08:00', '09:30', '11:00', '12:30',
-             '14:00', '15:30', '17:00', '18:30']
     days = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi']
 
     if request.method == 'POST' and request.POST["_method"] == "delete":
@@ -70,19 +68,28 @@ def group_details_view(request, group_id):
         modules = Module.objects.filter(
             formation=group.section.formation, semester=selected_semester)
         teachers = Enseignant.objects.all()
-        programs = Seance.objects.filter(
-            groupe=group, semester=selected_semester)
-        sections = Section.objects.all()
+        seances = Seance.objects.filter(
+            groupe=group, semester=selected_semester).order_by('start_time')
+        
+
+        dimanche = seances.filter(day="dimanche")
+        lundi = seances.filter(day="lundi")
+        mardi = seances.filter(day="mardi")
+        mercredi = seances.filter(day="mercredi")
+        jeudi = seances.filter(day="jeudi")
+        
         group_context = {
             'group': group,
-            'sections': sections,
-            "times": times,
             "days": days,
             "salles": salles,
             "modules": modules,
             "teachers": teachers,
             "semesters": semesters,
             "selected_semester": selected_semester,
-            'programs': programs
+            'dimanche': dimanche,
+            'lundi': lundi,
+            'mardi': mardi,
+            'mercredi': mercredi,
+            'jeudi': jeudi,
         }
         return render(request=request, template_name="groups/details.html", context=group_context)

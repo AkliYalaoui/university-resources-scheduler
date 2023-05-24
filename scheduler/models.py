@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import datetime
 
 class Semestre(models.Model):
     name = models.CharField(max_length=100)
@@ -63,6 +64,7 @@ class Seance(models.Model):
     semester = models.ForeignKey(Semestre, on_delete=models.CASCADE)
     salle = models.ForeignKey(Salle, on_delete=models.CASCADE)
     day = models.CharField(max_length=10, choices=DAY_CHOICES)
-    time = models.TimeField()
+    start_time = models.TimeField(default=datetime.time(8, 00))
+    end_time = models.TimeField(default=datetime.time(10, 00))
     type = models.CharField(max_length=100)
 
