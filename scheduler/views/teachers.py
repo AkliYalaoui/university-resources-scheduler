@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from ..decorators import admin_required, teacher_required
-from ..models import Etudiant, Formation, Section, Groupe, Semestre, Salle, Module, Enseignant, Seance
+from ..models import Etudiant, Formation, Section, Groupe, Semestre, Salle, Module, Enseignant, Seance, Grade
 from django.core.paginator import Paginator
 
 CustomUser = get_user_model()
@@ -52,7 +52,7 @@ def teachers_view(request):
         # print(form)
         # if form.is_valid():
         username = request.POST['username']
-        grade = request.POST['grade']
+        grade_id = request.POST['grade']
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
         email = request.POST['email']
@@ -61,6 +61,7 @@ def teachers_view(request):
             username=username, password=password, email=email, first_name=first_name, last_name=last_name, user_type='teacher')
         print(user)
 
+        grade = Grade.objects.get(id=grade_id)
         teacher = Enseignant.objects.create(user=user, grade=grade)
         print(teacher)
         # form.instance.user = user
@@ -70,11 +71,13 @@ def teachers_view(request):
 
     else:
         teachers = Enseignant.objects.all()
+        grades = Grade.objects.all()
         paginator = Paginator(teachers, 20)
         page_number = request.GET.get('page')
         teachers = paginator.get_page(page_number)
         teachers_context = {
             'teachers': teachers,
+            'grades': grades,
         }
         return render(request=request, template_name="teachers/home.html", context=teachers_context)
 
@@ -85,10 +88,13 @@ def teacher_details_view(request, teacher_id):
     teacher = get_object_or_404(Enseignant, user_id=teacher_id)
     if request.method == 'POST' and request.POST["_method"] == "delete":
         teacher.delete()
+        if request.POST["_redirect"]:
+            return redirect(request.POST["_redirect"])
         return redirect('teachers')
+    
     elif request.method == 'POST' and request.POST["_method"] == "put":
         username = request.POST['username']
-        grade = request.POST['grade']
+        grade_id = request.POST['grade']
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
         email = request.POST['email']
@@ -99,6 +105,7 @@ def teacher_details_view(request, teacher_id):
         teacher.user.email = email
         teacher.user.save()
 
+        grade = Grade.objects.get(id=grade_id)
         teacher.grade = grade
         teacher.save()
         return redirect('teacher_details', teacher_id=teacher_id)
@@ -109,11 +116,13 @@ def teacher_details_view(request, teacher_id):
         return redirect('teacher_details', teacher_id=teacher_id)
     elif request.method == 'GET':
         modules = Module.objects.all()
+        grades = Grade.objects.all()
         teacher_modules = teacher.modules.all
         print(teacher_modules)
         teacher_context = {
             'teacher': teacher,
             "teacher_modules": teacher_modules,
-            "modules": modules
+            "modules": modules,
+            "grades": grades,
         }
         return render(request=request, template_name="teachers/details.html", context=teacher_context)

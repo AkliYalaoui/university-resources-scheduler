@@ -22,7 +22,7 @@
                     <td class="border border-gray-400 px-4 py-2">{{ teacher.user.first_name }}</td>
                     <td class="border border-gray-400 px-4 py-2">{{ teacher.user.last_name }}</td>
                     <td class="border border-gray-400 px-4 py-2">{{ teacher.user.email }}</td>
-                    <td class="border border-gray-400 px-4 py-2">{{ teacher.grade }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ teacher.grade.name }}</td>
                     <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
                         <form action="{% url 'teacher_details' teacher_id=teacher.user.id %}"
                               method="post">
@@ -90,11 +90,11 @@
                        name="email"
                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
                 <label for="grade" class="block mb-2">Grade:</label>
-                <input type="text"
-                       id="grade"
-                       name="grade"
-                       class="border border-gray-400 px-4 py-2 mb-4 rounded"
-                       required>
+                <select name="grade"
+                        id="grade"
+                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    {% for grade in grades %}<option value="{{ grade.id }}">{{ grade.name }}</option>{% endfor %}
+                </select>
                 <input type="hidden"
                        id="password"
                        name="password"

@@ -1,36 +1,36 @@
 {% extends 'layouts/auth.html' %}
 {% block title %}Tableau de bord{% endblock %}
 {% block content %}
-    <section class="p-4">
-        <div class="grid grid-cols-3 gap-2 justify-center my-10">
-            <div class="bg-blue-200 rounded shadow-md p-6">
-                <h2 class="text-lg font-semibold">Etudiants</h2>
-                <p class="text-4xl font-bold mt-2">{{ student_count }}</p>
-            </div>
-            <div class="bg-green-200 rounded shadow-md p-6">
-                <h2 class="text-lg font-semibold">Enseignants</h2>
-                <p class="text-4xl font-bold mt-2">{{ teacher_count }}</p>
-            </div>
-            <div class="bg-yellow-200 rounded shadow-md p-6">
-                <h2 class="text-lg font-semibold">Administrateurs</h2>
-                <p class="text-4xl font-bold mt-2">{{ admin_count }}</p>
-            </div>
+    <div class="grid grid-cols-3 gap-2 justify-center my-10">
+        <div class="bg-blue-200 rounded shadow-md p-6">
+            <h2 class="text-lg font-semibold">Etudiants</h2>
+            <p class="text-4xl font-bold mt-2">{{ student_count }}</p>
         </div>
+        <div class="bg-green-200 rounded shadow-md p-6">
+            <h2 class="text-lg font-semibold">Enseignants</h2>
+            <p class="text-4xl font-bold mt-2">{{ teacher_count }}</p>
+        </div>
+        <div class="bg-yellow-200 rounded shadow-md p-6">
+            <h2 class="text-lg font-semibold">Administrateurs</h2>
+            <p class="text-4xl font-bold mt-2">{{ admin_count }}</p>
+        </div>
+    </div>
+    <div class="w-full overflow-x-auto">
         <canvas id="formationChart"></canvas>
-    </section>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // Get the formation and student count data from the backend
             const formationData = JSON.parse('{{ formation_data|safe }}');
-            
+
             // Sort the formation data by student count in descending order
             formationData.sort((a, b) => b.student_count - a.student_count);
-            
+
             // Extract formation names and student counts
             const formationNames = formationData.map(data => data.name);
             const studentCounts = formationData.map(data => data.student_count);
-            
+
             // Create a bar chart
             const ctx = document.getElementById('formationChart').getContext('2d');
             const chart = new Chart(ctx, {

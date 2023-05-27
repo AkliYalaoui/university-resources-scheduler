@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,13 +8,17 @@
     <meta name="description"
           content="Gérer les emplois des temps des étudiants" />
     <meta name="keywords" content="étudiants" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="{% static 'favicon.ico' %}">
     <title>
       {% block title %}{% endblock %}
     </title>
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <div class="shadow-lg">
+  <body class="overflow-hidden">
+    <div class="shadow-lg fixed top-0 right-0 w-full z-50 bg-white">
       <nav class="flex items-center justify-between px-4 py-3 max-w-7xl mx-auto">
         <div class="flex items-center gap-4">
           {% if user.is_superuser %}
@@ -38,43 +43,63 @@
           {% endif %}
         </div>
         <div class="relative">
-          <button id="profileMenuButton" class="text-gray-800 focus:outline-none">profile</button>
+          <button id="profileMenuButton" class="text-gray-800 focus:outline-none">
+            <i class="fa-regular fa-user fa-lg"></i> <span>{{user.username}}</span>
+          </button>
           <div id="profileMenu"
-               class="absolute right-0 mt-2 bg-white text-gray-800 rounded-md shadow-lg hidden w-36">
+               class="absolute right-0 top-6 mt-2 bg-white text-gray-800 rounded-md shadow-lg hidden w-56">
             <ul class="py-1">
               <li>
-                <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+                <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-gray-100 flex flex-row items-center gap-2">
+                  <i class="fa-solid fa-user-pen fa-lg"></i>
+                  <span>Profile</span>
+                </a>
               </li>
               <li>
-                <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100">Logout</a>
+                <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 flex flex-row items-center gap-2">
+                  <i class="fa-solid fa-right-from-bracket fa-lg"></i>
+                  <span>Se déconnecter</span>
+                </a>
               </li>
             </ul>
           </div>
         </div>
       </nav>
     </div>
-    <main class="flex min-h-screen">
+    <main class="flex">
       {% if user.is_superuser %}
-        <section id="drawer" class="bg-gray-800 text-white w-64 p-4">
-          <article class="bg-gray-700 p-2 rounded mb-6 mt-2">
-            <h1 class="text-lg font-bold mb-2">{{ user.username }}</h1>
+        <section id="drawer" class="bg-gray-800 text-white basis-64 p-4 h-screen mt-12 overflow-auto">
+          <article class="bg-gray-700 p-2 rounded mb-4 mt-2">
+            <h1 class="text-lg font-bold mb-1">{{ user.username }}</h1>
             {% if user.user_type %}
-              <h2 class="text-sm mb-2">{{ user.user_type }}</h2>
+              <h2 class="text-sm">{{ user.user_type }}</h2>
             {% else %}
               <h2 class="text-sm">Admin</h2>
             {% endif %}
           </article>
-          <ul class="space-y-2">
+          <ul class="space-y-1">
             <li>
-              <a href="{% url 'admins' %}" class="block p-3 rounded hover:bg-gray-700">Administrateurs</a>
+              <a href="{% url 'admins' %}" class="block p-3 rounded hover:bg-gray-700">Gestionnaires</a>
+            </li>
+            <li>
+              <a href="{% url 'students' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Etudiants</a>
             </li>
             <li>
               <a href="{% url 'teachers' %}"
                  class="block p-3 rounded hover:bg-gray-700">Enseignants</a>
             </li>
             <li>
-              <a href="{% url 'students' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Etudiants</a>
+              <a href="{% url 'grades' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Grades</a>
+            </li>
+            <li>
+              <a href="{% url 'semesters' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Semestres</a>
+            </li>
+            <li>
+              <a href="{% url 'formations' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Formations</a>
             </li>
             <li>
               <a href="{% url 'sections' %}"
@@ -84,24 +109,19 @@
               <a href="{% url 'groups' %}" class="block p-3 rounded hover:bg-gray-700">Groupes</a>
             </li>
             <li>
+              <a href="{% url 'modules' %}"
+                 class="block p-3 rounded hover:bg-gray-700">Modules</a>
+            </li>
+            <li>
               <a href="{% url 'salles' %}" class="block p-3 rounded hover:bg-gray-700">Salles</a>
             </li>
             <li>
-              <a href="{% url 'formations' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Formations</a>
-            </li>
-            <li>
-              <a href="{% url 'semesters' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Semestres</a>
-            </li>
-            <li>
-              <a href="{% url 'modules' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Modules</a>
+              <a href="{% url 'type_salles' %}" class="block p-3 rounded hover:bg-gray-700">Type De Salles</a>
             </li>
           </ul>
         </section>
       {% endif %}
-      <section id="content" class="flex-grow p-8 mt-4">
+      <section id="content" class="flex-grow p-8 h-screen pt-20 overflow-auto">
         {% block content %}{% endblock %}
       </section>
     </main>
@@ -114,7 +134,7 @@
             const profileMenu = document.getElementById("profileMenu");
 
             toggleButton?.addEventListener("click", function() {
-                drawer?.classList?.toggle("hidden");
+              drawer?.classList?.toggle("hidden");
             });
 
             /*

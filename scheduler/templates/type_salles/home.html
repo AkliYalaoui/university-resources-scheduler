@@ -1,0 +1,75 @@
+{% extends '../layouts/auth.html' %} 
+{% block title %}Types de salles{%endblock %} 
+{%block content %}
+<button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block" id="openModal">Ajouter</button>
+
+<table class="border-collapse border border-gray-400 w-full">
+    <thead>
+        <tr>
+            <th class="border border-gray-400 px-4 py-2">Name</th>
+            <th class="border border-gray-400 px-4 py-2">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for type in types %}
+            <tr>
+                <td class="border border-gray-400 px-4 py-2">{{ type.name }}</td>
+                <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+                    <form action="{% url 'type_salle_details' type_id=type.id %}"
+                          method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="_method" value="delete">
+                        <input type="submit"
+                               class="text-red-600 hover:underline cursor-pointer"
+                               value="supprimer">
+                    </form>
+                    <a href="{% url 'type_salle_details' type_id=type.id %}"
+                       class="text-blue-600 hover:underline">consulter</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="2" class="p-2 text-center">Aucun Type trouvé</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination flex items-center justify-center mt-10">
+    <span class="step-links">
+        {% if types.has_previous %}
+            <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">first</a>
+            <a href="?page={{ types.previous_page_number }}"
+               class="text-blue-500 hover:text-blue-700 mr-3">previous</a>
+        {% endif %}
+        <span class="current text-gray-700 font-bold">Page {{ types.number }} of {{ types.paginator.num_pages }}.</span>
+        {% if types.has_next %}
+            <a href="?page={{ types.next_page_number }}"
+               class="text-blue-500 hover:text-blue-700 ml-3">next</a>
+            <a href="?page={{ types.paginator.num_pages }}"
+               class="text-blue-500 hover:text-blue-700 ml-3">last</a>
+        {% endif %}
+    </span>
+</div>
+<!-- Modal -->
+<div id="modal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+    <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+        <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white " id="closeModal">X</button>
+        <h2 class="text-lg font-bold mb-4">Ajouter un nouveau type de salle </h2>
+        <form action="{% url 'type_salles' %}" method="post" class="flex flex-col">
+            {% csrf_token %}
+            <label for="name" class="block mb-2">Name:</label>
+            <input type="text" id="name" name="name" class="border border-gray-400 px-4 py-2 mb-4 rounded" required>
+            <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Ajouter</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document?.getElementById("openModal")?.addEventListener("click", function() {
+        document?.getElementById("modal")?.classList?.remove("hidden");
+    });
+    document?.getElementById("closeModal")?.addEventListener("click", function() {
+        document?.getElementById("modal")?.classList?.add("hidden");
+    });
+</script>
+{% endblock %}
