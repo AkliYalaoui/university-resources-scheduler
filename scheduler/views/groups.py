@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from ..decorators import admin_required
 from ..models import Section, Groupe, Semestre, Salle, Module, Enseignant, Seance, Etudiant
@@ -8,8 +9,6 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import datetime
-import operator
-from functools import reduce
 
 
 @login_required
@@ -22,7 +21,24 @@ def groups_view(request):
             selected_section_id = request.POST.get('section')
             selected_section = Section.objects.get(id=selected_section_id)
             form.instance.section = selected_section
-            form.save()
+            group = form.save()
+
+            related_sessions= Seance.objects.filter( type="cours",groupe__section= selected_section)
+            for cours in related_sessions:
+                 new_seance = Seance.objects.create(
+                        enseignant=cours.enseignant,
+                        subject=cours.subject,
+                        groupe=group,
+                        semester=cours.semester,
+                        salle=cours.salle,
+                        day=cours.day,
+                        start_time=cours.start_time,
+                        end_time=cours.end_time,
+                        type=cours.type
+                    )
+                 
+                 print(new_seance)
+
             return redirect('groups')
 
     else:
@@ -60,14 +76,48 @@ def group_details_view(request, group_id):
         return redirect('group_details', group_id=group_id)
     elif request.method == 'POST' and request.POST["_method"] == "post":
         form = ProgramForm(request.POST)
+        semester_id = request.POST.get('semester')
         if form.is_valid():
-            form.save()
-            return redirect('group_details', group_id=group_id)
+            seance = form.save(commit=False)
+            seance.save()
+
+            if seance.type == 'cours':
+                related_groups = Groupe.objects.filter(section=group.section).exclude(id=group_id)
+                 # Add the same session to each related group
+                for related_group in related_groups:
+                    new_seance = Seance.objects.create(
+                        enseignant=seance.enseignant,
+                        subject=seance.subject,
+                        groupe=related_group,
+                        semester=seance.semester,
+                        salle=seance.salle,
+                        day=seance.day,
+                        start_time=seance.start_time,
+                        end_time=seance.end_time,
+                        type=seance.type
+                    )
+
+                    print(new_seance)
+
+            return redirect(reverse('group_details', args=[group_id]) + f'?semester={semester_id}')
     elif request.method == 'POST' and request.POST["_method"] == "patch":
+        semester_id = request.POST.get('semester')
         seance_id = request.POST["seance"]
         seance = get_object_or_404(Seance, id=seance_id)
-        seance.delete()
-        return redirect('group_details', group_id=group_id)
+
+        if seance.type == 'cours':
+            seance_remove = Seance.objects.filter(
+                        type=seance.type,
+                        day=seance.day,
+                        start_time=seance.start_time,
+                        end_time=seance.end_time,
+                        groupe__section= group.section,
+                        semester=seance.semester,
+                    )
+            seance_remove.delete()
+        else:
+            seance.delete()
+        return redirect(reverse('group_details', args=[group_id]) + f'?semester={semester_id}')
     elif request.method == 'GET':
         selected_semester_id = request.GET.get('semester')
         selected_semester = None
@@ -120,6 +170,10 @@ def allowed_sessions_view(request, group_id, semester_id):
         for module in modules:
             total_volume = datetime.timedelta()
             for seance in module.seance_set.all():
+                if seance.groupe_id != group_id:
+                    continue
+
+                print(seance.groupe_id)
                 start_time = datetime.datetime.combine(
                     datetime.date.today(), seance.start_time)
                 end_time = datetime.datetime.combine(
@@ -127,7 +181,8 @@ def allowed_sessions_view(request, group_id, semester_id):
                 duration = end_time - start_time
                 total_volume += duration
 
-            if total_volume <= datetime.timedelta(hours=module.weekly_volume):
+            print("total_volume", total_volume)
+            if total_volume < datetime.timedelta(hours=module.weekly_volume):
                 filtered_modules.append(module)
 
     filtered_teachers = []
@@ -153,20 +208,18 @@ def allowed_sessions_view(request, group_id, semester_id):
 
     seance_types = []
     if "get_types" in request.GET:
-        conflicting_sessions = Seance.objects.filter(day=request.GET["day"], start_time__lte=request.GET["end_time"],
-                                                     end_time__gte=request.GET["start_time"], type__in=["td", "tp"],  groupe__section=group.section)
-        
-        print(conflicting_sessions)
-        if conflicting_sessions.exists():
-            seance_types = ["td", "tp"]
-        else : 
-            seance_types = ["td", "tp", "cours"]
+        conflicting_sessions = Seance.objects.filter(day=request.GET["day"], start_time__lt=request.GET["end_time"],
+                                              end_time__gt=request.GET["start_time"],  groupe__section=group.section)
 
-        conflicting_sessions = Seance.objects.filter(day=request.GET["day"], start_time__lte=request.GET["end_time"],
-                                                     end_time__gte=request.GET["start_time"], type__in=["cours"],  groupe__section=group.section)
-        if conflicting_sessions.exists():
-            seance_types = ["cours"]
-        else:
+        for conflicting_session in conflicting_sessions:
+            if conflicting_session.type in ["cours"] :
+                seance_types = ["cours"]
+                break
+            elif conflicting_session.type in ["td", "tp"]: 
+                seance_types = ["td", "tp"]
+                break
+
+        if len(seance_types) == 0:
             seance_types = ["td", "tp", "cours"]
 
     filtered_salles = []

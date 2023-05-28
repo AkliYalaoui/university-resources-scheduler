@@ -87,6 +87,11 @@
                 <form method="post" action="{% url 'group_details' group_id=group.id %}">
                   {% csrf_token %}
                   <input type="hidden" name="_method" value="patch">
+                  <input type="hidden"
+                         id="semester"
+                         name="semester"
+                         value="{{ selected_semester.id }}"
+                         required>
                   <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
                   <button type="submit"
                           class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
@@ -106,6 +111,11 @@
                 <form method="post" action="{% url 'group_details' group_id=group.id %}">
                   {% csrf_token %}
                   <input type="hidden" name="_method" value="patch">
+                  <input type="hidden"
+                         id="semester"
+                         name="semester"
+                         value="{{ selected_semester.id }}"
+                         required>
                   <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
                   <button type="submit"
                           class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
@@ -125,6 +135,11 @@
                 <form method="post" action="{% url 'group_details' group_id=group.id %}">
                   {% csrf_token %}
                   <input type="hidden" name="_method" value="patch">
+                  <input type="hidden"
+                         id="semester"
+                         name="semester"
+                         value="{{ selected_semester.id }}"
+                         required>
                   <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
                   <button type="submit"
                           class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
@@ -144,6 +159,11 @@
                 <form method="post" action="{% url 'group_details' group_id=group.id %}">
                   {% csrf_token %}
                   <input type="hidden" name="_method" value="patch">
+                  <input type="hidden"
+                         id="semester"
+                         name="semester"
+                         value="{{ selected_semester.id }}"
+                         required>
                   <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
                   <button type="submit"
                           class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
@@ -163,6 +183,11 @@
                 <form method="post" action="{% url 'group_details' group_id=group.id %}">
                   {% csrf_token %}
                   <input type="hidden" name="_method" value="patch">
+                  <input type="hidden"
+                         id="semester"
+                         name="semester"
+                         value="{{ selected_semester.id }}"
+                         required>
                   <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
                   <button type="submit"
                           class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
@@ -201,6 +226,7 @@
                       id="day"
                       class="border border-gray-400 px-4 py-2 mb-2 rounded"
                       required>
+                <option value="">None</option>
                 {% for day in days %}<option value="{{ day }}">{{ day }}</option>{% endfor %}
               </select>
               <label for="start_time">Debut :</label>
@@ -223,32 +249,22 @@
               <select name="subject"
                       id="subject"
                       class="border border-gray-400 px-4 py-2 mb-2 rounded"
-                      required>
-                {% for module in modules %}<option value="{{ module.id }}">{{ module.name }}</option>{% endfor %}
-              </select>
+                      required></select>
               <label for="enseignant">Enseignant :</label>
               <select name="enseignant"
                       id="enseignant"
                       class="border border-gray-400 px-4 py-2 mb-2 rounded"
-                      required>
-                {% for teacher in teachers %}
-                  <option value="{{ teacher.user.id }}">{{ teacher.user.first_name }} {{ teacher.user.last_name }}</option>
-                {% endfor %}
-              </select>
+                      required></select>
               <label for="type" class="block mb-2">Type:</label>
               <select name="type"
                       id="type"
                       class="border border-gray-400 px-4 py-2 mb-4 rounded"
-                      required>
-                {% for type in types %}<option value="{{ type }}">{{ type|upper }}</option>{% endfor %}
-              </select>
+                      required></select>
               <label for="salle">Salle :</label>
               <select name="salle"
                       id="salle"
                       class="border border-gray-400 px-4 py-2 mb-2 rounded"
-                      required>
-                {% for salle in salles %}<option value="{{ salle.id }}">{{ salle.name }} ({{ salle.type }})</option>{% endfor %}
-              </select>
+                      required></select>
               <div class="flex flex-row align-center justify-center gap-2 mt-4">
                 <button type="submit" class="bg-gray-700 text-white px-4 py-2  rounded">Sauvegarder</button>
                 <button type="reset"
@@ -284,6 +300,9 @@
       const typeSelect = document.getElementById('type');
       const salleSelect = document.getElementById('salle');
 
+      const groupID = document.getElementById('groupe').value;
+      const semesterID = document.getElementById('semester').value;
+
       subjectSelect.disabled = true;
       enseignantSelect.disabled = true;
       typeSelect.disabled = true;
@@ -298,7 +317,11 @@
       function populateSelectOptions(selectElement, options) {
           selectElement.innerHTML = '';
 
-          for (const option of options) {
+          includeEmptyOption = [{
+              value: "",
+              label: "None"
+          }, ...options]
+          for (const option of includeEmptyOption) {
               const {
                   value,
                   label
@@ -314,9 +337,6 @@
       daySelect.addEventListener('change', () => {
           if (startTimeInput.value && endTimeInput.value) {
               subjectSelect.disabled = false;
-
-              const groupID = document.getElementById('groupe').value;
-              const semesterID = document.getElementById('semester').value;
               const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_modules`;
 
               fetchData(url)
@@ -335,8 +355,6 @@
       startTimeInput.addEventListener('change', () => {
           if (daySelect.value && endTimeInput.value) {
               subjectSelect.disabled = false;
-              const groupID = document.getElementById('groupe').value;
-              const semesterID = document.getElementById('semester').value;
               const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_modules`;
 
               fetchData(url)
@@ -354,8 +372,6 @@
       endTimeInput.addEventListener('change', () => {
           if (daySelect.value && startTimeInput.value) {
               subjectSelect.disabled = false;
-              const groupID = document.getElementById('groupe').value;
-              const semesterID = document.getElementById('semester').value;
               const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_modules`;
 
               fetchData(url)
@@ -371,52 +387,51 @@
 
       // Écouter l'événement de changement du module
       subjectSelect.addEventListener('change', () => {
-          enseignantSelect.disabled = false;
-          const groupID = document.getElementById('groupe').value;
-          const semesterID = document.getElementById('semester').value;
-          const url = `/sessions/${groupID}/${semesterID}?module=${subjectSelect.value}&day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_teachers`;
+          if (subjectSelect.value) {
+              enseignantSelect.disabled = false;
+              const url = `/sessions/${groupID}/${semesterID}?module=${subjectSelect.value}&day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_teachers`;
 
-          fetchData(url)
-              .then(data => {
-                  console.log(data)
-                  populateSelectOptions(enseignantSelect, data.teachers);
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-              });
-
+              fetchData(url)
+                  .then(data => {
+                      console.log(data)
+                      populateSelectOptions(enseignantSelect, data.teachers);
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+          }
       });
 
       // Écouter l'événement de changement de l'enseignant
       enseignantSelect.addEventListener('change', () => {
-          typeSelect.disabled = false;
-          const groupID = document.getElementById('groupe').value;
-          const semesterID = document.getElementById('semester').value;
-          const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_types`;
+          if (enseignantSelect.value) {
+              typeSelect.disabled = false;
+              const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_types`;
 
-          fetchData(url)
-              .then(data => {
-                  console.log(data)
-                  populateSelectOptions(typeSelect, data.types);
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-              });
+              fetchData(url)
+                  .then(data => {
+                      console.log(data)
+                      populateSelectOptions(typeSelect, data.types);
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+          }
       });
       typeSelect.addEventListener('change', () => {
-          salleSelect.disabled = false;
-          const groupID = document.getElementById('groupe').value;
-          const semesterID = document.getElementById('semester').value;
-          const url = `/sessions/${groupID}/${semesterID}?type=${typeSelect.value}&day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_rooms`;
+          if (typeSelect.value) {
+              salleSelect.disabled = false;
+              const url = `/sessions/${groupID}/${semesterID}?type=${typeSelect.value}&day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_rooms`;
 
-          fetchData(url)
-              .then(data => {
-                  console.log(data)
-                  populateSelectOptions(salleSelect, data.salles);
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-              });
+              fetchData(url)
+                  .then(data => {
+                      console.log(data)
+                      populateSelectOptions(salleSelect, data.salles);
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+          }
       });
   </script>
 {% endblock %}
