@@ -17,6 +17,9 @@
                 <p>
                     Fin : <b>{{ semester.end }}</b>
                 </p>
+                <p>
+                    Session : <b>{{ semester.session }}</b>
+                </p>
             </div>
         </header>
         <div id="modal"
@@ -32,13 +35,25 @@
                       class="flex flex-col">
                     {% csrf_token %}
                     <input type="hidden" name="_method" value="put">
-                    <label for="name" class="block mb-2">Formation:</label>
+                    <label for="name" class="block mb-2">Nom:</label>
                     <input type="text"
                            id="name"
                            name="name"
                            value="{{ semester.name }}"
                            class="border border-gray-400 px-4 py-2 mb-4 rounded"
                            required>
+                    <label for="session" class="block mb-2">Session:</label>
+                    <select name="session"
+                            id="session"
+                            class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                        {% for session in sessions %}
+                            {% if session == semester.session %}
+                                <option value="{{ session }}" selected>{{ session }}</option>
+                            {% else %}
+                                <option value="{{ session }}">{{ session }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
                     <label for="start" class="block mb-2">Début:</label>
                     <input type="date"
                            id="start"

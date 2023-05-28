@@ -1,5 +1,5 @@
 from django import forms
-from .models import Etudiant, Formation, Section, Groupe, Semestre, Salle, Module, Seance, Grade, TypeSalle
+from .models import Etudiant, Formation, Section, Groupe, Semestre, Salle, Module, Seance, Grade
 
 
 class StudentForm(forms.ModelForm):
@@ -36,15 +36,15 @@ class GradeForm(forms.ModelForm):
     class Meta:
         model = Grade
         fields = "__all__"
-class TypeSalleForm(forms.ModelForm):
-    class Meta:
-        model = TypeSalle
-        fields = "__all__"
+# class TypeSalleForm(forms.ModelForm):
+#     class Meta:
+#         model = TypeSalle
+#         fields = "__all__"
 
 class SalleForm(forms.ModelForm):
     class Meta:
         model = Salle
-        fields = ["name", "capacity"]
+        fields = ["name", "capacity", "type"]
 
 class ProgramForm(forms.ModelForm):
     class Meta:

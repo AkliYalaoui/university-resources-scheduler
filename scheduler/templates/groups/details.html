@@ -178,58 +178,77 @@
           </div>
         </div>
         <div id="seance-modal"
-             class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center">
+             class="hidden fixed z-50 inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center">
           <div class="bg-white p-4 rounded-lg  min-w-[500px]">
             <h2 class="text-2xl font-bold mb-4">Ajouter créneau</h2>
             <form action="{% url 'group_details' group_id=group.id %}"
                   method="post"
                   class="flex flex-col gap-1">
               {% csrf_token %}
-              <input type="hidden" name="_method" value="post">
-              <input type="hidden" id="groupe" name="groupe" value="{{ group.id }}">
+              <input type="hidden" name="_method" value="post" required>
+              <input type="hidden"
+                     id="groupe"
+                     name="groupe"
+                     value="{{ group.id }}"
+                     required>
               <input type="hidden"
                      id="semester"
                      name="semester"
-                     value="{{ selected_semester.id }}">
-              <label for="day">Day :</label>
+                     value="{{ selected_semester.id }}"
+                     required>
+              <label for="day">Jour :</label>
               <select name="day"
                       id="day"
-                      class="border border-gray-400 px-4 py-2 mb-2 rounded">
+                      class="border border-gray-400 px-4 py-2 mb-2 rounded"
+                      required>
                 {% for day in days %}<option value="{{ day }}">{{ day }}</option>{% endfor %}
               </select>
               <label for="start_time">Debut :</label>
               <input type="time"
+                     min="08:00"
+                     max="17:00"
                      id="start_time"
                      name="start_time"
-                     class="border border-gray-400 px-4 py-2 mb-2 rounded">
+                     class="border border-gray-400 px-4 py-2 mb-2 rounded"
+                     required>
               <label for="end_time">Fin :</label>
               <input type="time"
                      id="end_time"
                      name="end_time"
-                     class="border border-gray-400 px-4 py-2 mb-2 rounded">
+                     min="09:00"
+                     max="18:00"
+                     class="border border-gray-400 px-4 py-2 mb-2 rounded"
+                     required>
               <label for="subject">Module :</label>
               <select name="subject"
                       id="subject"
-                      class="border border-gray-400 px-4 py-2 mb-2 rounded">
+                      class="border border-gray-400 px-4 py-2 mb-2 rounded"
+                      required>
                 {% for module in modules %}<option value="{{ module.id }}">{{ module.name }}</option>{% endfor %}
               </select>
               <label for="enseignant">Enseignant :</label>
               <select name="enseignant"
                       id="enseignant"
-                      class="border border-gray-400 px-4 py-2 mb-2 rounded">
-                {% for teacher in teachers %}<option value="{{ teacher.user.id }}">{{ teacher.user.username }}</option>{% endfor %}
+                      class="border border-gray-400 px-4 py-2 mb-2 rounded"
+                      required>
+                {% for teacher in teachers %}
+                  <option value="{{ teacher.user.id }}">{{ teacher.user.first_name }} {{ teacher.user.last_name }}</option>
+                {% endfor %}
+              </select>
+              <label for="type" class="block mb-2">Type:</label>
+              <select name="type"
+                      id="type"
+                      class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                      required>
+                {% for type in types %}<option value="{{ type }}">{{ type|upper }}</option>{% endfor %}
               </select>
               <label for="salle">Salle :</label>
               <select name="salle"
                       id="salle"
-                      class="border border-gray-400 px-4 py-2 mb-2 rounded">
-                {% for salle in salles %}<option value="{{ salle.id }}">{{ salle.name }}</option>{% endfor %}
+                      class="border border-gray-400 px-4 py-2 mb-2 rounded"
+                      required>
+                {% for salle in salles %}<option value="{{ salle.id }}">{{ salle.name }} ({{ salle.type }})</option>{% endfor %}
               </select>
-              <label for="type">Type:</label>
-              <input type="text"
-                     id="type"
-                     name="type"
-                     class="border border-gray-400 px-4 py-2 mb-2 rounded">
               <div class="flex flex-row align-center justify-center gap-2 mt-4">
                 <button type="submit" class="bg-gray-700 text-white px-4 py-2  rounded">Sauvegarder</button>
                 <button type="reset"
@@ -255,6 +274,149 @@
       });
       document?.getElementById("close-modal-btn")?.addEventListener("click", function() {
           document?.getElementById("seance-modal")?.classList?.add("hidden");
+      });
+
+      const daySelect = document.getElementById('day');
+      const startTimeInput = document.getElementById('start_time');
+      const endTimeInput = document.getElementById('end_time');
+      const subjectSelect = document.getElementById('subject');
+      const enseignantSelect = document.getElementById('enseignant');
+      const typeSelect = document.getElementById('type');
+      const salleSelect = document.getElementById('salle');
+
+      subjectSelect.disabled = true;
+      enseignantSelect.disabled = true;
+      typeSelect.disabled = true;
+      salleSelect.disabled = true;
+
+      async function fetchData(url) {
+          const response = await fetch(url);
+          return response.json();
+      }
+
+      // Function to populate the select input elements
+      function populateSelectOptions(selectElement, options) {
+          selectElement.innerHTML = '';
+
+          for (const option of options) {
+              const {
+                  value,
+                  label
+              } = option;
+              const optionElement = document.createElement('option');
+              optionElement.value = value;
+              optionElement.textContent = label;
+              selectElement.appendChild(optionElement);
+          }
+      }
+
+      // Écouter l'événement de changement de jour
+      daySelect.addEventListener('change', () => {
+          if (startTimeInput.value && endTimeInput.value) {
+              subjectSelect.disabled = false;
+
+              const groupID = document.getElementById('groupe').value;
+              const semesterID = document.getElementById('semester').value;
+              const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_modules`;
+
+              fetchData(url)
+                  .then(data => {
+                      console.log(data)
+                      populateSelectOptions(subjectSelect, data.modules);
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+
+          }
+      });
+
+      // Écouter l'événement de changement de l'heure de début
+      startTimeInput.addEventListener('change', () => {
+          if (daySelect.value && endTimeInput.value) {
+              subjectSelect.disabled = false;
+              const groupID = document.getElementById('groupe').value;
+              const semesterID = document.getElementById('semester').value;
+              const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_modules`;
+
+              fetchData(url)
+                  .then(data => {
+                      console.log(data)
+                      populateSelectOptions(subjectSelect, data.modules);
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+          }
+      });
+
+      // Écouter l'événement de changement de l'heure de fin
+      endTimeInput.addEventListener('change', () => {
+          if (daySelect.value && startTimeInput.value) {
+              subjectSelect.disabled = false;
+              const groupID = document.getElementById('groupe').value;
+              const semesterID = document.getElementById('semester').value;
+              const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_modules`;
+
+              fetchData(url)
+                  .then(data => {
+                      console.log(data)
+                      populateSelectOptions(subjectSelect, data.modules);
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+          }
+      });
+
+      // Écouter l'événement de changement du module
+      subjectSelect.addEventListener('change', () => {
+          enseignantSelect.disabled = false;
+          const groupID = document.getElementById('groupe').value;
+          const semesterID = document.getElementById('semester').value;
+          const url = `/sessions/${groupID}/${semesterID}?module=${subjectSelect.value}&day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_teachers`;
+
+          fetchData(url)
+              .then(data => {
+                  console.log(data)
+                  populateSelectOptions(enseignantSelect, data.teachers);
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+              });
+
+      });
+
+      // Écouter l'événement de changement de l'enseignant
+      enseignantSelect.addEventListener('change', () => {
+          typeSelect.disabled = false;
+          const groupID = document.getElementById('groupe').value;
+          const semesterID = document.getElementById('semester').value;
+          const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_types`;
+
+          fetchData(url)
+              .then(data => {
+                  console.log(data)
+                  populateSelectOptions(typeSelect, data.types);
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+              });
+      });
+      typeSelect.addEventListener('change', () => {
+          salleSelect.disabled = false;
+          const groupID = document.getElementById('groupe').value;
+          const semesterID = document.getElementById('semester').value;
+          const url = `/sessions/${groupID}/${semesterID}?type=${typeSelect.value}&day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_rooms`;
+
+          fetchData(url)
+              .then(data => {
+                  console.log(data)
+                  populateSelectOptions(salleSelect, data.salles);
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+              });
       });
   </script>
 {% endblock %}

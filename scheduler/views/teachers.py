@@ -53,6 +53,7 @@ def teachers_view(request):
         # if form.is_valid():
         username = request.POST['username']
         grade_id = request.POST['grade']
+        daily_load = request.POST['daily_load']
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
         email = request.POST['email']
@@ -62,7 +63,8 @@ def teachers_view(request):
         print(user)
 
         grade = Grade.objects.get(id=grade_id)
-        teacher = Enseignant.objects.create(user=user, grade=grade)
+        teacher = Enseignant.objects.create(
+            user=user, grade=grade, daily_load=daily_load)
         print(teacher)
         # form.instance.user = user
         # form.instance.groupe = selected_group
@@ -91,10 +93,11 @@ def teacher_details_view(request, teacher_id):
         if request.POST["_redirect"]:
             return redirect(request.POST["_redirect"])
         return redirect('teachers')
-    
+
     elif request.method == 'POST' and request.POST["_method"] == "put":
         username = request.POST['username']
         grade_id = request.POST['grade']
+        daily_load = request.POST['daily_load']
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
         email = request.POST['email']
@@ -107,6 +110,7 @@ def teacher_details_view(request, teacher_id):
 
         grade = Grade.objects.get(id=grade_id)
         teacher.grade = grade
+        teacher.daily_load = daily_load
         teacher.save()
         return redirect('teacher_details', teacher_id=teacher_id)
     elif request.method == 'POST' and request.POST["_method"] == "post":

@@ -11,6 +11,7 @@
                 <th class="border border-gray-400 px-4 py-2">Last Name</th>
                 <th class="border border-gray-400 px-4 py-2">Email</th>
                 <th class="border border-gray-400 px-4 py-2">Grade</th>
+                <th class="border border-gray-400 px-4 py-2">Charge journalière</th>
                 <th class="border border-gray-400 px-4 py-2">Actions</th>
                 <!-- Add other columns as needed -->
             </tr>
@@ -23,6 +24,7 @@
                     <td class="border border-gray-400 px-4 py-2">{{ teacher.user.last_name }}</td>
                     <td class="border border-gray-400 px-4 py-2">{{ teacher.user.email }}</td>
                     <td class="border border-gray-400 px-4 py-2">{{ teacher.grade.name }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ teacher.daily_load }}</td>
                     <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
                         <form action="{% url 'teacher_details' teacher_id=teacher.user.id %}"
                               method="post">
@@ -38,7 +40,7 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="6" class="p-2 text-center">Aucun enseignant à afficher</td>
+                    <td colspan="7" class="p-2 text-center">Aucun enseignant à afficher</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -88,6 +90,11 @@
                 <input type="email"
                        id="email"
                        name="email"
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                <label for="daily_load" class="block mb-2">Charge journalière:</label>
+                <input type="number"
+                       id="daily_load"
+                       name="daily_load"
                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
                 <label for="grade" class="block mb-2">Grade:</label>
                 <select name="grade"

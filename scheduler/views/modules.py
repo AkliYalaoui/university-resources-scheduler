@@ -49,12 +49,12 @@ def module_details_view(request, module_id):
         return redirect('modules')
     elif request.method == 'POST' and request.POST["_method"] == "put":
         name = request.POST['name']
-        volume = request.POST['volume']
+        weekly_volume = request.POST['weekly_volume']
         semester_id = request.POST['semester']
         formation_id = request.POST['formation']
 
         module.name = name
-        module.volume = volume
+        module.weekly_volume = weekly_volume
         module.semester = Semestre.objects.get(id=semester_id)
         module.formation = Formation.objects.get(id=formation_id)
 

@@ -12,7 +12,7 @@
                     Salle : <b>{{ salle.name }}</b>
                 </p>
                 <p>
-                    Type : <b>{{ salle.type.name }}</b>
+                    Type : <b>{{ salle.type }}</b>
                 </p>
                 <p>
                     Capacité : <b>{{ salle.capacity }}</b>
@@ -44,10 +44,10 @@
                             id="type"
                             class="border border-gray-400 px-4 py-2 mb-4 rounded">
                         {% for type in types %}
-                            {% if type.id == salle.type.id %}
-                                <option value="{{ type.id }}" selected>{{ type.name }}</option>
+                            {% if type == salle.type %}
+                                <option value="{{ type }}" selected>{{ type }}</option>
                             {% else %}
-                                <option value="{{ type.id }}">{{ type.name }}</option>
+                                <option value="{{ type }}">{{ type }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>

@@ -1,10 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
-from ..decorators import admin_required, student_required, teacher_required
-from ..models import Etudiant, Formation, Section, Groupe, Semestre, Salle, Module, Enseignant, Seance
-from ..forms import FormationForm, SectionForm, GroupForm, SemestreForm, SalleForm, ModuleForm, ProgramForm
+from ..decorators import admin_required
+from ..models import Section, Groupe, Semestre, Salle, Module, Enseignant, Seance, Etudiant
+from ..forms import GroupForm, ProgramForm
 from django.core.paginator import Paginator
+from django.db.models import Q
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import datetime
+import operator
+from functools import reduce
 
 
 @login_required
@@ -76,6 +81,7 @@ def group_details_view(request, group_id):
         seances = Seance.objects.filter(
             groupe=group, semester=selected_semester).order_by('start_time')
 
+        types = ["td", "tp", "cours"]
         dimanche = seances.filter(day="dimanche")
         lundi = seances.filter(day="lundi")
         mardi = seances.filter(day="mardi")
@@ -90,6 +96,7 @@ def group_details_view(request, group_id):
             "teachers": teachers,
             "semesters": semesters,
             "selected_semester": selected_semester,
+            "types": types,
             'dimanche': dimanche,
             'lundi': lundi,
             'mardi': mardi,
@@ -97,3 +104,111 @@ def group_details_view(request, group_id):
             'jeudi': jeudi,
         }
         return render(request=request, template_name="groups/details.html", context=group_context)
+
+
+@csrf_exempt
+def allowed_sessions_view(request, group_id, semester_id):
+    group = get_object_or_404(Groupe, id=group_id)
+    semester = get_object_or_404(Semestre, id=semester_id)
+
+    filtered_modules = []
+    if "get_modules" in request.GET:
+        # Retrieve the modules that do not exceed their max_weekly_volume
+        modules = Module.objects.filter(
+            formation=group.section.formation, semester=semester).prefetch_related('seance_set')
+        
+        for module in modules:
+            total_volume = datetime.timedelta()
+            for seance in module.seance_set.all():
+                start_time = datetime.datetime.combine(
+                    datetime.date.today(), seance.start_time)
+                end_time = datetime.datetime.combine(
+                    datetime.date.today(), seance.end_time)
+                duration = end_time - start_time
+                total_volume += duration
+
+            if total_volume <= datetime.timedelta(hours=module.weekly_volume):
+                filtered_modules.append(module)
+
+    filtered_teachers = []
+    if "get_teachers" in request.GET:
+        module_id = request.GET["module"]
+        module = Module.objects.get(id=module_id)
+        teachers = Enseignant.objects.exclude(
+            Q(seance__day=request.GET["day"]) & Q(seance__start_time__lte=request.GET["end_time"]) & Q(
+                seance__end_time__gte=request.GET["start_time"])
+        ).filter(modules=module)
+
+        filtered_teachers = []
+        for teacher in teachers:
+            total_daily_load = datetime.timedelta()
+            for seance in teacher.seance_set.all():
+                seance_start = datetime.datetime.combine(datetime.datetime.now().date(), seance.start_time)
+                seance_end = datetime.datetime.combine(datetime.datetime.now().date(), seance.end_time)
+                duration = seance_end - seance_start
+                total_daily_load += duration
+
+            if total_daily_load.total_seconds() / 3600 < teacher.daily_load:
+                filtered_teachers.append(teacher)
+
+    seance_types = []
+    if "get_types" in request.GET:
+        conflicting_sessions = Seance.objects.filter(day=request.GET["day"], start_time__lte=request.GET["end_time"],
+                                                     end_time__gte=request.GET["start_time"], type__in=["td", "tp"],  groupe__section=group.section)
+        
+        print(conflicting_sessions)
+        if conflicting_sessions.exists():
+            seance_types = ["td", "tp"]
+        else : 
+            seance_types = ["td", "tp", "cours"]
+
+        conflicting_sessions = Seance.objects.filter(day=request.GET["day"], start_time__lte=request.GET["end_time"],
+                                                     end_time__gte=request.GET["start_time"], type__in=["cours"],  groupe__section=group.section)
+        if conflicting_sessions.exists():
+            seance_types = ["cours"]
+        else:
+            seance_types = ["td", "tp", "cours"]
+
+    filtered_salles = []
+    if "get_rooms" in request.GET:
+        occupied_salle_ids = Seance.objects.filter(
+            day=request.GET["day"],
+            start_time__lte=request.GET["end_time"],
+            end_time__gte=request.GET["start_time"]
+        ).values_list('salle_id', flat=True)
+
+        # Retrieve the free salles at the target time
+        types = {
+            "td": ["td", "amphitheater"],
+            "cours": ["td", "amphitheater"],
+            "tp": ["tp"],
+        }
+
+        allowed_types = types.get(request.GET["type"], [])
+
+        if request.GET["type"] in ['td', 'tp']:
+            students_count = Etudiant.objects.filter(
+                groupe_id=group_id).count()
+        else:
+            students_count = Etudiant.objects.filter(
+                groupe__section_id=group.section.id).count()
+
+        salles = Salle.objects.exclude(id__in=occupied_salle_ids).\
+            filter(capacity__gte=students_count)
+        print("salles", salles)
+
+        filtered_salles = [
+            salle for salle in salles if salle.type in allowed_types
+        ]
+
+    modules_data = [{"value": module.id, "label": module.name}
+                    for module in filtered_modules]
+    teachers_data = [{"value": teacher.user.id, "label": teacher.user.first_name + " " + teacher.user.last_name}
+                     for teacher in filtered_teachers]
+    types_data = [{"value": type_data, "label": type_data}
+                    for type_data in seance_types]
+    
+    salles_data = [{"value": salle.id, "label": salle.name + "( " + salle.type +" )"}
+                    for salle in filtered_salles]
+    
+    return JsonResponse({"modules": modules_data, "teachers": teachers_data, "types": types_data, "salles": salles_data})

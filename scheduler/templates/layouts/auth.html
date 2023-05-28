@@ -18,7 +18,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="overflow-hidden">
-    <div class="shadow-lg fixed top-0 right-0 w-full z-50 bg-white">
+    <div class="shadow-lg fixed top-0 right-0 w-full z-40 bg-white">
       <nav class="flex items-center justify-between px-4 py-3 max-w-7xl mx-auto">
         <div class="flex items-center gap-4">
           {% if user.is_superuser %}
@@ -114,9 +114,6 @@
             </li>
             <li>
               <a href="{% url 'salles' %}" class="block p-3 rounded hover:bg-gray-700">Salles</a>
-            </li>
-            <li>
-              <a href="{% url 'type_salles' %}" class="block p-3 rounded hover:bg-gray-700">Type De Salles</a>
             </li>
           </ul>
         </section>
