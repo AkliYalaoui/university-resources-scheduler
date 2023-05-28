@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from ..decorators import admin_required, student_required
-from ..models import Etudiant, Formation, Section, Groupe, Semestre, Salle, Module, Enseignant, Seance
+from ..models import Etudiant,Groupe, Semestre, Seance
 from django.core.paginator import Paginator
+from django.urls import reverse
+
 
 CustomUser = get_user_model()
 
@@ -45,30 +47,26 @@ def students_home_view(request):
 @admin_required
 def students_view(request):
     if request.method == 'POST':
-        # form = StudentForm(request.POST)
-        # print(form)
-        # if form.is_valid():
-        username = request.POST['username']
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        email = request.POST['email']
-        password = request.POST['password']
-        user = CustomUser.objects.create_user(
-            username=username, password=password, email=email, first_name=first_name, last_name=last_name, user_type='student')
-        print(user)
+        try:
+            username = request.POST['username']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+            email = request.POST['email']
+            password = request.POST['password']
+            user = CustomUser.objects.create_user(
+                username=username, password=password, email=email, first_name=first_name, last_name=last_name, user_type='student')
 
-        selected_group_id = request.POST.get('group')
-        selected_group = Groupe.objects.get(id=selected_group_id)
-        print(selected_group)
+            selected_group_id = request.POST.get('group')
+            selected_group = Groupe.objects.get(id=selected_group_id)
 
-        etudiant = Etudiant.objects.create(user=user, groupe=selected_group)
-        print(etudiant)
-        # form.instance.user = user
-        # form.instance.groupe = selected_group
-        # form.save()
-        return redirect('students')
+            etudiant = Etudiant.objects.create(user=user, groupe=selected_group)
+            return redirect('students')
+        except Exception as e:
+            print(e)
+            return redirect(reverse('students') + '?error=An+error+occurred+while+creating+the+profile')
 
     else:
+        error = request.GET.get('error')
         groups = Groupe.objects.all()
         students = Etudiant.objects.all()
 
@@ -79,6 +77,7 @@ def students_view(request):
         students_context = {
             'groups': groups,
             'students': students,
+            'error': error,
         }
         return render(request=request, template_name="students/home.html", context=students_context)
 
@@ -91,25 +90,31 @@ def student_details_view(request, student_id):
         student.delete()
         return redirect('students')
     elif request.method == 'POST' and request.POST["_method"] == "put":
-        username = request.POST['username']
-        group_id = request.POST['group']
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        email = request.POST['email']
+        try:
+            username = request.POST['username']
+            group_id = request.POST['group']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+            email = request.POST['email']
 
-        student.user.username = username
-        student.user.first_name = first_name
-        student.user.last_name = last_name
-        student.user.email = email
-        student.user.save()
+            student.user.username = username
+            student.user.first_name = first_name
+            student.user.last_name = last_name
+            student.user.email = email
+            student.user.save()
 
-        student.groupe_id = group_id
-        student.save()
-        return redirect('student_details', student_id=student_id)
+            student.groupe_id = group_id
+            student.save()
+            return redirect('student_details', student_id=student_id)
+        except Exception as e:
+            print(e)
+            return redirect(reverse('student_details',args=[student_id]) + '?error=An+error+occurred+while+updating+the+profile')
     elif request.method == 'GET':
         groups = Groupe.objects.all()
+        error = request.GET.get('error')
         student_context = {
             'student': student,
-            "groups": groups
+            "groups": groups,
+            "error": error,
         }
         return render(request=request, template_name="students/details.html", context=student_context)

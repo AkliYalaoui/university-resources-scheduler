@@ -26,20 +26,26 @@ def login_view(request):
 def profile_view(request):
     user = request.user
     if request.method == 'POST':
-        username = request.POST['username']
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        email = request.POST['email']
-        password = request.POST['password']
+        try:
+            username = request.POST['username']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+            email = request.POST['email']
+            password = request.POST['password']
 
-        user.username = username
-        user.first_name = first_name
-        user.last_name = last_name
-        user.email = email
-        if password :
-            user.set_password(password)
-        user.save()
-        return render(request, 'auth/profile.html')
+            user.username = username
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email
+            if password:
+                user.set_password(password)
+            user.save()
+            return render(request, 'auth/profile.html')
+
+        except Exception as e:
+            print(e)
+            return render(request=request, template_name="auth/profile.html", context={"user": user, "error": "An error occurred while updating the profile."})
+
     else:
         return render(request=request, template_name="auth/profile.html", context={"user": user})
 

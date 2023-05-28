@@ -9,39 +9,46 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import datetime
-
+from django.urls import reverse
 
 @login_required
 @admin_required
 def groups_view(request):
     if request.method == 'POST':
-        form = GroupForm(request.POST)
-        print(form)
-        if form.is_valid():
-            selected_section_id = request.POST.get('section')
-            selected_section = Section.objects.get(id=selected_section_id)
-            form.instance.section = selected_section
-            group = form.save()
+        try:
+            form = GroupForm(request.POST)
+            print(form)
+            if form.is_valid():
+                selected_section_id = request.POST.get('section')
+                selected_section = Section.objects.get(id=selected_section_id)
+                form.instance.section = selected_section
+                group = form.save()
 
-            related_sessions= Seance.objects.filter( type="cours",groupe__section= selected_section)
-            for cours in related_sessions:
-                 new_seance = Seance.objects.create(
-                        enseignant=cours.enseignant,
-                        subject=cours.subject,
-                        groupe=group,
-                        semester=cours.semester,
-                        salle=cours.salle,
-                        day=cours.day,
-                        start_time=cours.start_time,
-                        end_time=cours.end_time,
-                        type=cours.type
-                    )
-                 
-                 print(new_seance)
+                related_sessions= Seance.objects.filter( type="cours",groupe__section= selected_section)
+                for cours in related_sessions:
+                    new_seance = Seance.objects.create(
+                            enseignant=cours.enseignant,
+                            subject=cours.subject,
+                            groupe=group,
+                            semester=cours.semester,
+                            salle=cours.salle,
+                            day=cours.day,
+                            start_time=cours.start_time,
+                            end_time=cours.end_time,
+                            type=cours.type
+                        )
+                    
+                    print(new_seance)
 
-            return redirect('groups')
+                return redirect('groups')
+            else:
+                raise Exception("form not valid")
+        except Exception as e:
+            print(e)
+            return redirect(reverse('groups') + '?error=An+error+occurred+while+creating+the+group')
 
     else:
+        error = request.GET.get('error')
         sections = Section.objects.all()
         groups = Groupe.objects.all()
 
@@ -52,6 +59,7 @@ def groups_view(request):
         groups_context = {
             'sections': sections,
             'groups': groups,
+            'error': error,
         }
         return render(request=request, template_name="groups/home.html", context=groups_context)
 
@@ -66,40 +74,50 @@ def group_details_view(request, group_id):
         group.delete()
         return redirect('groups')
     elif request.method == 'POST' and request.POST["_method"] == "put":
-        name = request.POST['name']
-        section_id = request.POST['section']
+        try:
+            name = request.POST['name']
+            section_id = request.POST['section']
 
-        group.name = name
-        group.section = Section.objects.get(id=section_id)
+            group.name = name
+            group.section = Section.objects.get(id=section_id)
 
-        group.save()
-        return redirect('group_details', group_id=group_id)
+            group.save()
+            return redirect('group_details', group_id=group_id)
+        except Exception as e:
+            print(e)
+            return redirect(reverse('group_details',args=[group_id]) + '?error=An+error+occurred+while+updating+the+group')
+        
     elif request.method == 'POST' and request.POST["_method"] == "post":
-        form = ProgramForm(request.POST)
-        semester_id = request.POST.get('semester')
-        if form.is_valid():
-            seance = form.save(commit=False)
-            seance.save()
+        try:
+            form = ProgramForm(request.POST)
+            semester_id = request.POST.get('semester')
+            if form.is_valid():
+                seance = form.save(commit=False)
+                seance.save()
 
-            if seance.type == 'cours':
-                related_groups = Groupe.objects.filter(section=group.section).exclude(id=group_id)
-                 # Add the same session to each related group
-                for related_group in related_groups:
-                    new_seance = Seance.objects.create(
-                        enseignant=seance.enseignant,
-                        subject=seance.subject,
-                        groupe=related_group,
-                        semester=seance.semester,
-                        salle=seance.salle,
-                        day=seance.day,
-                        start_time=seance.start_time,
-                        end_time=seance.end_time,
-                        type=seance.type
-                    )
+                if seance.type == 'cours':
+                    related_groups = Groupe.objects.filter(section=group.section).exclude(id=group_id)
+                    # Add the same session to each related group
+                    for related_group in related_groups:
+                        new_seance = Seance.objects.create(
+                            enseignant=seance.enseignant,
+                            subject=seance.subject,
+                            groupe=related_group,
+                            semester=seance.semester,
+                            salle=seance.salle,
+                            day=seance.day,
+                            start_time=seance.start_time,
+                            end_time=seance.end_time,
+                            type=seance.type
+                        )
 
-                    print(new_seance)
-
-            return redirect(reverse('group_details', args=[group_id]) + f'?semester={semester_id}')
+                        print(new_seance)
+                return redirect(reverse('group_details', args=[group_id]) + f'?semester={semester_id}')
+            else:
+                raise Exception("form not valid")
+        except Exception as e:
+            print(e)
+            return redirect(reverse('group_details',args=[group_id]) + '?error=An+error+occurred+while+updating+the+schedule')
     elif request.method == 'POST' and request.POST["_method"] == "patch":
         semester_id = request.POST.get('semester')
         seance_id = request.POST["seance"]
@@ -119,6 +137,7 @@ def group_details_view(request, group_id):
             seance.delete()
         return redirect(reverse('group_details', args=[group_id]) + f'?semester={semester_id}')
     elif request.method == 'GET':
+        error = request.GET.get('error')
         selected_semester_id = request.GET.get('semester')
         selected_semester = None
         if selected_semester_id:
@@ -152,6 +171,7 @@ def group_details_view(request, group_id):
             'mardi': mardi,
             'mercredi': mercredi,
             'jeudi': jeudi,
+            'error': error,
         }
         return render(request=request, template_name="groups/details.html", context=group_context)
 

@@ -16,12 +16,12 @@ class Semestre(models.Model):
     session = models.CharField(max_length=10, choices=SESSION_CHOICES, default="février")
 
 class Formation(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     niveau = models.CharField(max_length=100)
     nb_semestre = models.IntegerField(default=2)
 
 class Module(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     weekly_volume = models.IntegerField(default=5)
     semester = models.ForeignKey(Semestre, on_delete=models.CASCADE)
     formation = models.ForeignKey(Formation, on_delete=models.CASCADE)
@@ -45,7 +45,7 @@ class CustomUser(AbstractUser):
 
 
 class Grade(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     
     def __str__(self) -> str:
         return self.name
@@ -66,7 +66,7 @@ class Etudiant(models.Model):
 #         return self.name
 
 class Salle(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     # type = models.ForeignKey(TypeSalle, on_delete=models.CASCADE)
     TYPE_CHOICES = (
         ('td', 'TD'),

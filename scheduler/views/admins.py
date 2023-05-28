@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from ..decorators import admin_required
 from django.core.paginator import Paginator
+from django.urls import reverse
+
 
 CustomUser = get_user_model()
 
@@ -11,25 +13,30 @@ CustomUser = get_user_model()
 @admin_required
 def admins_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        email = request.POST['email']
-        password = request.POST['password']
-        user = CustomUser.objects.create_user(
-            username=username, password=password, email=email, first_name=first_name, last_name=last_name, is_superuser=True, user_type='admin')
-        print(user)
-        return redirect('admins')
+        try:
+            username = request.POST['username']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+            email = request.POST['email']
+            password = request.POST['password']
+            user = CustomUser.objects.create_user(
+                username=username, password=password, email=email, first_name=first_name, last_name=last_name, is_superuser=True, user_type='admin')
+            print(user)
+            return redirect('admins')
+        except Exception as e:
+            print(e)
+            return redirect(reverse('admins') + '?error=An+error+occurred+while+creating+the+profile')
 
     else:
+        error = request.GET.get('error')
         admins = CustomUser.objects.filter(is_superuser=True)
-
         paginator = Paginator(admins, 20)
         page_number = request.GET.get('page')
         admins = paginator.get_page(page_number)
 
         admins_context = {
             'admins': admins,
+            "error": error
         }
         return render(request=request, template_name="admins/home.html", context=admins_context)
 
@@ -46,19 +53,25 @@ def admin_details_view(request, admin_id):
         admin.delete()
         return redirect('admins')
     elif request.method == 'POST' and request.POST["_method"] == "put":
-        username = request.POST['username']
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        email = request.POST['email']
+        try:
+            username = request.POST['username']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+            email = request.POST['email']
 
-        admin.username = username
-        admin.first_name = first_name
-        admin.last_name = last_name
-        admin.email = email
-        admin.save()
-        return redirect('admin_details', admin_id=admin_id)
+            admin.username = username
+            admin.first_name = first_name
+            admin.last_name = last_name
+            admin.email = email
+            admin.save()
+            return redirect('admin_details', admin_id=admin_id)
+        except Exception as e:
+            print(e)
+            return redirect(reverse('admin_details',args=[admin_id]) + '?error=An+error+occurred+while+updating+the+profile')
     elif request.method == 'GET':
+        error = request.GET.get('error')
         admin_context = {
             'admin': admin,
+            'error': error,
         }
         return render(request=request, template_name="admins/details.html", context=admin_context)

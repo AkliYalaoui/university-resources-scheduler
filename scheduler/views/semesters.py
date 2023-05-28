@@ -4,17 +4,26 @@ from ..decorators import admin_required
 from ..models import  Semestre
 from ..forms import  SemestreForm
 from django.core.paginator import Paginator
+from django.urls import reverse
+
 
 @login_required
 @admin_required
 def semesters_view(request):
     if request.method == 'POST':
-        form = SemestreForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('semesters')
+        try:
+            form = SemestreForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('semesters')
+            else:
+                raise Exception("form not valid")
+        except Exception as e:
+            print(e)
+            return redirect(reverse('semesters') + '?error=An+error+occurred+while+creating+the+semester')
 
     else:
+        error = request.GET.get('error')
         semesters = Semestre.objects.all()
         sessions = ["février", "juin"]
         paginator = Paginator(semesters, 20)
@@ -23,7 +32,8 @@ def semesters_view(request):
 
         semesters_context = {
             "semesters": semesters,
-            "sessions": sessions
+            "sessions": sessions,
+            "error": error,
         }
         return render(request=request, template_name="semesters/home.html", context=semesters_context)
     
@@ -36,21 +46,27 @@ def semester_details_view(request, semester_id):
         semester.delete()
         return redirect('semesters')
     elif request.method == 'POST' and request.POST["_method"] == "put":
-        name = request.POST['name']
-        start = request.POST['start']
-        end = request.POST['end']
-        session = request.POST['session']
+        try:
+            name = request.POST['name']
+            start = request.POST['start']
+            end = request.POST['end']
+            session = request.POST['session']
 
-        semester.name = name
-        semester.start = start
-        semester.end = end
-        semester.session = session
-        semester.save()
-        return redirect('semester_details', semester_id=semester_id)
+            semester.name = name
+            semester.start = start
+            semester.end = end
+            semester.session = session
+            semester.save()
+            return redirect('semester_details', semester_id=semester_id)
+        except Exception as e:
+            print(e)
+            return redirect(reverse('semester_details',args=[semester_id]) + '?error=An+error+occurred+while+updating+the+semester')
     elif request.method == 'GET':
         sessions = ["février", "juin"]
+        error = request.GET.get('error')
         semester_context = {
             'semester': semester,
-            "sessions": sessions
+            "sessions": sessions,
+            "error": error,
         }
         return render(request=request, template_name="semesters/details.html", context=semester_context)

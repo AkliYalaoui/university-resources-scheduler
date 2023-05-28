@@ -1,14 +1,18 @@
 {% extends 'layouts/base.html' %} 
 {% block title %}Se Connecter{% endblock %} 
 {%block content %} 
-  {% if error %}
-    <p>{{ error }}</p>
-  {% endif %}
-  <section class="max-w-xl mx-auto my-20 shadow-md">
+  <section class="max-w-xl mx-auto my-20 shadow-md p-2">
     <div>
       <h1 class="text-center text-3xl font-semibold">Acceder à votre EDT</h1>
       <h2 class="text-center text-lg font-light">connectez vous maintenant pour voir votre edt</h2>
     </div>
+
+    {%if error%}
+    <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2" role="alert">
+      <strong class="font-bold">Error:</strong>
+      <span class="block sm:inline">{{ error }}</span>
+    </div>
+    {%endif%}
     <form method="post" class="p-2  my-2 flex flex-col gap-0.5 ">
       {% csrf_token %}
       <label for="username">Username:</label>

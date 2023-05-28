@@ -1,9 +1,17 @@
 {% extends '../layouts/auth.html' %}
-{% block title %}Administrateurs{% endblock %}
+{% block title %}Gestionnaires{% endblock %}
 {% block content %}
-    {% if error %}<p>{{ error }}</p>{% endif %}
-    <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4 ml-auto block"
-            id="openModal">Ajouter un nouvel admin</button>
+
+<h2 class="text-3xl font-bold mb-4"># Liste de gestionnaires</h2>
+{% if error %}
+<div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
+     role="alert">
+       <strong class="font-bold">Error:</strong>
+       <span class="block sm:inline">{{ error }}</span>
+</div>
+{% endif %}
+    <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
+            id="openModal">Nouveau</button>
     <table class="border-collapse border border-gray-400 w-full">
         <thead>
             <tr>
@@ -37,7 +45,7 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="5" class="p-2 text-center">Aucun administrateurs à afficher</td>
+                    <td colspan="5" class="p-2 text-center">Aucun Gestionnairesà afficher</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -64,7 +72,7 @@
         <div class="bg-white w-1/2 p-6 rounded shadow-lg">
             <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
                     id="closeModal">X</button>
-            <h2 class="text-lg font-bold mb-4">Ajouter un administrateur</h2>
+            <h2 class="text-lg font-bold mb-4">Ajouter un gestionnaire</h2>
             <form action="{% url 'admins' %}" method="post" class="flex flex-col">
                 {% csrf_token %}
                 <label for="username" class="block mb-2">Username:</label>
