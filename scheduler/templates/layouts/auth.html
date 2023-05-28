@@ -33,13 +33,13 @@
             </button>
           {% endif %}
           {% if user.user_type == "student" %}
-            <a href="{% url 'students_workspaces' %}">Logo</a>
+            <a href="{% url 'students_workspaces' %}" class="italic">Université de béjaia</a>
           {% endif %}
           {% if user.user_type == "teacher" %}
-            <a href="{% url 'teachers_workspaces' %}">Logo</a>
+            <a href="{% url 'teachers_workspaces' %}" class="italic">Université de béjaia</a>
           {% endif %}
           {% if user.is_superuser %}
-            <a href="{% url 'home' %}">Logo</a>
+            <a href="{% url 'home' %}" class="italic">Université de béjaia</a>
           {% endif %}
         </div>
         <div class="relative">
