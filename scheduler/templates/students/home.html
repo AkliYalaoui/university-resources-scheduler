@@ -11,19 +11,18 @@
 </div>
 {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
-            id="openModal">Nouveau</button>
+            id="openModal">Ajouter</button>
     <table class="border-collapse border border-gray-400 w-full">
         <thead>
             <tr>
-                <th class="border border-gray-400 px-4 py-2">Username</th>
-                <th class="border border-gray-400 px-4 py-2">First Name</th>
-                <th class="border border-gray-400 px-4 py-2">Last Name</th>
+                <th class="border border-gray-400 px-4 py-2">Nom d'utilisateur</th>
+                <th class="border border-gray-400 px-4 py-2">Prénom</th>
+                <th class="border border-gray-400 px-4 py-2">Nom</th>
                 <th class="border border-gray-400 px-4 py-2">Email</th>
                 <th class="border border-gray-400 px-4 py-2">Groupe</th>
                 <th class="border border-gray-400 px-4 py-2">Section</th>
                 <th class="border border-gray-400 px-4 py-2">Formation</th>
                 <th class="border border-gray-400 px-4 py-2">Action</th>
-                <!-- Add other columns as needed -->
             </tr>
         </thead>
         <tbody>
@@ -59,16 +58,16 @@
     <div class="pagination flex items-center justify-center mt-10">
         <span class="step-links">
             {% if students.has_previous %}
-                <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">first</a>
+                <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">première</a>
                 <a href="?page={{ students.previous_page_number }}"
-                   class="text-blue-500 hover:text-blue-700 mr-3">previous</a>
+                   class="text-blue-500 hover:text-blue-700 mr-3">précédent</a>
             {% endif %}
-            <span class="current text-gray-700 font-bold">Page {{ students.number }} of {{ students.paginator.num_pages }}.</span>
+            <span class="current text-gray-700 font-bold">Page {{ students.number }} sur {{ students.paginator.num_pages }}.</span>
             {% if students.has_next %}
                 <a href="?page={{ students.next_page_number }}"
-                   class="text-blue-500 hover:text-blue-700 ml-3">next</a>
+                   class="text-blue-500 hover:text-blue-700 ml-3">suivant</a>
                 <a href="?page={{ students.paginator.num_pages }}"
-                   class="text-blue-500 hover:text-blue-700 ml-3">last</a>
+                   class="text-blue-500 hover:text-blue-700 ml-3">dernière</a>
             {% endif %}
         </span>
     </div>
@@ -81,18 +80,18 @@
             <h2 class="text-lg font-bold mb-4">Ajouter un étudiant</h2>
             <form action="{% url 'students' %}" method="post" class="flex flex-col">
                 {% csrf_token %}
-                <label for="username" class="block mb-2">Username:</label>
+                <label for="username" class="block mb-2">Nom d'utilisateur:</label>
                 <input type="text"
                        id="username"
                        name="username"
                        class="border border-gray-400 px-4 py-2 mb-4 rounded"
                        required>
-                <label for="first_name" class="block mb-2">First Name:</label>
+                <label for="first_name" class="block mb-2">Prénom:</label>
                 <input type="text"
                        id="first_name"
                        name="first_name"
                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                <label for="last_name" class="block mb-2">Last Name:</label>
+                <label for="last_name" class="block mb-2">Nom:</label>
                 <input type="text"
                        id="last_name"
                        name="last_name"

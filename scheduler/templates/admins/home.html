@@ -2,7 +2,7 @@
 {% block title %}Gestionnaires{% endblock %}
 {% block content %}
 
-<h2 class="text-3xl font-bold mb-4"># Liste de gestionnaires</h2>
+<h2 class="text-3xl font-bold mb-4"># Liste des gestionnaires</h2>
 {% if error %}
 <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
      role="alert">
@@ -11,13 +11,13 @@
 </div>
 {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
-            id="openModal">Nouveau</button>
+            id="openModal">Ajouter</button>
     <table class="border-collapse border border-gray-400 w-full">
         <thead>
             <tr>
-                <th class="border border-gray-400 px-4 py-2">Username</th>
-                <th class="border border-gray-400 px-4 py-2">First Name</th>
-                <th class="border border-gray-400 px-4 py-2">Last Name</th>
+                <th class="border border-gray-400 px-4 py-2">Nom d'utilisateur</th>
+                <th class="border border-gray-400 px-4 py-2">Prénom</th>
+                <th class="border border-gray-400 px-4 py-2">Nom</th>
                 <th class="border border-gray-400 px-4 py-2">Email</th>
                 <th class="border border-gray-400 px-4 py-2">Date de création</th>
                 <th class="border border-gray-400 px-4 py-2">Actions</th>
@@ -45,7 +45,7 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="5" class="p-2 text-center">Aucun Gestionnairesà afficher</td>
+                    <td colspan="5" class="p-2 text-center">Aucun Gestionnaires à afficher</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -53,16 +53,16 @@
     <div class="pagination flex items-center justify-center mt-10">
         <span class="step-links">
             {% if admins.has_previous %}
-                <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">first</a>
+                <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">première</a>
                 <a href="?page={{ admins.previous_page_number }}"
-                   class="text-blue-500 hover:text-blue-700 mr-3">previous</a>
+                   class="text-blue-500 hover:text-blue-700 mr-3">précédent</a>
             {% endif %}
-            <span class="current text-gray-700 font-bold">Page {{ admins.number }} of {{ admins.paginator.num_pages }}.</span>
+            <span class="current text-gray-700 font-bold">Page {{ admins.number }} sur {{ admins.paginator.num_pages }}.</span>
             {% if admins.has_next %}
                 <a href="?page={{ admins.next_page_number }}"
-                   class="text-blue-500 hover:text-blue-700 ml-3">next</a>
+                   class="text-blue-500 hover:text-blue-700 ml-3">suivant</a>
                 <a href="?page={{ admins.paginator.num_pages }}"
-                   class="text-blue-500 hover:text-blue-700 ml-3">last</a>
+                   class="text-blue-500 hover:text-blue-700 ml-3">dernière</a>
             {% endif %}
         </span>
     </div>
@@ -75,18 +75,18 @@
             <h2 class="text-lg font-bold mb-4">Ajouter un gestionnaire</h2>
             <form action="{% url 'admins' %}" method="post" class="flex flex-col">
                 {% csrf_token %}
-                <label for="username" class="block mb-2">Username:</label>
+                <label for="username" class="block mb-2">Nom d'utilisateur:</label>
                 <input type="text"
                        id="username"
                        name="username"
                        class="border border-gray-400 px-4 py-2 mb-4 rounded"
                        required>
-                <label for="first_name" class="block mb-2">First Name:</label>
+                <label for="first_name" class="block mb-2">Prénom:</label>
                 <input type="text"
                        id="first_name"
                        name="first_name"
                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                <label for="last_name" class="block mb-2">Last Name:</label>
+                <label for="last_name" class="block mb-2">Nom:</label>
                 <input type="text"
                        id="last_name"
                        name="last_name"

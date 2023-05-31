@@ -13,20 +13,20 @@
              method="post"
              class="flex flex-col w-6/12 mx-auto">
               {% csrf_token %}
-              <label for="username" class="block mb-2">Username:</label>
+              <label for="username" class="block mb-2">Nom d'utilisateur:</label>
               <input type="text"
                      id="username"
                      name="username"
                      value="{{ user.username }}"
                      class="border border-gray-400 px-4 py-2 mb-4 rounded"
                      required>
-              <label for="first_name" class="block mb-2">First Name:</label>
+              <label for="first_name" class="block mb-2">Prénom:</label>
               <input type="text"
                      id="first_name"
                      name="first_name"
                      value="{{ user.first_name }}"
                      class="border border-gray-400 px-4 py-2 mb-4 rounded">
-              <label for="last_name" class="block mb-2">Last Name:</label>
+              <label for="last_name" class="block mb-2">Nom:</label>
               <input type="text"
                      id="last_name"
                      name="last_name"

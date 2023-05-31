@@ -12,7 +12,7 @@
       {% endif %}
       <div class="mb-2 flex flex-row align-center justify-end gap-2">
         <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-                id="openModal">Editer</button>
+                id="openModal">Modifier</button>
       </div>
       <div class="p-2 rounded bg-blue-100 grid grid-cols-2 gap-3 ">
         <p>
@@ -81,131 +81,149 @@
       <button type="submit" class="p-2 bg-gray-700 text-white rounded">Ok</button>
     </form>
     {% if selected_semester %}
-      <section class="p-2 my-4 w-9/12 mx-auto">
+      <section class="p-2 my-4 mx-auto">
         <div class="mb-4 flex flex-row align-center justify-end gap-2">
           <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded text-sm"
                   id="openSeanceModal">Ajouter créneau</button>
         </div>
-        <div class="grid grid-cols-5 gap-2 bg-white p-2" id="edt">
-          {% for day in days %}<div class="font-semibold text-center p-2">{{ day }}</div>{% endfor %}
-          <div class="flex flex-col gap-2">
+        <div class="bg-white p-2" id="edt">
+          <div class="grid grid-cols-7 gap-2">
+            <div class="text-center p-2"></div>
+            {% for label in labels %}<div class="font-semibold text-center p-2">{{ label }}</div>{% endfor %}
+          </div>
+          <div class="grid grid-cols-7 gap-2 my-1">
+            <div class="font-semibold text-center p-2">Dimanche</div>
             {% for seance in dimanche %}
-              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative">
-                <form method="post" action="{% url 'group_details' group_id=group.id %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="_method" value="patch">
-                  <input type="hidden"
-                         id="semester"
-                         name="semester"
-                         value="{{ selected_semester.id }}"
-                         required>
-                  <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
-                  <button type="submit"
-                          class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
-                </form>
-                <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
-                <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
-                <span>{{ seance.type }}</span>
-              </div>
-            {% empty %}
-              <div class="p-2 text-center">Empty</div>
+              {% if seance.empty %}
+                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+              {% else %}
+                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                  <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="patch">
+                    <input type="hidden"
+                           id="semester"
+                           name="semester"
+                           value="{{ selected_semester.id }}"
+                           required>
+                    <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                    <button type="submit"
+                            class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                  </form>
+                  <span class="font-bold">{{ seance.subject.name }}</span>
+                  <span>{{ seance.type }}</span>
+                  <span>{{ seance.salle.name }}</span>
+                  <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                </div>
+              {% endif %}
             {% endfor %}
           </div>
-          <div class="flex flex-col gap-2">
+          <div class="grid grid-cols-7 gap-2 my-1">
+            <div class="font-semibold text-center p-2">Lundi</div>
             {% for seance in lundi %}
-              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative">
-                <form method="post" action="{% url 'group_details' group_id=group.id %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="_method" value="patch">
-                  <input type="hidden"
-                         id="semester"
-                         name="semester"
-                         value="{{ selected_semester.id }}"
-                         required>
-                  <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
-                  <button type="submit"
-                          class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
-                </form>
-                <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
-                <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
-                <span>{{ seance.type }}</span>
-              </div>
-            {% empty %}
-              <div class="p-2 text-center">Empty</div>
+              {% if seance.empty %}
+                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+              {% else %}
+                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                  <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="patch">
+                    <input type="hidden"
+                           id="semester"
+                           name="semester"
+                           value="{{ selected_semester.id }}"
+                           required>
+                    <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                    <button type="submit"
+                            class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                  </form>
+                  <span class="font-bold">{{ seance.subject.name }}</span>
+                  <span>{{ seance.type }}</span>
+                  <span>{{ seance.salle.name }}</span>
+                  <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                </div>
+              {% endif %}
             {% endfor %}
           </div>
-          <div class="flex flex-col gap-2">
+          <div class="grid grid-cols-7 gap-2 my-1">
+            <div class="font-semibold text-center p-2">Mardi</div>
             {% for seance in mardi %}
-              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative">
-                <form method="post" action="{% url 'group_details' group_id=group.id %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="_method" value="patch">
-                  <input type="hidden"
-                         id="semester"
-                         name="semester"
-                         value="{{ selected_semester.id }}"
-                         required>
-                  <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
-                  <button type="submit"
-                          class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
-                </form>
-                <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
-                <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
-                <span>{{ seance.type }}</span>
-              </div>
-            {% empty %}
-              <div class="p-2 text-center">Empty</div>
+              {% if seance.empty %}
+                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+              {% else %}
+                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                  <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="patch">
+                    <input type="hidden"
+                           id="semester"
+                           name="semester"
+                           value="{{ selected_semester.id }}"
+                           required>
+                    <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                    <button type="submit"
+                            class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                  </form>
+                  <span class="font-bold">{{ seance.subject.name }}</span>
+                  <span>{{ seance.type }}</span>
+                  <span>{{ seance.salle.name }}</span>
+                  <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                </div>
+              {% endif %}
             {% endfor %}
           </div>
-          <div class="flex flex-col gap-2">
+          <div class="grid grid-cols-7 gap-2 my-1">
+            <div class="font-semibold text-center p-2">Mercredi</div>
             {% for seance in mercredi %}
-              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative">
-                <form method="post" action="{% url 'group_details' group_id=group.id %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="_method" value="patch">
-                  <input type="hidden"
-                         id="semester"
-                         name="semester"
-                         value="{{ selected_semester.id }}"
-                         required>
-                  <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
-                  <button type="submit"
-                          class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
-                </form>
-                <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
-                <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
-                <span>{{ seance.type }}</span>
-              </div>
-            {% empty %}
-              <div class="p-2 text-center">Empty</div>
+              {% if seance.empty %}
+                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+              {% else %}
+                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                  <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="patch">
+                    <input type="hidden"
+                           id="semester"
+                           name="semester"
+                           value="{{ selected_semester.id }}"
+                           required>
+                    <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                    <button type="submit"
+                            class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                  </form>
+                  <span class="font-bold">{{ seance.subject.name }}</span>
+                  <span>{{ seance.type }}</span>
+                  <span>{{ seance.salle.name }}</span>
+                  <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                </div>
+              {% endif %}
             {% endfor %}
           </div>
-          <div class="flex flex-col gap-2">
+          <div class="grid grid-cols-7 gap-2 my-1">
+            <div class="font-semibold text-center p-2">Jeudi</div>
             {% for seance in jeudi %}
-              <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative">
-                <form method="post" action="{% url 'group_details' group_id=group.id %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="_method" value="patch">
-                  <input type="hidden"
-                         id="semester"
-                         name="semester"
-                         value="{{ selected_semester.id }}"
-                         required>
-                  <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
-                  <button type="submit"
-                          class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
-                </form>
-                <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
-                <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
-                <span>{{ seance.type }}</span>
-              </div>
-            {% empty %}
-              <div class="p-2 text-center">Empty</div>
+              {% if seance.empty %}
+                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+              {% else %}
+                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                  <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="patch">
+                    <input type="hidden"
+                           id="semester"
+                           name="semester"
+                           value="{{ selected_semester.id }}"
+                           required>
+                    <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                    <button type="submit"
+                            class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                  </form>
+                  <span class="font-bold">{{ seance.subject.name }}</span>
+                  <span>{{ seance.type }}</span>
+                  <span>{{ seance.salle.name }}</span>
+                  <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                </div>
+              {% endif %}
             {% endfor %}
           </div>
         </div>
@@ -236,22 +254,11 @@
                 <option value="">None</option>
                 {% for day in days %}<option value="{{ day }}">{{ day }}</option>{% endfor %}
               </select>
-              <label for="start_time">Debut :</label>
-              <input type="time"
-                     min="08:00"
-                     max="17:00"
-                     id="start_time"
-                     name="start_time"
-                     class="border border-gray-400 px-4 py-2 mb-2 rounded"
-                     required>
-              <label for="end_time">Fin :</label>
-              <input type="time"
-                     id="end_time"
-                     name="end_time"
-                     min="09:00"
-                     max="18:00"
-                     class="border border-gray-400 px-4 py-2 mb-2 rounded"
-                     required>
+              <label for="creaneau">Créneau :</label>
+              <select name="creaneau"
+                      id="creaneau"
+                      class="border border-gray-400 px-4 py-2 mb-2 rounded"
+                      required></select>
               <label for="subject">Module :</label>
               <select name="subject"
                       id="subject"
@@ -300,8 +307,7 @@
       });
 
       const daySelect = document.getElementById('day');
-      const startTimeInput = document.getElementById('start_time');
-      const endTimeInput = document.getElementById('end_time');
+      const creaneauSelect = document.getElementById('creaneau');
       const subjectSelect = document.getElementById('subject');
       const enseignantSelect = document.getElementById('enseignant');
       const typeSelect = document.getElementById('type');
@@ -310,6 +316,7 @@
       const groupID = document.getElementById('groupe').value;
       const semesterID = document.getElementById('semester').value;
 
+      creaneauSelect.disabled = true;
       subjectSelect.disabled = true;
       enseignantSelect.disabled = true;
       typeSelect.disabled = true;
@@ -342,61 +349,40 @@
 
       // Écouter l'événement de changement de jour
       daySelect.addEventListener('change', () => {
-          if (startTimeInput.value && endTimeInput.value) {
-              subjectSelect.disabled = false;
-              const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_modules`;
+          creaneauSelect.disabled = false;
+          const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&get_times`;
 
-              fetchData(url)
-                  .then(data => {
-                      console.log(data)
-                      populateSelectOptions(subjectSelect, data.modules);
-                  })
-                  .catch(error => {
-                      console.error('Error:', error);
-                  });
+          fetchData(url)
+              .then(data => {
+                  console.log(data)
+                  populateSelectOptions(creaneauSelect, data.times);
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+              });
 
-          }
+      });
+      creaneauSelect.addEventListener('change', () => {
+          subjectSelect.disabled = false;
+          const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&creaneau=${creaneauSelect.value}&get_modules`;
+
+          fetchData(url)
+              .then(data => {
+                  console.log(data)
+                  populateSelectOptions(subjectSelect, data.modules);
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+              });
+
       });
 
-      // Écouter l'événement de changement de l'heure de début
-      startTimeInput.addEventListener('change', () => {
-          if (daySelect.value && endTimeInput.value) {
-              subjectSelect.disabled = false;
-              const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_modules`;
-
-              fetchData(url)
-                  .then(data => {
-                      console.log(data)
-                      populateSelectOptions(subjectSelect, data.modules);
-                  })
-                  .catch(error => {
-                      console.error('Error:', error);
-                  });
-          }
-      });
-
-      // Écouter l'événement de changement de l'heure de fin
-      endTimeInput.addEventListener('change', () => {
-          if (daySelect.value && startTimeInput.value) {
-              subjectSelect.disabled = false;
-              const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_modules`;
-
-              fetchData(url)
-                  .then(data => {
-                      console.log(data)
-                      populateSelectOptions(subjectSelect, data.modules);
-                  })
-                  .catch(error => {
-                      console.error('Error:', error);
-                  });
-          }
-      });
 
       // Écouter l'événement de changement du module
       subjectSelect.addEventListener('change', () => {
           if (subjectSelect.value) {
               enseignantSelect.disabled = false;
-              const url = `/sessions/${groupID}/${semesterID}?module=${subjectSelect.value}&day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_teachers`;
+              const url = `/sessions/${groupID}/${semesterID}?module=${subjectSelect.value}&day=${daySelect.value}&creaneau=${creaneauSelect.value}&get_teachers`;
 
               fetchData(url)
                   .then(data => {
@@ -413,7 +399,7 @@
       enseignantSelect.addEventListener('change', () => {
           if (enseignantSelect.value) {
               typeSelect.disabled = false;
-              const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_types`;
+              const url = `/sessions/${groupID}/${semesterID}?day=${daySelect.value}&creaneau=${creaneauSelect.value}&get_types`;
 
               fetchData(url)
                   .then(data => {
@@ -428,7 +414,7 @@
       typeSelect.addEventListener('change', () => {
           if (typeSelect.value) {
               salleSelect.disabled = false;
-              const url = `/sessions/${groupID}/${semesterID}?type=${typeSelect.value}&day=${daySelect.value}&start_time=${startTimeInput.value}&end_time=${endTimeInput.value}&get_rooms`;
+              const url = `/sessions/${groupID}/${semesterID}?type=${typeSelect.value}&day=${daySelect.value}&creaneau=${creaneauSelect.value}&get_rooms`;
 
               fetchData(url)
                   .then(data => {

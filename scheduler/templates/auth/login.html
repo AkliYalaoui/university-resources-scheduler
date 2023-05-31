@@ -15,9 +15,9 @@
     {%endif%}
     <form method="post" class="p-2  my-2 flex flex-col gap-0.5 ">
       {% csrf_token %}
-      <label for="username">Username:</label>
+      <label for="username">Nom d'utilisateur:</label>
       <input type="text" id="username" name="username" required class="p-2 border-2"/><br />
-      <label for="password">Password:</label>
+      <label for="password">Mot de passe:</label>
       <input type="password" id="password" name="password" required class="p-2 border-2"/><br />
       <input type="submit" value="Login" class="p-2 bg-gray-700 cursor-pointer text-white">
     </form>

@@ -53,66 +53,84 @@
                         onclick="downloadPDF()">Download PDF</button>
             </div>
             <div id="edt">
-                <div class="grid grid-cols-5 gap-2 bg-white p-2">
-                    {% for day in days %}<div class="font-semibold text-center p-2">{{ day }}</div>{% endfor %}
-                    <div class="flex flex-col gap-2">
+                <div class="bg-white p-2">
+                    <div class="grid grid-cols-7 gap-2">
+                        <div class="text-center p-2"></div>
+                        {% for label in labels %}<div class="font-semibold text-center p-2">{{ label }}</div>{% endfor %}
+                    </div>
+                    <div class="grid grid-cols-7 gap-2 my-1">
+                        <div class="font-semibold text-center p-2">Dimanche</div>
                         {% for seance in dimanche %}
-                            <div class="bg-blue-200 rounded p-1 flex flex-col gap-1">
-                                <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
-                                <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                                <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
-                                <span>{{ seance.type }}</span>
-                            </div>
-                        {% empty %}
-                            <div class="p-2 text-center">Empty</div>
+                            {% if seance.empty %}
+                                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                            {% else %}
+                                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                    <span class="font-bold">{{ seance.subject.name }}</span>
+                                    <span>{{ seance.type }}</span>
+                                    <span>{{ seance.salle.name }}</span>
+                                    <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                                </div>
+                            {% endif %}
                         {% endfor %}
                     </div>
-                    <div class="flex flex-col gap-2">
+                    <div class="grid grid-cols-7 gap-2 my-1">
+                        <div class="font-semibold text-center p-2">Lundi</div>
                         {% for seance in lundi %}
-                            <div class="bg-blue-200 rounded p-1 flex flex-col gap-1">
-                                <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
-                                <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                                <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
-                                <span>{{ seance.type }}</span>
-                            </div>
-                        {% empty %}
-                            <div class="p-2 text-center">Empty</div>
+                            {% if seance.empty %}
+                                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                            {% else %}
+                                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                    <span class="font-bold">{{ seance.subject.name }}</span>
+                                    <span>{{ seance.type }}</span>
+                                    <span>{{ seance.salle.name }}</span>
+                                    <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                                </div>
+                            {% endif %}
                         {% endfor %}
                     </div>
-                    <div class="flex flex-col gap-2">
+                    <div class="grid grid-cols-7 gap-2 my-1">
+                        <div class="font-semibold text-center p-2">Mardi</div>
                         {% for seance in mardi %}
-                            <div class="bg-blue-200 rounded p-1 flex flex-col gap-1">
-                                <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
-                                <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                                <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
-                                <span>{{ seance.type }}</span>
-                            </div>
-                        {% empty %}
-                            <div class="p-2 text-center">Empty</div>
+                            {% if seance.empty %}
+                                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                            {% else %}
+                                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                    <span class="font-bold">{{ seance.subject.name }}</span>
+                                    <span>{{ seance.type }}</span>
+                                    <span>{{ seance.salle.name }}</span>
+                                    <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                                </div>
+                            {% endif %}
                         {% endfor %}
                     </div>
-                    <div class="flex flex-col gap-2">
+                    <div class="grid grid-cols-7 gap-2 my-1">
+                        <div class="font-semibold text-center p-2">Mercredi</div>
                         {% for seance in mercredi %}
-                            <div class="bg-blue-200 rounded p-1 flex flex-col gap-1">
-                                <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
-                                <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                                <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
-                                <span>{{ seance.type }}</span>
-                            </div>
-                        {% empty %}
-                            <div class="p-2 text-center">Empty</div>
+                            {% if seance.empty %}
+                                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                            {% else %}
+                                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                    <span class="font-bold">{{ seance.subject.name }}</span>
+                                    <span>{{ seance.type }}</span>
+                                    <span>{{ seance.salle.name }}</span>
+                                    <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                                </div>
+                            {% endif %}
                         {% endfor %}
                     </div>
-                    <div class="flex flex-col gap-2">
+                    <div class="grid grid-cols-7 gap-2 my-1">
+                        <div class="font-semibold text-center p-2">Jeudi</div>
                         {% for seance in jeudi %}
-                            <div class="bg-blue-200 rounded p-1 flex flex-col gap-1">
-                                <span>{{ seance.subject.name }} - {{ seance.salle.name }}</span>
-                                <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                                <span>{{ seance.start_time }} - {{ seance.end_time }}</span>
-                                <span>{{ seance.type }}</span>
-                            </div>
-                        {% empty %}
-                            <div class="p-2 text-center">Empty</div>
+                            {% if seance.empty %}
+                                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                            {% else %}
+                                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                    <span class="font-bold">{{ seance.subject.name }}</span>
+                                    <span>{{ seance.type }}</span>
+                                    <span>{{ seance.salle.name }}</span>
+                                    <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                                </div>
+                            {% endif %}
                         {% endfor %}
                     </div>
                 </div>

@@ -12,7 +12,7 @@
             {% endif %}
             <div class="mb-2 flex flex-row align-center justify-end gap-2">
                 <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-                        id="openModal">Editer</button>
+                        id="openModal">Modifier</button>
             </div>
             <div class="p-2 rounded bg-blue-100 grid grid-cols-2 gap-3 ">
                 <p>
@@ -54,20 +54,20 @@
                       class="flex flex-col">
                     {% csrf_token %}
                     <input type="hidden" name="_method" value="put">
-                    <label for="username" class="block mb-2">Username:</label>
+                    <label for="username" class="block mb-2">Nom d'utilisateur:</label>
                     <input type="text"
                            id="username"
                            name="username"
                            value="{{ student.user.username }}"
                            class="border border-gray-400 px-4 py-2 mb-4 rounded"
                            required>
-                    <label for="first_name" class="block mb-2">First Name:</label>
+                    <label for="first_name" class="block mb-2">Prénom:</label>
                     <input type="text"
                            id="first_name"
                            name="first_name"
                            value="{{ student.user.first_name }}"
                            class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                    <label for="last_name" class="block mb-2">Last Name:</label>
+                    <label for="last_name" class="block mb-2">Nom:</label>
                     <input type="text"
                            id="last_name"
                            name="last_name"
