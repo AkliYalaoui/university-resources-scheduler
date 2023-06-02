@@ -147,7 +147,7 @@ def teacher_details_view(request, teacher_id):
     teacher = get_object_or_404(Enseignant, user_id=teacher_id)
     if request.method == 'POST' and request.POST["_method"] == "delete":
         teacher.delete()
-        if request.POST["_redirect"]:
+        if "_redirect" in request.POST:
             return redirect(request.POST["_redirect"])
         return redirect('teachers')
 
