@@ -12,13 +12,13 @@
 {% endif %}
 
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
-            id="openModal">Nouveau</button>
+            id="openModal">Ajouter</button>
     <table class="border-collapse border border-gray-400 w-full">
         <thead>
             <tr>
-                <th class="border border-gray-400 px-4 py-2">Name</th>
+                <th class="border border-gray-400 px-4 py-2">Nom</th>
                 <th class="border border-gray-400 px-4 py-2">Type</th>
-                <th class="border border-gray-400 px-4 py-2">Capacity</th>
+                <th class="border border-gray-400 px-4 py-2">Capacité</th>
                 <th class="border border-gray-400 px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -50,16 +50,16 @@
     <div class="pagination flex items-center justify-center mt-10">
         <span class="step-links">
             {% if salles.has_previous %}
-                <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">first</a>
+                <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">première</a>
                 <a href="?page={{ salles.previous_page_number }}"
-                   class="text-blue-500 hover:text-blue-700 mr-3">previous</a>
+                   class="text-blue-500 hover:text-blue-700 mr-3">précédent</a>
             {% endif %}
-            <span class="current text-gray-700 font-bold">Page {{ salles.number }} of {{ salles.paginator.num_pages }}.</span>
+            <span class="current text-gray-700 font-bold">Page {{ salles.number }} sur {{ salles.paginator.num_pages }}.</span>
             {% if salles.has_next %}
                 <a href="?page={{ salles.next_page_number }}"
-                   class="text-blue-500 hover:text-blue-700 ml-3">next</a>
+                   class="text-blue-500 hover:text-blue-700 ml-3">suivant</a>
                 <a href="?page={{ salles.paginator.num_pages }}"
-                   class="text-blue-500 hover:text-blue-700 ml-3">last</a>
+                   class="text-blue-500 hover:text-blue-700 ml-3">dernière</a>
             {% endif %}
         </span>
     </div>
@@ -72,7 +72,7 @@
             <h2 class="text-lg font-bold mb-4">Ajouter une nouvelle salle</h2>
             <form action="{% url 'salles' %}" method="post" class="flex flex-col">
                 {% csrf_token %}
-                <label for="name" class="block mb-2">Name:</label>
+                <label for="name" class="block mb-2">Nom:</label>
                 <input type="text"
                        id="name"
                        name="name"
@@ -84,7 +84,7 @@
                         class="border border-gray-400 px-4 py-2 mb-4 rounded">
                     {% for type in types %}<option value="{{ type }}">{{ type|upper }}</option>{% endfor %}
                 </select>
-                <label for="capacity" class="block mb-2">Capacity:</label>
+                <label for="capacity" class="block mb-2">Capacité:</label>
                 <input type="number"
                        id="capacity"
                        name="capacity"

@@ -11,11 +11,11 @@
 </div>
 {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
-            id="openModal">nouveau</button>
+            id="openModal">Ajouter</button>
     <table class="border-collapse border border-gray-400 w-full">
         <thead>
             <tr>
-                <th class="border border-gray-400 px-4 py-2">Name</th>
+                <th class="border border-gray-400 px-4 py-2">Nom</th>
                 <th class="border border-gray-400 px-4 py-2">Section</th>
                 <th class="border border-gray-400 px-4 py-2">Formation</th>
                 <th class="border border-gray-400 px-4 py-2">Actions</th>
@@ -49,16 +49,16 @@
     <div class="pagination flex items-center justify-center mt-10">
         <span class="step-links">
             {% if groups.has_previous %}
-                <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">first</a>
+                <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">première</a>
                 <a href="?page={{ groups.previous_page_number }}"
-                   class="text-blue-500 hover:text-blue-700 mr-3">previous</a>
+                   class="text-blue-500 hover:text-blue-700 mr-3">précédent</a>
             {% endif %}
-            <span class="current text-gray-700 font-bold">Page {{ groups.number }} of {{ groups.paginator.num_pages }}.</span>
+            <span class="current text-gray-700 font-bold">Page {{ groups.number }} sur {{ groups.paginator.num_pages }}.</span>
             {% if groups.has_next %}
                 <a href="?page={{ groups.next_page_number }}"
-                   class="text-blue-500 hover:text-blue-700 ml-3">next</a>
+                   class="text-blue-500 hover:text-blue-700 ml-3">suivant</a>
                 <a href="?page={{ groups.paginator.num_pages }}"
-                   class="text-blue-500 hover:text-blue-700 ml-3">last</a>
+                   class="text-blue-500 hover:text-blue-700 ml-3">dernière</a>
             {% endif %}
         </span>
     </div>
@@ -71,7 +71,7 @@
             <h2 class="text-lg font-bold mb-4">Ajouter un groupe</h2>
             <form action="{% url 'groups' %}" method="post" class="flex flex-col">
                 {% csrf_token %}
-                <label for="name" class="block mb-2">Name:</label>
+                <label for="name" class="block mb-2">Nom:</label>
                 <input type="text"
                        id="name"
                        name="name"
