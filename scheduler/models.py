@@ -16,9 +16,26 @@ class Semestre(models.Model):
     session = models.CharField(max_length=10, choices=SESSION_CHOICES, default="février")
 
 class Formation(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    niveau = models.CharField(max_length=100)
+
+    NIVEAU_CHOICES = (
+        ('L1', 'L1'),
+        ('L2', 'L2'),
+        ('L3', 'L3'),
+        ('M1', 'M1'),
+        ('M2', 'M2'),
+    )
+      
+    name = models.CharField(max_length=100)
+    niveau = models.CharField(max_length=3, choices=NIVEAU_CHOICES)
     nb_semestre = models.IntegerField(default=2)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'niveau'], name='unique_name_niveau')
+        ]
+
+    def __str__(self):
+        return f"{self.name} - {self.niveau}"
 
 class Module(models.Model):
     name = models.CharField(max_length=100, unique=True)

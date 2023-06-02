@@ -24,6 +24,9 @@
         <p>
           Formation : <b>{{ group.section.formation.name }}</b>
         </p>
+        <p>
+          Niveau : <b>{{ group.section.formation.niveau }}</b>
+        </p>
       </div>
     </header>
     <div id="modal"
@@ -52,9 +55,9 @@
                   class="border border-gray-300 rounded px-4 py-2 w-full mb-4">
             {% for section in sections %}
               {% if section.id == group.section.id %}
-                <option value="{{ section.id }}" selected>{{ section.name }}</option>
+                <option value="{{ section.id }}" selected>{{ section.name }} : {{ section.formation.name }} - {{ section.formation.niveau }}</option>
               {% else %}
-                <option value="{{ section.id }}">{{ section.name }}</option>
+                <option value="{{ section.id }}">{{ section.name }} : {{ section.formation.name }} - {{ section.formation.niveau }}</option>
               {% endif %}
             {% endfor %}
           </select>

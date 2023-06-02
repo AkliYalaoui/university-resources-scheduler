@@ -18,6 +18,7 @@
             <tr>
                 <th class="border border-gray-400 px-4 py-2">Nom</th>
                 <th class="border border-gray-400 px-4 py-2">Formation</th>
+                <th class="border border-gray-400 px-4 py-2">Niveau</th>
                 <th class="border border-gray-400 px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -26,6 +27,7 @@
                 <tr>
                     <td class="border border-gray-400 px-4 py-2">{{ section.name }}</td>
                     <td class="border border-gray-400 px-4 py-2">{{ section.formation.name }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ section.formation.niveau }}</td>
                     <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
                         <form action="{% url 'section_details' section_id=section.id %}"
                               method="post">
@@ -82,7 +84,7 @@
                 <select name="formation"
                         id="formation"
                         class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                    {% for formation in formations %}<option value="{{ formation.id }}">{{ formation.name }}</option>{% endfor %}
+                    {% for formation in formations %}<option value="{{ formation.id }}">{{ formation.name }} - {{formation.niveau}} </option>{% endfor %}
                 </select>
                 <button type="submit"
                         class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Ajouter</button>

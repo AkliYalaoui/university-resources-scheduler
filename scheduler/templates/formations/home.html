@@ -1,134 +1,109 @@
-{% extends '../layouts/auth.html' %} {% block title %}Formations{%endblock %}
-{%block content %}
-
-<h2 class="text-3xl font-bold mb-4"># Liste des formations</h2>
-{% if error %}
-<div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
-     role="alert">
-       <strong class="font-bold">Error:</strong>
-       <span class="block sm:inline">{{ error }}</span>
-</div>
-{% endif %}
-
-<button
-  class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
-  id="openModal"
->
-  Ajouter
-</button>
-
-<table class="border-collapse border border-gray-400 w-full">
-  <thead>
-    <tr>
-      <th class="border border-gray-400 px-4 py-2">Nom</th>
-      <th class="border border-gray-400 px-4 py-2">Niveau</th>
-      <th class="border border-gray-400 px-4 py-2">Nombre de semestres</th>
-      <th class="border border-gray-400 px-4 py-2">Actions</th>
-      <!-- Add other columns as needed -->
-    </tr>
-  </thead>
-  <tbody>
-    {% for formation in page_obj %}
-    <tr>
-      <td class="border border-gray-400 px-4 py-2">{{ formation.name }}</td>
-      <td class="border border-gray-400 px-4 py-2">{{ formation.niveau }}</td>
-      <td class="border border-gray-400 px-4 py-2">{{ formation.nb_semestre }}</td>
-      <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
-        <form action="{% url 'formation_details' formation_id=formation.id %}"
-              method="post">
-            {% csrf_token %}
-            <input type="hidden" name="_method" value="delete">
-            <input type="submit"
-                    onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
-                   class="text-red-600 hover:underline cursor-pointer"
-                   value="supprimer">
-        </form>
-        <a href="{% url 'formation_details' formation_id=formation.id %}"
-           class="text-blue-600 hover:underline">consulter</a>
-    </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="4" class="p-2 text-center">Aucune formation à afficher</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<div class="pagination flex items-center justify-center mt-10">
+{% extends '../layouts/auth.html' %}
+{% block title %}Formations{% endblock %}
+{% block content %}
+  <h2 class="text-3xl font-bold mb-4"># Liste des formations</h2>
+  {% if error %}
+    <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
+         role="alert">
+      <strong class="font-bold">Error:</strong>
+      <span class="block sm:inline">{{ error }}</span>
+    </div>
+  {% endif %}
+  <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
+          id="openModal">Ajouter</button>
+  <table class="border-collapse border border-gray-400 w-full">
+    <thead>
+      <tr>
+        <th class="border border-gray-400 px-4 py-2">Nom</th>
+        <th class="border border-gray-400 px-4 py-2">Niveau</th>
+        <th class="border border-gray-400 px-4 py-2">Nombre de semestres</th>
+        <th class="border border-gray-400 px-4 py-2">Actions</th>
+        <!-- Add other columns as needed -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for formation in page_obj %}
+        <tr>
+          <td class="border border-gray-400 px-4 py-2">{{ formation.name }}</td>
+          <td class="border border-gray-400 px-4 py-2">{{ formation.niveau }}</td>
+          <td class="border border-gray-400 px-4 py-2">{{ formation.nb_semestre }}</td>
+          <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+            <form action="{% url 'formation_details' formation_id=formation.id %}"
+                  method="post">
+              {% csrf_token %}
+              <input type="hidden" name="_method" value="delete">
+              <input type="submit"
+                     onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
+                     class="text-red-600 hover:underline cursor-pointer"
+                     value="supprimer">
+            </form>
+            <a href="{% url 'formation_details' formation_id=formation.id %}"
+               class="text-blue-600 hover:underline">consulter</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4" class="p-2 text-center">Aucune formation à afficher</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="pagination flex items-center justify-center mt-10">
     <span class="step-links">
       {% if page_obj.has_previous %}
         <a href="?page=1" class="text-blue-500 hover:text-blue-700 mr-3">première</a>
-        <a href="?page={{ page_obj.previous_page_number }}" class="text-blue-500 hover:text-blue-700 mr-3">précédent</a>
+        <a href="?page={{ page_obj.previous_page_number }}"
+           class="text-blue-500 hover:text-blue-700 mr-3">précédent</a>
       {% endif %}
-  
-      <span class="current text-gray-700 font-bold">
-        Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}.
-      </span>
-  
+      <span class="current text-gray-700 font-bold">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}.</span>
       {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="text-blue-500 hover:text-blue-700 ml-3">suivant</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}" class="text-blue-500 hover:text-blue-700 ml-3">dernière</a>
+        <a href="?page={{ page_obj.next_page_number }}"
+           class="text-blue-500 hover:text-blue-700 ml-3">suivant</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}"
+           class="text-blue-500 hover:text-blue-700 ml-3">dernière</a>
       {% endif %}
     </span>
   </div>
-  
-<!-- Modal -->
-<div
-  id="modal"
-  class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75"
->
-  <div class="bg-white w-1/2 p-6 rounded shadow-lg">
-    <button
-      class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
-      id="closeModal"
-    >
-      X
-    </button>
-    <h2 class="text-lg font-bold mb-4">Ajouter une nouvelle formation</h2>
-    <form action="{% url 'formations' %}" method="post" class="flex flex-col">
-      {% csrf_token %}
-      <label for="name" class="block mb-2">Nom:</label>
-      <input
-        type="text"
-        id="name"
-        name="name"
-        class="border border-gray-400 px-4 py-2 mb-4 rounded"
-        required
-      />
-      <label for="niveau" class="block mb-2">Niveau:</label>
-      <input
-        type="text"
-        id="niveau"
-        name="niveau"
-        class="border border-gray-400 px-4 py-2 mb-4 rounded"
-        required
-      />
-      <label for="nb_semestre" class="block mb-2">Nombre de semestres:</label>
-      <input
-        type="number"
-        id="nb_semestre"
-        name="nb_semestre"
-        class="border border-gray-400 px-4 py-2 mb-4 rounded"
-        required
-      />
-      <button
-        type="submit"
-        class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-      >
-        Ajouter
-      </button>
-    </form>
+  <!-- Modal -->
+  <div id="modal"
+       class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+    <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+      <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+              id="closeModal">X</button>
+      <h2 class="text-lg font-bold mb-4">Ajouter une nouvelle formation</h2>
+      <form action="{% url 'formations' %}" method="post" class="flex flex-col">
+        {% csrf_token %}
+        <label for="name" class="block mb-2">Nom:</label>
+        <input type="text"
+               id="name"
+               name="name"
+               class="border border-gray-400 px-4 py-2 mb-4 rounded"
+               required />
+        <label for="niveau" class="block mb-2">Niveau:</label>
+        <select name="niveau"
+                id="niveau"
+                class="border border-gray-400 px-4 py-2 mb-4 rounded">
+          {% for level in levels %}<option value="{{ level }}">{{ level }}</option>{% endfor %}
+        </select>
+        <label for="nb_semestre" class="block mb-2">Nombre de semestres:</label>
+        <input type="number"
+               id="nb_semestre"
+               name="nb_semestre"
+               class="border border-gray-400 px-4 py-2 mb-4 rounded"
+               required />
+        <button type="submit"
+                class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Ajouter</button>
+      </form>
+    </div>
   </div>
-</div>
-
-<script>
-  document?.getElementById("openModal")?.addEventListener("click", function () {
-    document?.getElementById("modal")?.classList?.remove("hidden");
-  });
-  document
-    ?.getElementById("closeModal")
-    ?.addEventListener("click", function () {
-      document?.getElementById("modal")?.classList?.add("hidden");
-    });
-</script>
+  <script>
+      document?.getElementById("openModal")?.addEventListener("click", function() {
+          document?.getElementById("modal")?.classList?.remove("hidden");
+      });
+      document
+          ?.getElementById("closeModal")
+          ?.addEventListener("click", function() {
+              document?.getElementById("modal")?.classList?.add("hidden");
+          });
+  </script>
 {% endblock %}

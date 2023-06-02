@@ -207,6 +207,8 @@ def group_details_view(request, group_id):
         seances = Seance.objects.filter(
             groupe=group, semester=selected_semester).order_by('start_time')
 
+        sections = Section.objects.all()
+        
         # types = ["td", "tp", "cours"]
         dimanche = seances.filter(day="dimanche")
         lundi = seances.filter(day="lundi")
@@ -263,6 +265,7 @@ def group_details_view(request, group_id):
 
         group_context = {
             'group': group,
+            'sections': sections,
             "days": days,
             "labels": labels,
             "salles": salles,

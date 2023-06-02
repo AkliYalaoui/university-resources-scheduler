@@ -4,12 +4,12 @@
     {% if formation %}
         <header class="w-6/12 mx-auto">
             {% if error %}
-            <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
-                 role="alert">
-                <strong class="font-bold">Error:</strong>
-                <span class="block sm:inline">{{ error }}</span>
-            </div>
-        {% endif %}
+                <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
+                     role="alert">
+                    <strong class="font-bold">Error:</strong>
+                    <span class="block sm:inline">{{ error }}</span>
+                </div>
+            {% endif %}
             <div class="mb-2 flex flex-row align-center justify-end gap-2">
                 <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
                         id="openModal">Modifier</button>
@@ -47,11 +47,17 @@
                            class="border border-gray-400 px-4 py-2 mb-4 rounded"
                            required>
                     <label for="niveau" class="block mb-2">Niveau:</label>
-                    <input type="text"
-                           id="niveau"
-                           name="niveau"
-                           value="{{ formation.niveau }}"
-                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <select name="niveau"
+                            id="niveau"
+                            class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                        {% for level in levels %}
+                            {% if level == formation.niveau %}
+                                <option value="{{ level }}" selected>{{ level }}</option>
+                            {% else %}
+                                <option value="{{ level }}">{{ level }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
                     <label for="nb_semestre" class="block mb-2">Nombre de semestres</label>
                     <input type="number"
                            id="nb_semestre"

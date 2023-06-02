@@ -24,12 +24,14 @@ def formations_view(request):
 
     else:
         error = request.GET.get('error')
+        levels = ["L1", "L2", "L3", "M1", "M2"]
         formations = Formation.objects.all()
         paginator = Paginator(formations, 20)
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
         formations_context = {
             "page_obj": page_obj,
+            "levels": levels,
             "error": error,
         }
         return render(request=request, template_name="formations/home.html", context=formations_context)
@@ -59,8 +61,10 @@ def formation_details_view(request, formation_id):
         
     elif request.method == 'GET':
         error = request.GET.get('error')
+        levels = ["L1", "L2", "L3", "M1", "M2"]
         formation_context = {
             'formation': formation,
+            'levels': levels,
             'error': error,
         }
         return render(request=request, template_name="formations/details.html", context=formation_context)

@@ -20,6 +20,7 @@
                 <th class="border border-gray-400 px-4 py-2">Volume hébdomadire</th>
                 <th class="border border-gray-400 px-4 py-2">Semestre</th>
                 <th class="border border-gray-400 px-4 py-2">Formation</th>
+                <th class="border border-gray-400 px-4 py-2">Niveau</th>
                 <th class="border border-gray-400 px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -30,6 +31,7 @@
                     <td class="border border-gray-400 px-4 py-2">{{ module.weekly_volume }}</td>
                     <td class="border border-gray-400 px-4 py-2">{{ module.semester.name }}</td>
                     <td class="border border-gray-400 px-4 py-2">{{ module.formation.name }}</td>
+                    <td class="border border-gray-400 px-4 py-2">{{ module.formation.niveau }}</td>
                     <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
                         <form action="{% url 'module_details' module_id=module.id %}" method="post">
                             {% csrf_token %}
@@ -92,7 +94,7 @@
                 <select name="formation"
                         id="formation"
                         class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                    {% for formation in formations %}<option value="{{ formation.id }}">{{ formation.name }}</option>{% endfor %}
+                    {% for formation in formations %}<option value="{{ formation.id }}">{{ formation.name }} - {{ formation.niveau }}</option>{% endfor %}
                 </select>
                 <label for="semester" class="block text-lg mb-2">Semestre:</label>
                 <select name="semester"
