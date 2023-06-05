@@ -1,7 +1,7 @@
 {% extends '../layouts/auth.html' %}
 {% block title %}Semestres{% endblock %}
 {% block content %}
-<h2 class="text-3xl font-bold mb-4"># Liste de semestres</h2>
+<h2 class="text-lg sm:text-3xl font-bold mb-4"># Liste de semestres</h2>
 {% if error %}
 <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
      role="alert">
@@ -11,6 +11,7 @@
 {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
             id="openModal">Ajouter</button>
+            <div class="overflow-x-auto">
     <table class="border-collapse border border-gray-400 w-full">
         <thead>
             <tr>
@@ -24,10 +25,10 @@
         <tbody>
             {% for semester in semesters %}
                 <tr>
-                    <td class="border border-gray-400 px-4 py-2">{{ semester.name }}</td>
-                    <td class="border border-gray-400 px-4 py-2">{{ semester.session }}</td>
-                    <td class="border border-gray-400 px-4 py-2">{{ semester.start }}</td>
-                    <td class="border border-gray-400 px-4 py-2">{{ semester.end }}</td>
+                    <td class="border border-gray-400 px-4 py-2 truncate">{{ semester.name }}</td>
+                    <td class="border border-gray-400 px-4 py-2 truncate">{{ semester.session }}</td>
+                    <td class="border border-gray-400 px-4 py-2 truncate">{{ semester.start }}</td>
+                    <td class="border border-gray-400 px-4 py-2 truncate">{{ semester.end }}</td>
                     <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
                         <form action="{% url 'semester_details' semester_id=semester.id %}"
                               method="post">
@@ -49,6 +50,7 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
     <div class="pagination flex items-center justify-center mt-10">
         <span class="step-links">
             {% if semesters.has_previous %}
@@ -67,8 +69,8 @@
     </div>
     <!-- Modal -->
     <div id="modal"
-         class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-        <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+         class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+        <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
             <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
                     id="closeModal">X</button>
             <h2 class="text-lg font-bold mb-4">Ajouter un nouveau semestre</h2>

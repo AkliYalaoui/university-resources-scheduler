@@ -2,7 +2,7 @@
 {% block title %}Semestre - {{ semester.name }}{% endblock %}
 {% block content %}
     {% if semester %}
-        <header class="w-6/12 mx-auto">
+        <header class="max-w-md mx-auto">
             {% if error %}
                 <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
                      role="alert">
@@ -14,24 +14,24 @@
                 <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
                         id="openModal">Modifier</button>
             </div>
-            <div class="p-2 rounded bg-blue-100 grid grid-cols-2 gap-3 ">
-                <p>
+            <div class="p-2 rounded bg-blue-100 grid grid-cols-1 sm:grid-cols-2 gap-3 ">
+                <p class="truncate">
                     Semestre : <b>{{ semester.name }}</b>
                 </p>
-                <p>
+                <p class="truncate">
                     Debut : <b>{{ semester.start }}</b>
                 </p>
-                <p>
+                <p class="truncate">
                     Fin : <b>{{ semester.end }}</b>
                 </p>
-                <p>
+                <p class="truncate">
                     Session : <b>{{ semester.session }}</b>
                 </p>
             </div>
         </header>
         <div id="modal"
-             class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-            <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+             class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+            <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
                 <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
                         id="closeModal">X</button>
                 <h2 class="mb-4">

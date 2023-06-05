@@ -1,29 +1,29 @@
 {% extends '../layouts/auth.html' %}
 {% block title %}{{ teacher.user.username }} - {{ teacher.grade }}{% endblock %}
 {% block content %}
-    <header class="w-6/12 mx-auto">
-        <div class="p-2 rounded bg-blue-100 grid grid-cols-2 gap-3 ">
-            <p>
+    <header class="max-w-md mx-auto">
+        <div class="p-2 rounded bg-blue-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <p class="truncate">
                 Nom d'utilisateur : <b>{{ teacher.user.username }}</b>
             </p>
-            <p>
+            <p class="truncate">
                 Email : <b>{{ teacher.user.email }}</b>
             </p>
-            <p>
+            <p class="truncate">
                 Nom : <b>{{ teacher.user.last_name }}</b>
             </p>
-            <p>
+            <p class="truncate">
                 Prénom : <b>{{ teacher.user.first_name }}</b>
             </p>
-            <p>
+            <p class="truncate">
                 Grade : <b>{{ teacher.grade }}</b>
             </p>
-            <p>
+            <p class="truncate">
                 Crée le : <b>{{ teacher.user.date_joined }}</b>
             </p>
         </div>
     </header>
-    <section class="my-8 w-6/12 mx-auto">
+    <section class="my-8 max-w-md mx-auto overflow-x-auto">
         <table class="border-collapse border border-gray-400 w-full">
             <thead>
                 <tr>
@@ -35,9 +35,9 @@
             <tbody>
                 {% for module in teacher_modules %}
                     <tr>
-                        <td class="border border-gray-400 px-4 py-2">{{ module.id }}</td>
-                        <td class="border border-gray-400 px-4 py-2">{{ module.name }}</td>
-                        <td class="border border-gray-400 px-4 py-2">{{ module.volume }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ module.id }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ module.name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ module.weekly_volume }}</td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -49,11 +49,11 @@
     </section>
     <form method="get"
           action="{% url 'teachers_workspaces' %}"
-          class="p-1 mt-2 mb-4 w-6/12 mx-auto">
+          class="p-1 mt-2 mb-4 max-w-sm mx-auto">
         <label for="semester" class="block text-lg mb-2">Choisir un semestre:</label>
         <select name="semester"
                 id="semester"
-                class="border border-gray-400 px-4 py-2 mb-4 rounded w-72">
+                class="border border-gray-400 px-4 py-2 mb-4 rounded w-full">
             {% for semester in semesters %}
                 {% if selected_semester.id == semester.id %}
                     <option value="{{ semester.id }}" selected>{{ semester.name }} : {{ semester.start }} - {{ semester.end }}</option>
@@ -62,94 +62,96 @@
                 {% endif %}
             {% endfor %}
         </select>
-        <button type="submit" class="p-2 bg-gray-700 text-white rounded">Ok</button>
+        <button type="submit" class="p-2 bg-gray-700 text-white rounded">sélectionner</button>
     </form>
     {% if selected_semester %}
-        <section class="p-2 my-4 w-9/12 mx-auto">
+        <section class="p-2 my-4  mx-auto">
             <div class="mb-4 flex flex-row align-center justify-end gap-2">
                 <button class="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded text-sm"
                         onclick="downloadPDF()">Download PDF</button>
             </div>
-            <div id="edt">
-                <div class="bg-white p-2">
-                    <div class="grid grid-cols-7 gap-2">
-                        <div class="text-center p-2"></div>
-                        {% for label in labels %}<div class="font-semibold text-center p-2">{{ label }}</div>{% endfor %}
-                    </div>
-                    <div class="grid grid-cols-7 gap-2 my-1">
-                        <div class="font-semibold text-center p-2">Dimanche</div>
-                        {% for seance in dimanche %}
-                            {% if seance.empty %}
-                                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-                            {% else %}
-                                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                                    <span class="font-bold">{{ seance.subject.name }}</span>
-                                    <span>{{ seance.type }}</span>
-                                    <span>{{ seance.salle.name }}</span>
-                                    <span>{{ seance.groupe.section.formation.name }} {{ seance.groupe.section.name }} {{ seance.groupe.name }}</span>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <div class="grid grid-cols-7 gap-2 my-1">
-                        <div class="font-semibold text-center p-2">Lundi</div>
-                        {% for seance in lundi %}
-                            {% if seance.empty %}
-                                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-                            {% else %}
-                                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                                    <span class="font-bold">{{ seance.subject.name }}</span>
-                                    <span>{{ seance.type }}</span>
-                                    <span>{{ seance.salle.name }}</span>
-                                    <span>{{ seance.groupe.section.formation.name }} {{ seance.groupe.section.name }} {{ seance.groupe.name }}</span>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <div class="grid grid-cols-7 gap-2 my-1">
-                        <div class="font-semibold text-center p-2">Mardi</div>
-                        {% for seance in mardi %}
-                            {% if seance.empty %}
-                                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-                            {% else %}
-                                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                                    <span class="font-bold">{{ seance.subject.name }}</span>
-                                    <span>{{ seance.type }}</span>
-                                    <span>{{ seance.salle.name }}</span>
-                                    <span>{{ seance.groupe.section.formation.name }} {{ seance.groupe.section.name }} {{ seance.groupe.name }}</span>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <div class="grid grid-cols-7 gap-2 my-1">
-                        <div class="font-semibold text-center p-2">Mercredi</div>
-                        {% for seance in mercredi %}
-                            {% if seance.empty %}
-                                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-                            {% else %}
-                                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                                    <span class="font-bold">{{ seance.subject.name }}</span>
-                                    <span>{{ seance.type }}</span>
-                                    <span>{{ seance.salle.name }}</span>
-                                    <span>{{ seance.groupe.section.formation.name }} {{ seance.groupe.section.name }} {{ seance.groupe.name }}</span>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <div class="grid grid-cols-7 gap-2 my-1">
-                        <div class="font-semibold text-center p-2">Jeudi</div>
-                        {% for seance in jeudi %}
-                            {% if seance.empty %}
-                                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-                            {% else %}
-                                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                                    <span class="font-bold">{{ seance.subject.name }}</span>
-                                    <span>{{ seance.type }}</span>
-                                    <span>{{ seance.salle.name }}</span>
-                                    <span>{{ seance.groupe.section.formation.name }} {{ seance.groupe.section.name }} {{ seance.groupe.name }}</span>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+            <div class="overflow-x-auto p-2">
+                <div id="edt" class="min-w-max">
+                    <div class="bg-white">
+                        <div class="grid grid-cols-7 gap-2">
+                            <div class="text-center p-2"></div>
+                            {% for label in labels %}<div class="font-semibold text-center p-2">{{ label }}</div>{% endfor %}
+                        </div>
+                        <div class="grid grid-cols-7 gap-2 my-1">
+                            <div class="font-semibold text-center p-2">Dimanche</div>
+                            {% for seance in dimanche %}
+                                {% if seance.empty %}
+                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                                {% else %}
+                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                        <span class="font-bold">{{ seance.subject.name }}</span>
+                                        <span>{{ seance.type }}</span>
+                                        <span>{{ seance.salle.name }}</span>
+                                        <span>{{ seance.groupe.section.formation.name }} {{ seance.groupe.section.name }} {{ seance.groupe.name }}</span>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="grid grid-cols-7 gap-2 my-1">
+                            <div class="font-semibold text-center p-2">Lundi</div>
+                            {% for seance in lundi %}
+                                {% if seance.empty %}
+                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                                {% else %}
+                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                        <span class="font-bold">{{ seance.subject.name }}</span>
+                                        <span>{{ seance.type }}</span>
+                                        <span>{{ seance.salle.name }}</span>
+                                        <span>{{ seance.groupe.section.formation.name }} {{ seance.groupe.section.name }} {{ seance.groupe.name }}</span>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="grid grid-cols-7 gap-2 my-1">
+                            <div class="font-semibold text-center p-2">Mardi</div>
+                            {% for seance in mardi %}
+                                {% if seance.empty %}
+                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                                {% else %}
+                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                        <span class="font-bold">{{ seance.subject.name }}</span>
+                                        <span>{{ seance.type }}</span>
+                                        <span>{{ seance.salle.name }}</span>
+                                        <span>{{ seance.groupe.section.formation.name }} {{ seance.groupe.section.name }} {{ seance.groupe.name }}</span>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="grid grid-cols-7 gap-2 my-1">
+                            <div class="font-semibold text-center p-2">Mercredi</div>
+                            {% for seance in mercredi %}
+                                {% if seance.empty %}
+                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                                {% else %}
+                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                        <span class="font-bold">{{ seance.subject.name }}</span>
+                                        <span>{{ seance.type }}</span>
+                                        <span>{{ seance.salle.name }}</span>
+                                        <span>{{ seance.groupe.section.formation.name }} {{ seance.groupe.section.name }} {{ seance.groupe.name }}</span>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="grid grid-cols-7 gap-2 my-1">
+                            <div class="font-semibold text-center p-2">Jeudi</div>
+                            {% for seance in jeudi %}
+                                {% if seance.empty %}
+                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                                {% else %}
+                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                        <span class="font-bold">{{ seance.subject.name }}</span>
+                                        <span>{{ seance.type }}</span>
+                                        <span>{{ seance.salle.name }}</span>
+                                        <span>{{ seance.groupe.section.formation.name }} {{ seance.groupe.section.name }} {{ seance.groupe.name }}</span>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -32,18 +32,18 @@
             </button>
           {% endif %}
           {% if user.user_type == "student" %}
-            <a href="{% url 'students_workspaces' %}" class="italic">Université de béjaia</a>
+            <a href="{% url 'students_workspaces' %}" class="italic truncate">Université de béjaia</a>
           {% endif %}
           {% if user.user_type == "teacher" %}
-            <a href="{% url 'teachers_workspaces' %}" class="italic">Université de béjaia</a>
+            <a href="{% url 'teachers_workspaces' %}" class="italic truncate">Université de béjaia</a>
           {% endif %}
           {% if user.is_superuser %}
-            <a href="{% url 'home' %}" class="italic">Université de béjaia</a>
+            <a href="{% url 'home' %}" class="italic truncate">Université de béjaia</a>
           {% endif %}
         </div>
         <div class="relative">
           <button id="profileMenuButton" class="text-gray-800 focus:outline-none">
-            <i class="fa-regular fa-user fa-lg"></i> <span>{{user.username}}</span>
+            <i class="fa-regular fa-user fa-lg"></i> <span class="truncate">{{user.username}}</span>
           </button>
           <div id="profileMenu"
                class="absolute right-0 top-6 mt-2 bg-white text-gray-800 rounded-md shadow-lg hidden w-56">
@@ -69,55 +69,55 @@
       {% if user.is_superuser %}
         <section id="drawer" class="bg-gray-800 text-white basis-64 p-4 h-screen mt-12 overflow-auto">
           <article class="bg-gray-700 p-2 rounded mb-4 mt-2">
-            <h1 class="text-lg font-bold mb-1">{{ user.username }}</h1>
+            <h1 class="text-lg font-bold mb-1 truncate">{{ user.username }}</h1>
             {% if user.user_type %}
-              <h2 class="text-sm">{{ user.user_type }}</h2>
+              <h2 class="text-sm truncate">{{ user.user_type }}</h2>
             {% else %}
-              <h2 class="text-sm">Admin</h2>
+              <h2 class="text-sm truncate">Admin</h2>
             {% endif %}
           </article>
           <ul class="space-y-1">
             <li>
-              <a href="{% url 'admins' %}" class="block p-3 rounded hover:bg-gray-700">Gestionnaires</a>
+              <a href="{% url 'admins' %}" class="block p-3 rounded hover:bg-gray-700 truncate">Gestionnaires</a>
             </li>
             <li>
               <a href="{% url 'students' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Etudiants</a>
+                 class="block p-3 rounded hover:bg-gray-700 truncate">Etudiants</a>
             </li>
             <li>
               <a href="{% url 'teachers' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Enseignants</a>
+                 class="block p-3 rounded hover:bg-gray-700 truncate">Enseignants</a>
             </li>
             <li>
               <a href="{% url 'grades' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Grades</a>
+                 class="block p-3 rounded hover:bg-gray-700 truncate">Grades</a>
             </li>
             <li>
               <a href="{% url 'semesters' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Semestres</a>
+                 class="block p-3 rounded hover:bg-gray-700 truncate">Semestres</a>
             </li>
             <li>
               <a href="{% url 'formations' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Formations</a>
+                 class="block p-3 rounded hover:bg-gray-700 truncate">Formations</a>
             </li>
             <li>
               <a href="{% url 'sections' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Sections</a>
+                 class="block p-3 rounded hover:bg-gray-700 truncate">Sections</a>
             </li>
             <li>
-              <a href="{% url 'groups' %}" class="block p-3 rounded hover:bg-gray-700">Groupes</a>
+              <a href="{% url 'groups' %}" class="block p-3 rounded hover:bg-gray-700 truncate">Groupes</a>
             </li>
             <li>
               <a href="{% url 'modules' %}"
-                 class="block p-3 rounded hover:bg-gray-700">Modules</a>
+                 class="block p-3 rounded hover:bg-gray-700 truncate">Modules</a>
             </li>
             <li>
-              <a href="{% url 'salles' %}" class="block p-3 rounded hover:bg-gray-700">Salles</a>
+              <a href="{% url 'salles' %}" class="block p-3 rounded hover:bg-gray-700 truncate">Salles</a>
             </li>
           </ul>
         </section>
       {% endif %}
-      <section id="content" class="flex-grow p-8 h-screen pt-20 overflow-auto">
+      <section id="content" class="flex-grow p-6 sm:p-8 h-screen pt-20 sm:pt-20 overflow-auto">
         {% block content %}{% endblock %}
       </section>
     </main>

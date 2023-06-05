@@ -1,17 +1,17 @@
 {% extends 'layouts/auth.html' %}
 {% block title %}Tableau de bord{% endblock %}
 {% block content %}
-    <div class="grid grid-cols-3 gap-2 justify-center my-10">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 justify-center my-10">
         <div class="bg-blue-200 rounded shadow-md p-6">
-            <h2 class="text-lg font-semibold">Etudiants</h2>
+            <h2 class="text-lg font-semibold truncate">Etudiants</h2>
             <p class="text-4xl font-bold mt-2">{{ student_count }}</p>
         </div>
         <div class="bg-green-200 rounded shadow-md p-6">
-            <h2 class="text-lg font-semibold">Enseignants</h2>
+            <h2 class="text-lg font-semibold truncate">Enseignants</h2>
             <p class="text-4xl font-bold mt-2">{{ teacher_count }}</p>
         </div>
         <div class="bg-yellow-200 rounded shadow-md p-6">
-            <h2 class="text-lg font-semibold">Administrateurs</h2>
+            <h2 class="text-lg font-semibold truncate">Administrateurs</h2>
             <p class="text-4xl font-bold mt-2">{{ admin_count }}</p>
         </div>
     </div>

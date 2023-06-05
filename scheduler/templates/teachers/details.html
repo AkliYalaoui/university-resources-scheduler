@@ -2,7 +2,7 @@
 {% block title %}Enseignant - {{ teacher.user.username }}{% endblock %}
 {% block content %}
     {% if teacher %}
-        <header class="w-6/12 mx-auto">
+        <header class="max-w-md mx-auto">
             {% if error %}
                 <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
                      role="alert">
@@ -16,31 +16,31 @@
                 <button class="bg-white text-gray-700 hover:text-gray-600 border border-gray-700 font-bold py-2 px-4 rounded"
                         id="openModules">Modules</button>
             </div>
-            <div class="p-2 rounded bg-blue-100 grid grid-cols-2 gap-3 ">
-                <p>
+            <div class="p-2 rounded bg-blue-100 grid grid-cols-1 sm:grid-cols-2 gap-3 ">
+                <p class="truncate">
                     Nom d'utilisateur : <b>{{ teacher.user.username }}</b>
                 </p>
-                <p>
+                <p class="truncate">
                     Email : <b>{{ teacher.user.email }}</b>
                 </p>
-                <p>
+                <p class="truncate">
                     Nom : <b>{{ teacher.user.last_name }}</b>
                 </p>
-                <p>
+                <p class="truncate">
                     Prénom : <b>{{ teacher.user.first_name }}</b>
                 </p>
-                <p>
+                <p class="truncate">
                     Grade : <b>{{ teacher.grade }}</b>
                 </p>
-                <p>
+                <p class="truncate">
                     Charge journalière : <b>{{ teacher.daily_load }}</b>
                 </p>
-                <p>
+                <p class="truncate">
                     Crée le : <b>{{ teacher.user.date_joined }}</b>
                 </p>
             </div>
         </header>
-        <section class="my-8 w-6/12 mx-auto">
+            <div class="overflow-x-auto my-8">
             <table class="border-collapse border border-gray-400 w-full">
                 <thead>
                     <tr>
@@ -52,9 +52,9 @@
                 <tbody>
                     {% for module in teacher_modules %}
                         <tr>
-                            <td class="border border-gray-400 px-4 py-2">{{ module.id }}</td>
-                            <td class="border border-gray-400 px-4 py-2">{{ module.name }}</td>
-                            <td class="border border-gray-400 px-4 py-2">{{ module.weekly_volume }}</td>
+                            <td class="border border-gray-400 px-4 py-2 truncate">{{ module.id }}</td>
+                            <td class="border border-gray-400 px-4 py-2 truncate">{{ module.name }}</td>
+                            <td class="border border-gray-400 px-4 py-2 truncate">{{ module.weekly_volume }}</td>
                         </tr>
                     {% empty %}
                         <tr>
@@ -63,10 +63,10 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </section>
+        </div>
         <div id="modulesModal"
              class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-            <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+            <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
                 <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
                         id="closeModules">X</button>
                 <h2 class="mb-4">
@@ -98,7 +98,7 @@
         </div>
         <div id="modal"
              class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-            <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+            <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
                 <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
                         id="closeModal">X</button>
                 <h2 class="mb-4">

@@ -2,7 +2,7 @@
 {% block title %}Groupe - {{ group.name }}{% endblock %}
 {% block content %}
   {% if group %}
-    <header class="w-6/12 mx-auto">
+    <header class="max-w-md mx-auto">
       {% if error %}
         <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
              role="alert">
@@ -14,24 +14,24 @@
         <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
                 id="openModal">Modifier</button>
       </div>
-      <div class="p-2 rounded bg-blue-100 grid grid-cols-2 gap-3 ">
-        <p>
+      <div class="p-2 rounded bg-blue-100 grid grid-cols-1 sm:grid-cols-2 gap-3 ">
+        <p class="truncate">
           Groupe : <b>{{ group.name }}</b>
         </p>
-        <p>
+        <p class="truncate">
           Section : <b>{{ group.section.name }}</b>
         </p>
-        <p>
+        <p class="truncate">
           Formation : <b>{{ group.section.formation.name }}</b>
         </p>
-        <p>
+        <p class="truncate">
           Niveau : <b>{{ group.section.formation.niveau }}</b>
         </p>
       </div>
     </header>
     <div id="modal"
-         class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-      <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+         class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+      <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
         <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
                 id="closeModal">X</button>
         <h2 class="mb-4">
@@ -68,11 +68,11 @@
     </div>
     <form method="get"
           action="{% url 'group_details' group_id=group.id %}"
-          class="p-1 mt-2 mb-4 w-6/12 mx-auto">
+          class="p-1 mt-2 mb-4 max-w-sm mx-auto">
       <label for="semester" class="block text-lg mb-2">Choisir un semestre:</label>
       <select name="semester"
               id="semester"
-              class="border border-gray-400 px-4 py-2 mb-4 rounded w-72">
+              class="border border-gray-400 px-4 py-2 mb-4 rounded w-full">
         {% for semester in semesters %}
           {% if selected_semester.id == semester.id %}
             <option value="{{ semester.id }}" selected>{{ semester.name }} : {{ semester.start }} - {{ semester.end }}</option>
@@ -81,7 +81,7 @@
           {% endif %}
         {% endfor %}
       </select>
-      <button type="submit" class="p-2 bg-gray-700 text-white rounded">Ok</button>
+      <button type="submit" class="p-2 bg-gray-700 text-white rounded">sélectionner</button>
     </form>
     {% if selected_semester %}
       <section class="p-2 my-4 mx-auto">
@@ -89,7 +89,8 @@
           <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded text-sm"
                   id="openSeanceModal">Ajouter créneau</button>
         </div>
-        <div class="bg-white p-2" id="edt">
+        <div class="overflow-x-auto p-2">
+        <div class="bg-white min-w-max" id="edt">
           <div class="grid grid-cols-7 gap-2">
             <div class="text-center p-2"></div>
             {% for label in labels %}<div class="font-semibold text-center p-2">{{ label }}</div>{% endfor %}
@@ -230,9 +231,10 @@
             {% endfor %}
           </div>
         </div>
+      </div>
         <div id="seance-modal"
              class="hidden fixed z-50 inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center">
-          <div class="bg-white p-4 rounded-lg  min-w-[500px]">
+          <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
             <h2 class="text-2xl font-bold mb-4">Ajouter créneau</h2>
             <form action="{% url 'group_details' group_id=group.id %}"
                   method="post"

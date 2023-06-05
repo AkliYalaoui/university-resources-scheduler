@@ -2,7 +2,7 @@
 {% block title %}Gestionnaires{% endblock %}
 {% block content %}
 
-<h2 class="text-3xl font-bold mb-4"># Liste des gestionnaires</h2>
+<h2 class="text-lg sm:text-3xl font-bold mb-4"># Liste des gestionnaires</h2>
 {% if error %}
 <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
      role="alert">
@@ -12,45 +12,47 @@
 {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
             id="openModal">Ajouter</button>
-    <table class="border-collapse border border-gray-400 w-full">
-        <thead>
-            <tr>
-                <th class="border border-gray-400 px-4 py-2">Nom d'utilisateur</th>
-                <th class="border border-gray-400 px-4 py-2">Prénom</th>
-                <th class="border border-gray-400 px-4 py-2">Nom</th>
-                <th class="border border-gray-400 px-4 py-2">Email</th>
-                <th class="border border-gray-400 px-4 py-2">Date de création</th>
-                <th class="border border-gray-400 px-4 py-2">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for admin in admins %}
+    <div class="overflow-x-auto">
+        <table class="border-collapse border border-gray-400 w-full">
+            <thead>
                 <tr>
-                    <td class="border border-gray-400 px-4 py-2">{{ admin.username }}</td>
-                    <td class="border border-gray-400 px-4 py-2">{{ admin.first_name }}</td>
-                    <td class="border border-gray-400 px-4 py-2">{{ admin.last_name }}</td>
-                    <td class="border border-gray-400 px-4 py-2">{{ admin.email }}</td>
-                    <td class="border border-gray-400 px-4 py-2">{{ admin.date_joined }}</td>
-                    <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
-                        <form action="{% url 'admin_details' admin_id=admin.id %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="_method" value="delete">
-                            <input type="submit"
-                                    onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
-                                   class="text-red-600 hover:underline cursor-pointer"
-                                   value="supprimer">
-                        </form>
-                        <a href="{% url 'admin_details' admin_id=admin.id %}"
-                           class="text-blue-600 hover:underline">consulter</a>
-                    </td>
+                    <th class="border border-gray-400 px-4 py-2">Nom d'utilisateur</th>
+                    <th class="border border-gray-400 px-4 py-2">Prénom</th>
+                    <th class="border border-gray-400 px-4 py-2">Nom</th>
+                    <th class="border border-gray-400 px-4 py-2">Email</th>
+                    <th class="border border-gray-400 px-4 py-2">Date de création</th>
+                    <th class="border border-gray-400 px-4 py-2">Actions</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5" class="p-2 text-center">Aucun Gestionnaires à afficher</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for admin in admins %}
+                    <tr>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ admin.username }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ admin.first_name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ admin.last_name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ admin.email }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ admin.date_joined }}</td>
+                        <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+                            <form action="{% url 'admin_details' admin_id=admin.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="_method" value="delete">
+                                <input type="submit"
+                                        onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
+                                       class="text-red-600 hover:underline cursor-pointer"
+                                       value="supprimer">
+                            </form>
+                            <a href="{% url 'admin_details' admin_id=admin.id %}"
+                               class="text-blue-600 hover:underline">consulter</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="p-2 text-center">Aucun Gestionnaires à afficher</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <div class="pagination flex items-center justify-center mt-10">
         <span class="step-links">
             {% if admins.has_previous %}
@@ -69,8 +71,8 @@
     </div>
     <!-- Modal -->
     <div id="modal"
-         class="hidden fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-        <div class="bg-white w-1/2 p-6 rounded shadow-lg">
+         class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+        <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
             <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
                     id="closeModal">X</button>
             <h2 class="text-lg font-bold mb-4">Ajouter un gestionnaire</h2>
