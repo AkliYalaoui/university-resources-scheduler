@@ -11,9 +11,15 @@
     <title>
       {% block title %}{% endblock %}
     </title>
-    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}"
+          rel="stylesheet"
+          type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}"
+          rel="stylesheet"
+          type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}"
+          rel="stylesheet"
+          type="text/css">
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="overflow-hidden">
@@ -41,33 +47,44 @@
             <a href="{% url 'home' %}" class="italic truncate">Université de béjaia</a>
           {% endif %}
         </div>
-        <div class="relative">
-          <button id="profileMenuButton" class="text-gray-800 focus:outline-none">
-            <i class="fa-regular fa-user fa-lg"></i> <span class="truncate">{{user.username}}</span>
-          </button>
-          <div id="profileMenu"
-               class="absolute right-0 top-6 mt-2 bg-white text-gray-800 rounded-md shadow-lg hidden w-56">
-            <ul class="py-1">
-              <li>
-                <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-gray-100 flex flex-row items-center gap-2">
-                  <i class="fa-solid fa-user-pen fa-lg"></i>
-                  <span>Profile</span>
-                </a>
-              </li>
-              <li>
-                <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-gray-100 flex flex-row items-center gap-2">
-                  <i class="fa-solid fa-right-from-bracket fa-lg"></i>
-                  <span>Se déconnecter</span>
-                </a>
-              </li>
-            </ul>
+        <div class="flex items-center space-x-4">
+          {% if user.user_type == "student" %}
+          <a href="{% url 'students_search' %}">
+            <i class="fa-regular fa-search fa-lg"></i>
+            <span>Rechercher</span>
+          </a>
+          {% endif %}
+          <div class="relative">
+            <button id="profileMenuButton" class="text-gray-800 focus:outline-none">
+              <i class="fa-regular fa-user fa-lg"></i> <span class="truncate">{{ user.username }}</span>
+            </button>
+            <div id="profileMenu"
+                 class="absolute right-0 top-6 mt-2 bg-white text-gray-800 rounded-md shadow-lg hidden w-56">
+              <ul class="py-1">
+                <li>
+                  <a href="{% url 'profile' %}"
+                     class="block px-4 py-2 hover:bg-gray-100 flex flex-row items-center gap-2">
+                    <i class="fa-solid fa-user-pen fa-lg"></i>
+                    <span>Profile</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'logout' %}"
+                     class="block px-4 py-2 hover:bg-gray-100 flex flex-row items-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket fa-lg"></i>
+                    <span>Se déconnecter</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </nav>
     </div>
     <main class="flex">
       {% if user.is_superuser %}
-        <section id="drawer" class="bg-gray-800 text-white basis-64 p-4 h-screen mt-12 overflow-auto">
+        <section id="drawer"
+                 class="bg-gray-800 text-white basis-64 p-4 h-screen mt-12 overflow-auto">
           <article class="bg-gray-700 p-2 rounded mb-4 mt-2">
             <h1 class="text-lg font-bold mb-1 truncate">{{ user.username }}</h1>
             {% if user.user_type %}
@@ -78,7 +95,8 @@
           </article>
           <ul class="space-y-1">
             <li>
-              <a href="{% url 'admins' %}" class="block p-3 rounded hover:bg-gray-700 truncate">Gestionnaires</a>
+              <a href="{% url 'admins' %}"
+                 class="block p-3 rounded hover:bg-gray-700 truncate">Gestionnaires</a>
             </li>
             <li>
               <a href="{% url 'students' %}"
@@ -101,19 +119,22 @@
                  class="block p-3 rounded hover:bg-gray-700 truncate">Sections</a>
             </li>
             <li>
-              <a href="{% url 'groups' %}" class="block p-3 rounded hover:bg-gray-700 truncate">Groupes</a>
+              <a href="{% url 'groups' %}"
+                 class="block p-3 rounded hover:bg-gray-700 truncate">Groupes</a>
             </li>
             <li>
               <a href="{% url 'modules' %}"
                  class="block p-3 rounded hover:bg-gray-700 truncate">Modules</a>
             </li>
             <li>
-              <a href="{% url 'salles' %}" class="block p-3 rounded hover:bg-gray-700 truncate">Salles</a>
+              <a href="{% url 'salles' %}"
+                 class="block p-3 rounded hover:bg-gray-700 truncate">Salles</a>
             </li>
           </ul>
         </section>
       {% endif %}
-      <section id="content" class="flex-grow p-6 sm:p-8 h-screen pt-20 sm:pt-20 overflow-auto">
+      <section id="content"
+               class="flex-grow p-6 sm:p-8 h-screen pt-20 sm:pt-20 overflow-auto">
         {% block content %}{% endblock %}
       </section>
     </main>
@@ -126,7 +147,7 @@
             const profileMenu = document.getElementById("profileMenu");
 
             toggleButton?.addEventListener("click", function() {
-              drawer?.classList?.toggle("hidden");
+                drawer?.classList?.toggle("hidden");
             });
 
             /*

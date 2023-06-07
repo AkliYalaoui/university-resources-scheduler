@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from ..decorators import admin_required, student_required
-from ..models import Etudiant,Groupe, Semestre, Seance
+from ..models import Etudiant,Groupe, Semestre, Seance, Formation
 from django.core.paginator import Paginator
 from django.urls import reverse
 import datetime
@@ -15,6 +15,21 @@ start_times = [datetime.time(8, 00),
                datetime.time(13, 00),
                datetime.time(14, 40),
                datetime.time(16, 20)]
+
+@login_required
+@student_required
+def students_search_view(request):
+    
+    formations = Formation.objects.all()
+    levels = ["L1", "L2", "L3", "M1", "M2"]
+    semesters = Semestre.objects.all()
+
+    students_context = {
+        "formations": formations,
+        "levels": levels,
+        "semesters": semesters,
+    }
+    return render(request=request, template_name="students/search.html", context=students_context)
 
 @login_required
 @student_required
