@@ -1,61 +1,60 @@
 {% extends '../layouts/auth.html' %}
 {% block title %}Enseignants{% endblock %}
 {% block content %}
-
-<h2 class="text-lg sm:text-3xl font-bold mb-4"># Liste des enseignants</h2>
-{% if error %}
-<div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
-     role="alert">
-       <strong class="font-bold">Error:</strong>
-       <span class="block sm:inline">{{ error }}</span>
-</div>
-{% endif %}
+    <h2 class="text-lg sm:text-3xl font-bold mb-4"># Liste des enseignants</h2>
+    {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
+             role="alert">
+            <strong class="font-bold">Error:</strong>
+            <span class="block sm:inline">{{ error }}</span>
+        </div>
+    {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
             id="openModal">Ajouter</button>
-            <div class="overflow-x-auto">
-    <table class="border-collapse border border-gray-400 w-full">
-        <thead>
-            <tr>
-                <th class="border border-gray-400 px-4 py-2">Nom d'utilisateur</th>
-                <th class="border border-gray-400 px-4 py-2">Prénom</th>
-                <th class="border border-gray-400 px-4 py-2">Nom</th>
-                <th class="border border-gray-400 px-4 py-2">Email</th>
-                <th class="border border-gray-400 px-4 py-2">Grade</th>
-                <th class="border border-gray-400 px-4 py-2">Charge journalière</th>
-                <th class="border border-gray-400 px-4 py-2">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for teacher in teachers %}
+    <div class="overflow-x-auto">
+        <table class="border-collapse border border-gray-400 w-full">
+            <thead>
                 <tr>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.user.username }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.user.first_name }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.user.last_name }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.user.email }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.grade.name }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.daily_load }}</td>
-                    <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
-                        <form action="{% url 'teacher_details' teacher_id=teacher.user.id %}"
-                              method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="_method" value="delete">
-                            <input type="submit"
-                                   onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
-                                   class="text-red-600 hover:underline cursor-pointer"
-                                   value="supprimer">
-                        </form>
-                        <a href="{% url 'teacher_details' teacher_id=teacher.user.id %}"
-                           class="text-blue-600 hover:underline">consulter</a>
-                    </td>
+                    <th class="border border-gray-400 px-4 py-2">Nom d'utilisateur</th>
+                    <th class="border border-gray-400 px-4 py-2">Prénom</th>
+                    <th class="border border-gray-400 px-4 py-2">Nom</th>
+                    <th class="border border-gray-400 px-4 py-2">Email</th>
+                    <th class="border border-gray-400 px-4 py-2">Grade</th>
+                    <th class="border border-gray-400 px-4 py-2">Charge journalière</th>
+                    <th class="border border-gray-400 px-4 py-2">Actions</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="7" class="p-2 text-center">Aucun enseignant à afficher</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                {% for teacher in teachers %}
+                    <tr>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.user.username }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.user.first_name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.user.last_name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.user.email }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.grade }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ teacher.daily_load }}</td>
+                        <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+                            <form action="{% url 'teacher_details' teacher_id=teacher.user.id %}"
+                                  method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="_method" value="delete">
+                                <input type="submit"
+                                       onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
+                                       class="text-red-600 hover:underline cursor-pointer"
+                                       value="supprimer">
+                            </form>
+                            <a href="{% url 'teacher_details' teacher_id=teacher.user.id %}"
+                               class="text-blue-600 hover:underline">consulter</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="p-2 text-center">Aucun enseignant à afficher</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <div class="pagination flex items-center justify-center mt-10">
         <span class="step-links">
             {% if teachers.has_previous %}
@@ -108,11 +107,10 @@
                        name="daily_load"
                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
                 <label for="grade" class="block mb-2">Grade:</label>
-                <select name="grade"
-                        id="grade"
-                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                    {% for grade in grades %}<option value="{{ grade.id }}">{{ grade.name }}</option>{% endfor %}
-                </select>
+                <input type="grade"
+                       id="grade"
+                       name="grade"
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded">
                 <input type="hidden"
                        id="password"
                        name="password"

@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import datetime
-from django.core.exceptions import ValidationError
 
 class Semestre(models.Model):
     name = models.CharField(max_length=100)
@@ -61,17 +60,17 @@ class CustomUser(AbstractUser):
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
 
 
-class Grade(models.Model):
-    name = models.CharField(max_length=200, unique=True)
+# class Grade(models.Model):
+#     name = models.CharField(max_length=200, unique=True)
     
-    def __str__(self) -> str:
-        return self.name
+#     def __str__(self) -> str:
+#         return self.name
 
 class Enseignant(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
     daily_load = models.IntegerField(default=6)
     modules = models.ManyToManyField(Module)
-    grade = models.ForeignKey(Grade, on_delete=models.CASCADE)
+    grade = models.CharField(max_length=200)
 
 class Etudiant(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)

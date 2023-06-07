@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from ..decorators import admin_required, teacher_required
-from ..models import  Semestre, Module, Enseignant, Seance, Grade
+from ..models import  Semestre, Module, Enseignant, Seance
 from django.core.paginator import Paginator
 from django.urls import reverse
 import datetime
@@ -109,7 +109,7 @@ def teachers_view(request):
     if request.method == 'POST':
         try:
             username = request.POST['username']
-            grade_id = request.POST['grade']
+            grade = request.POST['grade']
             daily_load = request.POST['daily_load']
             first_name = request.POST['first_name']
             last_name = request.POST['last_name']
@@ -118,7 +118,6 @@ def teachers_view(request):
             user = CustomUser.objects.create_user(
                 username=username, password=password, email=email, first_name=first_name, last_name=last_name, user_type='teacher')
 
-            grade = Grade.objects.get(id=grade_id)
             teacher = Enseignant.objects.create(
                 user=user, grade=grade, daily_load=daily_load)
             return redirect('teachers')
@@ -129,13 +128,11 @@ def teachers_view(request):
     else:
         error = request.GET.get('error')
         teachers = Enseignant.objects.all()
-        grades = Grade.objects.all()
         paginator = Paginator(teachers, 20)
         page_number = request.GET.get('page')
         teachers = paginator.get_page(page_number)
         teachers_context = {
             'teachers': teachers,
-            'grades': grades,
             'error': error,
         }
         return render(request=request, template_name="teachers/home.html", context=teachers_context)
@@ -154,7 +151,7 @@ def teacher_details_view(request, teacher_id):
     elif request.method == 'POST' and request.POST["_method"] == "put":
         try:
             username = request.POST['username']
-            grade_id = request.POST['grade']
+            grade = request.POST['grade']
             daily_load = request.POST['daily_load']
             first_name = request.POST['first_name']
             last_name = request.POST['last_name']
@@ -166,7 +163,6 @@ def teacher_details_view(request, teacher_id):
             teacher.user.email = email
             teacher.user.save()
 
-            grade = Grade.objects.get(id=grade_id)
             teacher.grade = grade
             teacher.daily_load = daily_load
             teacher.save()
@@ -183,14 +179,12 @@ def teacher_details_view(request, teacher_id):
     elif request.method == 'GET':
         error = request.GET.get('error')
         modules = Module.objects.all()
-        grades = Grade.objects.all()
         teacher_modules = teacher.modules.all
         print(teacher_modules)
         teacher_context = {
             'teacher': teacher,
             "teacher_modules": teacher_modules,
             "modules": modules,
-            "grades": grades,
             "error": error,
         }
         return render(request=request, template_name="teachers/details.html", context=teacher_context)
