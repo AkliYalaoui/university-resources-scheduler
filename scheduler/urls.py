@@ -8,7 +8,7 @@ from .views.admins import admins_view, admin_details_view
 from .views.formations import formations_view, formation_details_view
 from .views.home import home_view
 from .views.sections import sections_view, section_details_view
-from .views.groups import groups_view, group_details_view, allowed_sessions_view
+from .views.groups import groups_view, group_details_view, group_edt_view, allowed_sessions_view
 from .views.semesters import semesters_view, semester_details_view
 from .views.salles import salles_view, salle_details_view
 # from .views.type_salles import type_salles_view, type_salle_details_view
@@ -33,6 +33,8 @@ urlpatterns = [
     path("sections/<int:section_id>", section_details_view, name="section_details"),
     path("groups/", groups_view, name="groups"),
     path("groups/<int:group_id>", group_details_view, name="group_details"),
+    path("groups/", groups_view, name="groups"),
+    path("groups/<int:group_id>/edt", group_edt_view, name="group_edt"),
     path("sessions/<int:group_id>/<int:semester_id>", allowed_sessions_view, name="allowed_sessions"),
     path("semesters/", semesters_view, name="semesters"),
     path("semesters/<int:semester_id>", semester_details_view, name="semester_details"),

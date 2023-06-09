@@ -13,7 +13,6 @@ def sections_view(request):
     if request.method == 'POST':
         try:
             form = SectionForm(request.POST)
-            print(form)
             if form.is_valid():
                 selected_formation_id = request.POST.get('formation')
                 selected_formation = Formation.objects.get(
@@ -30,7 +29,7 @@ def sections_view(request):
     else:
         error = request.GET.get('error')
         formations = Formation.objects.all()
-        sections = Section.objects.all()
+        sections = Section.objects.all().order_by('formation__niveau')
 
         paginator = Paginator(sections, 20)
         page_number = request.GET.get('page')

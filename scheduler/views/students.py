@@ -251,7 +251,7 @@ def students_view(request):
     else:
         error = request.GET.get('error')
         groups = Groupe.objects.all()
-        students = Etudiant.objects.all()
+        students = Etudiant.objects.all().order_by('user__username')
 
         paginator = Paginator(students, 20)
         page_number = request.GET.get('page')

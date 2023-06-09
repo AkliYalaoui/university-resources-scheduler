@@ -132,7 +132,7 @@ def teachers_view(request):
 
     else:
         error = request.GET.get('error')
-        teachers = Enseignant.objects.all()
+        teachers = Enseignant.objects.all().order_by('user__username')
         paginator = Paginator(teachers, 20)
         page_number = request.GET.get('page')
         teachers = paginator.get_page(page_number)

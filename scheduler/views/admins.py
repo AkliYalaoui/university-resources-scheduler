@@ -29,7 +29,7 @@ def admins_view(request):
 
     else:
         error = request.GET.get('error')
-        admins = CustomUser.objects.filter(is_superuser=True)
+        admins = CustomUser.objects.filter(is_superuser=True).order_by('username')
         paginator = Paginator(admins, 20)
         page_number = request.GET.get('page')
         admins = paginator.get_page(page_number)

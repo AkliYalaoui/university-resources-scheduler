@@ -33,7 +33,7 @@ def modules_view(request):
         error = request.GET.get('error')
         formations = Formation.objects.all()
         semesters = Semestre.objects.all()
-        modules = Module.objects.all()
+        modules = Module.objects.all().order_by("formation__niveau")
 
         paginator = Paginator(modules, 20)
         page_number = request.GET.get('page')

@@ -24,7 +24,7 @@ def semesters_view(request):
 
     else:
         error = request.GET.get('error')
-        semesters = Semestre.objects.all()
+        semesters = Semestre.objects.all().order_by('session')
         sessions = ["février", "juin"]
         paginator = Paginator(semesters, 20)
         page_number = request.GET.get('page')

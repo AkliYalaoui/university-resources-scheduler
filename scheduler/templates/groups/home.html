@@ -41,6 +41,8 @@
                         </form>
                         <a href="{% url 'group_details' group_id=group.id %}"
                            class="text-blue-600 hover:underline">modifier</a>
+                        <a href="{% url 'group_edt' group_id=group.id %}"
+                           class="text-green-600 hover:underline">consulter</a>
                     </td>
                 </tr>
             {% empty %}

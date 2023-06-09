@@ -24,7 +24,7 @@ def salles_view(request):
 
     else:
         error = request.GET.get('error')
-        salles = Salle.objects.all()
+        salles = Salle.objects.all().order_by("type")
         types = ["td", "tp", "amphitheater"]
         paginator = Paginator(salles, 20)
         page_number = request.GET.get('page')

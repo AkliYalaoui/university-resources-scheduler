@@ -25,7 +25,7 @@ def formations_view(request):
     else:
         error = request.GET.get('error')
         levels = ["L1", "L2", "L3", "M1", "M2"]
-        formations = Formation.objects.all()
+        formations = Formation.objects.all().order_by('niveau')
         paginator = Paginator(formations, 20)
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)

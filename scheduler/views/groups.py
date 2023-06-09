@@ -98,7 +98,7 @@ def groups_view(request):
     else:
         error = request.GET.get('error')
         sections = Section.objects.all()
-        groups = Groupe.objects.all()
+        groups = Groupe.objects.all().order_by("section__formation__niveau")
 
         paginator = Paginator(groups, 20)
         page_number = request.GET.get('page')
@@ -116,9 +116,7 @@ def groups_view(request):
 @admin_required
 def group_details_view(request, group_id):
     group = get_object_or_404(Groupe, id=group_id)
-    days = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi']
-    labels = ['08:00 - 09:30', '09:40 - 11:10', '11:20 - 12:50', '13:00 - 14:30', '14:40 - 16:10', '16:20 - 17:50']
-
+   
     if request.method == 'POST' and request.POST["_method"] == "delete":
         group.delete()
         return redirect('groups')
@@ -135,8 +133,25 @@ def group_details_view(request, group_id):
         except Exception as e:
             print(e)
             return redirect(reverse('group_details', args=[group_id]) + '?error=An+error+occurred+while+updating+the+group')
-
-    elif request.method == 'POST' and request.POST["_method"] == "post":
+    elif request.method == 'GET':
+        error = request.GET.get('error')
+        sections = Section.objects.all()
+    
+        group_context = {
+            'group': group,
+            'sections': sections,
+            'error': error,
+        }
+        return render(request=request, template_name="groups/details.html", context=group_context)
+    
+@login_required
+@admin_required
+def group_edt_view(request, group_id):
+    group = get_object_or_404(Groupe, id=group_id)
+    days = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi']
+    labels = ['08:00 - 09:30', '09:40 - 11:10', '11:20 - 12:50', '13:00 - 14:30', '14:40 - 16:10', '16:20 - 17:50']
+   
+    if request.method == 'POST' and request.POST["_method"] == "post":
         try:
             modified_post = request.POST.copy()
             time_id = request.POST["creaneau"]
@@ -169,12 +184,12 @@ def group_details_view(request, group_id):
                         )
 
                         print(new_seance)
-                return redirect(reverse('group_details', args=[group_id]) + f'?semester={semester_id}')
+                return redirect(reverse('group_edt', args=[group_id]) + f'?semester={semester_id}')
             else:
                 raise Exception("form not valid")
         except Exception as e:
             print(e)
-            return redirect(reverse('group_details', args=[group_id]) + '?error=An+error+occurred+while+updating+the+schedule')
+            return redirect(reverse('group_edt', args=[group_id]) + '?error=An+error+occurred+while+updating+the+schedule')
     elif request.method == 'POST' and request.POST["_method"] == "patch":
         semester_id = request.POST.get('semester')
         seance_id = request.POST["seance"]
@@ -192,7 +207,7 @@ def group_details_view(request, group_id):
             seance_remove.delete()
         else:
             seance.delete()
-        return redirect(reverse('group_details', args=[group_id]) + f'?semester={semester_id}')
+        return redirect(reverse('group_edt', args=[group_id]) + f'?semester={semester_id}')
     elif request.method == 'GET':
         error = request.GET.get('error')
         selected_semester_id = request.GET.get('semester')
@@ -200,16 +215,9 @@ def group_details_view(request, group_id):
         if selected_semester_id:
             selected_semester = Semestre.objects.get(id=selected_semester_id)
         semesters = Semestre.objects.all()
-        salles = Salle.objects.all()
-        modules = Module.objects.filter(
-            formation=group.section.formation, semester=selected_semester)
-        teachers = Enseignant.objects.all()
         seances = Seance.objects.filter(
             groupe=group, semester=selected_semester).order_by('start_time')
-
-        sections = Section.objects.all()
         
-        # types = ["td", "tp", "cours"]
         dimanche = seances.filter(day="dimanche")
         lundi = seances.filter(day="lundi")
         mardi = seances.filter(day="mardi")
@@ -270,15 +278,10 @@ def group_details_view(request, group_id):
 
         group_context = {
             'group': group,
-            'sections': sections,
             "days": days,
             "labels": labels,
-            "salles": salles,
-            "modules": modules,
-            "teachers": teachers,
             "semesters": semesters,
             "selected_semester": selected_semester,
-            # "types": types,
             'dimanche': list_dimanche,
             'lundi': list_lundi,
             'mardi': list_mardi,
@@ -286,7 +289,7 @@ def group_details_view(request, group_id):
             'jeudi': list_jeudi,
             'error': error,
         }
-        return render(request=request, template_name="groups/details.html", context=group_context)
+        return render(request=request, template_name="groups/edt.html", context=group_context)
 
 
 @csrf_exempt
