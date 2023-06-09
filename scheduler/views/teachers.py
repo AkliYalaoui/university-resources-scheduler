@@ -47,6 +47,7 @@ def teachers_home_view(request):
             if start_time == seance.start_time :
                 list_dimanche.append(seance)
                 append_time = False
+                break
         if append_time : 
             list_dimanche.append({"empty": True})
 
@@ -57,6 +58,7 @@ def teachers_home_view(request):
             if start_time == seance.start_time :
                 list_lundi.append(seance)
                 append_time = False
+                break
         if append_time : 
             list_lundi.append({"empty": True})
     list_mardi = []
@@ -66,6 +68,7 @@ def teachers_home_view(request):
             if start_time == seance.start_time :
                 list_mardi.append(seance)
                 append_time = False
+                break
         if append_time : 
             list_mardi.append({"empty": True})
     list_mercredi = []
@@ -75,6 +78,7 @@ def teachers_home_view(request):
             if start_time == seance.start_time :
                 list_mercredi.append(seance)
                 append_time = False
+                break
         if append_time : 
             list_mercredi.append({"empty": True})
     list_jeudi = []
@@ -84,6 +88,7 @@ def teachers_home_view(request):
             if start_time == seance.start_time :
                 list_jeudi.append(seance)
                 append_time = False
+                break
         if append_time : 
             list_jeudi.append({"empty": True})
 

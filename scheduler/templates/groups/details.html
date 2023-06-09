@@ -14,7 +14,7 @@
         <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
                 id="openModal">Modifier</button>
       </div>
-      <div class="p-2 rounded bg-blue-100 grid grid-cols-1 sm:grid-cols-2 gap-3 ">
+      <div class="p-2 rounded bg-blue-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
         <p class="truncate">
           Groupe : <b>{{ group.name }}</b>
         </p>
@@ -55,9 +55,13 @@
                   class="border border-gray-300 rounded px-4 py-2 w-full mb-4">
             {% for section in sections %}
               {% if section.id == group.section.id %}
-                <option value="{{ section.id }}" selected>{{ section.name }} : {{ section.formation.name }} - {{ section.formation.niveau }}</option>
+                <option value="{{ section.id }}" selected>
+                  {{ section.name }} : {{ section.formation.name }} - {{ section.formation.niveau }}
+                </option>
               {% else %}
-                <option value="{{ section.id }}">{{ section.name }} : {{ section.formation.name }} - {{ section.formation.niveau }}</option>
+                <option value="{{ section.id }}">
+                  {{ section.name }} : {{ section.formation.name }} - {{ section.formation.niveau }}
+                </option>
               {% endif %}
             {% endfor %}
           </select>
@@ -86,152 +90,156 @@
     {% if selected_semester %}
       <section class="p-2 my-4 mx-auto">
         <div class="mb-4 flex flex-row align-center justify-end gap-2">
+          <button class="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded text-sm"
+                  onclick="downloadPDF('{{ group.section.formation.name }}' , '{{ group.section.formation.niveau }}' ,'{{ group.section.name }}','{{ group.name }}')">
+            Download PDF
+          </button>
           <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded text-sm"
                   id="openSeanceModal">Ajouter créneau</button>
         </div>
         <div class="overflow-x-auto p-2">
-        <div class="bg-white min-w-max" id="edt">
-          <div class="grid grid-cols-7 gap-2">
-            <div class="text-center p-2"></div>
-            {% for label in labels %}<div class="font-semibold text-center p-2">{{ label }}</div>{% endfor %}
-          </div>
-          <div class="grid grid-cols-7 gap-2 my-1">
-            <div class="font-semibold text-center p-2">Dimanche</div>
-            {% for seance in dimanche %}
-              {% if seance.empty %}
-                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-              {% else %}
-                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                  <form method="post" action="{% url 'group_details' group_id=group.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="_method" value="patch">
-                    <input type="hidden"
-                           id="semester"
-                           name="semester"
-                           value="{{ selected_semester.id }}"
-                           required>
-                    <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
-                    <button type="submit"
-                            class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
-                  </form>
-                  <span class="font-bold">{{ seance.subject.name }}</span>
-                  <span>{{ seance.type }}</span>
-                  <span>{{ seance.salle.name }}</span>
-                  <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-          <div class="grid grid-cols-7 gap-2 my-1">
-            <div class="font-semibold text-center p-2">Lundi</div>
-            {% for seance in lundi %}
-              {% if seance.empty %}
-                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-              {% else %}
-                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                  <form method="post" action="{% url 'group_details' group_id=group.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="_method" value="patch">
-                    <input type="hidden"
-                           id="semester"
-                           name="semester"
-                           value="{{ selected_semester.id }}"
-                           required>
-                    <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
-                    <button type="submit"
-                            class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
-                  </form>
-                  <span class="font-bold">{{ seance.subject.name }}</span>
-                  <span>{{ seance.type }}</span>
-                  <span>{{ seance.salle.name }}</span>
-                  <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-          <div class="grid grid-cols-7 gap-2 my-1">
-            <div class="font-semibold text-center p-2">Mardi</div>
-            {% for seance in mardi %}
-              {% if seance.empty %}
-                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-              {% else %}
-                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                  <form method="post" action="{% url 'group_details' group_id=group.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="_method" value="patch">
-                    <input type="hidden"
-                           id="semester"
-                           name="semester"
-                           value="{{ selected_semester.id }}"
-                           required>
-                    <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
-                    <button type="submit"
-                            class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
-                  </form>
-                  <span class="font-bold">{{ seance.subject.name }}</span>
-                  <span>{{ seance.type }}</span>
-                  <span>{{ seance.salle.name }}</span>
-                  <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-          <div class="grid grid-cols-7 gap-2 my-1">
-            <div class="font-semibold text-center p-2">Mercredi</div>
-            {% for seance in mercredi %}
-              {% if seance.empty %}
-                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-              {% else %}
-                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                  <form method="post" action="{% url 'group_details' group_id=group.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="_method" value="patch">
-                    <input type="hidden"
-                           id="semester"
-                           name="semester"
-                           value="{{ selected_semester.id }}"
-                           required>
-                    <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
-                    <button type="submit"
-                            class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
-                  </form>
-                  <span class="font-bold">{{ seance.subject.name }}</span>
-                  <span>{{ seance.type }}</span>
-                  <span>{{ seance.salle.name }}</span>
-                  <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-          <div class="grid grid-cols-7 gap-2 my-1">
-            <div class="font-semibold text-center p-2">Jeudi</div>
-            {% for seance in jeudi %}
-              {% if seance.empty %}
-                <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-              {% else %}
-                <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                  <form method="post" action="{% url 'group_details' group_id=group.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="_method" value="patch">
-                    <input type="hidden"
-                           id="semester"
-                           name="semester"
-                           value="{{ selected_semester.id }}"
-                           required>
-                    <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
-                    <button type="submit"
-                            class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
-                  </form>
-                  <span class="font-bold">{{ seance.subject.name }}</span>
-                  <span>{{ seance.type }}</span>
-                  <span>{{ seance.salle.name }}</span>
-                  <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                </div>
-              {% endif %}
-            {% endfor %}
+          <div class="bg-white min-w-max" id="edt">
+            <div class="grid grid-cols-7 gap-2">
+              <div class="text-center p-2"></div>
+              {% for label in labels %}<div class="font-semibold text-center p-2">{{ label }}</div>{% endfor %}
+            </div>
+            <div class="grid grid-cols-7 gap-2 my-1">
+              <div class="font-semibold text-center p-2">Dimanche</div>
+              {% for seance in dimanche %}
+                {% if seance.empty %}
+                  <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                {% else %}
+                  <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                    <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="_method" value="patch">
+                      <input type="hidden"
+                             id="semester"
+                             name="semester"
+                             value="{{ selected_semester.id }}"
+                             required>
+                      <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                      <button type="submit"
+                              class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                    </form>
+                    <span class="font-bold">{{ seance.subject.name }}</span>
+                    <span>{{ seance.type }}</span>
+                    <span>{{ seance.salle.name }}</span>
+                    <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div class="grid grid-cols-7 gap-2 my-1">
+              <div class="font-semibold text-center p-2">Lundi</div>
+              {% for seance in lundi %}
+                {% if seance.empty %}
+                  <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                {% else %}
+                  <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                    <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="_method" value="patch">
+                      <input type="hidden"
+                             id="semester"
+                             name="semester"
+                             value="{{ selected_semester.id }}"
+                             required>
+                      <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                      <button type="submit"
+                              class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                    </form>
+                    <span class="font-bold">{{ seance.subject.name }}</span>
+                    <span>{{ seance.type }}</span>
+                    <span>{{ seance.salle.name }}</span>
+                    <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div class="grid grid-cols-7 gap-2 my-1">
+              <div class="font-semibold text-center p-2">Mardi</div>
+              {% for seance in mardi %}
+                {% if seance.empty %}
+                  <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                {% else %}
+                  <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                    <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="_method" value="patch">
+                      <input type="hidden"
+                             id="semester"
+                             name="semester"
+                             value="{{ selected_semester.id }}"
+                             required>
+                      <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                      <button type="submit"
+                              class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                    </form>
+                    <span class="font-bold">{{ seance.subject.name }}</span>
+                    <span>{{ seance.type }}</span>
+                    <span>{{ seance.salle.name }}</span>
+                    <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div class="grid grid-cols-7 gap-2 my-1">
+              <div class="font-semibold text-center p-2">Mercredi</div>
+              {% for seance in mercredi %}
+                {% if seance.empty %}
+                  <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                {% else %}
+                  <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                    <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="_method" value="patch">
+                      <input type="hidden"
+                             id="semester"
+                             name="semester"
+                             value="{{ selected_semester.id }}"
+                             required>
+                      <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                      <button type="submit"
+                              class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                    </form>
+                    <span class="font-bold">{{ seance.subject.name }}</span>
+                    <span>{{ seance.type }}</span>
+                    <span>{{ seance.salle.name }}</span>
+                    <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div class="grid grid-cols-7 gap-2 my-1">
+              <div class="font-semibold text-center p-2">Jeudi</div>
+              {% for seance in jeudi %}
+                {% if seance.empty %}
+                  <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                {% else %}
+                  <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                    <form method="post" action="{% url 'group_details' group_id=group.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="_method" value="patch">
+                      <input type="hidden"
+                             id="semester"
+                             name="semester"
+                             value="{{ selected_semester.id }}"
+                             required>
+                      <input type="hidden" id="seance" name="seance" value="{{ seance.id }}">
+                      <button type="submit"
+                              class="absolute -top-4 -right-1 text-red-700 font-bold cursor-pointer text-lg">x</button>
+                    </form>
+                    <span class="font-bold">{{ seance.subject.name }}</span>
+                    <span>{{ seance.type }}</span>
+                    <span>{{ seance.salle.name }}</span>
+                    <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
           </div>
         </div>
-      </div>
         <div id="seance-modal"
              class="hidden fixed z-50 inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center">
           <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
@@ -296,6 +304,39 @@
       </section>
     {% endif %}
   {% endif %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+  <script>
+      function downloadPDF(formation, niveau, section, groupe) {
+          const doc = new jspdf.jsPDF();
+          const element = document.getElementById('edt');
+
+          // Save the current height of the element and set it to the full scroll height
+          const originalHeight = element.style.height;
+          element.style.height = element.scrollHeight + 'px';
+
+          // Scroll the element into view
+          element.scrollIntoView();
+
+          // Wait for a brief moment to ensure the element is fully visible
+          setTimeout(() => {
+              html2canvas(element).then((canvas) => {
+                  const imgData = canvas.toDataURL('image/jpeg');
+
+                  // Calculate the desired dimensions for the image in the PDF
+                  const pdfWidth = doc.internal.pageSize.getWidth() - 30; // Adjust the margins if needed
+                  const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                  // Add the scaled image to the PDF
+                  doc.addImage(imgData, 'JPEG', 15, 15, pdfWidth, pdfHeight);
+                  doc.save(`formation_${formation}-niveau_${niveau}-section_${section}-groupe_${groupe}`);
+
+                  // Reset the height of the element to its original value
+                  element.style.height = originalHeight;
+              });
+          }, 500)
+      }
+  </script>
   <script>
       document?.getElementById("openModal")?.addEventListener("click", function() {
           document?.getElementById("modal")?.classList?.remove("hidden");

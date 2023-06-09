@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from ..decorators import admin_required, student_required
-from ..models import Etudiant,Groupe, Semestre, Seance, Formation
+from ..models import Etudiant,Groupe, Semestre, Seance, Formation, Section
 from django.core.paginator import Paginator
 from django.urls import reverse
 import datetime
@@ -16,27 +16,134 @@ start_times = [datetime.time(8, 00),
                datetime.time(14, 40),
                datetime.time(16, 20)]
 
+days = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi']
+labels = ['08:00 - 09:30', '09:40 - 11:10', '11:20 - 12:50', '13:00 - 14:30', '14:40 - 16:10', '16:20 - 17:50']
+
 @login_required
 @student_required
 def students_search_view(request):
-    
-    formations = Formation.objects.all()
-    levels = ["L1", "L2", "L3", "M1", "M2"]
-    semesters = Semestre.objects.all()
+    try:
+        formations = Formation.objects.all()
+        semesters = Semestre.objects.all()
+        error = request.GET.get('error')
 
-    students_context = {
-        "formations": formations,
-        "levels": levels,
-        "semesters": semesters,
-    }
-    return render(request=request, template_name="students/search.html", context=students_context)
+        selected_semester_id = request.GET.get('semester')
+        selected_formation_id = request.GET.get('formation')
+        selected_formation = None
+        selected_semester = None
+        if selected_formation_id:
+            selected_formation = Formation.objects.get(id=selected_formation_id)
+            if not selected_formation :
+                raise Exception("Formation is required")
+        if selected_semester_id:
+            selected_semester = Semestre.objects.get(id=selected_semester_id)
+            if not selected_semester :
+                raise Exception("Semestre is required")
+
+        schedules = []
+        if selected_formation and selected_semester:
+            seances = Seance.objects.filter(
+            groupe__section__formation=selected_formation, semester=selected_semester).order_by('start_time')
+            all_sections = Section.objects.filter(formation=selected_formation)
+
+            for section in all_sections:
+                all_groups = Groupe.objects.filter(section=section)
+
+                groups = []
+                for groupe in all_groups:
+                    dimanche = seances.filter(day="dimanche", groupe=groupe)
+                    lundi = seances.filter(day="lundi", groupe=groupe)
+                    mardi = seances.filter(day="mardi", groupe=groupe)
+                    mercredi = seances.filter(day="mercredi", groupe=groupe)
+                    jeudi = seances.filter(day="jeudi", groupe=groupe)
+
+                    
+                    list_dimanche = []
+                    for start_time in start_times:
+                        append_time = True
+                        for seance in dimanche : 
+                            if start_time == seance.start_time :
+                                list_dimanche.append(seance)
+                                append_time = False
+                                break
+                        if append_time : 
+                            list_dimanche.append({"empty": True})
+
+                    list_lundi = []
+                    for start_time in start_times:
+                        append_time = True
+                        for seance in lundi : 
+                            if start_time == seance.start_time :
+                                list_lundi.append(seance)
+                                append_time = False
+                                break
+                        if append_time : 
+                            list_lundi.append({"empty": True})
+                    list_mardi = []
+                    for start_time in start_times:
+                        append_time = True
+                        for seance in mardi : 
+                            if start_time == seance.start_time :
+                                list_mardi.append(seance)
+                                append_time = False
+                                break
+                        if append_time : 
+                            list_mardi.append({"empty": True})
+                    list_mercredi = []
+                    for start_time in start_times:
+                        append_time = True
+                        for seance in mercredi : 
+                            if start_time == seance.start_time :
+                                list_mercredi.append(seance)
+                                append_time = False
+                                break
+                        if append_time : 
+                            list_mercredi.append({"empty": True})
+                    list_jeudi = []
+                    for start_time in start_times:
+                        append_time = True
+                        for seance in jeudi : 
+                            if start_time == seance.start_time :
+                                list_jeudi.append(seance)
+                                append_time = False
+                                break
+                        if append_time : 
+                            list_jeudi.append({"empty": True})
+                    
+                    groups.append( {
+                        "id" : groupe.pk,
+                        "name" : groupe.name,
+                        "dimanche" :list_dimanche,
+                        "lundi" :list_lundi,
+                        "mardi" :list_mardi,
+                        "mercredi" :list_mercredi,
+                        "jeudi" :list_jeudi,
+                    })
+                
+                schedules.append({
+                    "section" : section,
+                    "groups" : groups
+                })
+        
+        students_context = {
+            "formations": formations,
+            "semesters": semesters,
+            "selected_formation": selected_formation,
+            "selected_semester": selected_semester,
+            "schedules": schedules,
+            "error" : error,
+            "days": days,
+            "labels": labels,
+        }
+        return render(request=request, template_name="students/search.html", context=students_context)
+    except Exception as e:
+        print(e)
+        return redirect(reverse('students_search') + '?error=An+error+occurred+while+getting+the+EDT')
 
 @login_required
 @student_required
 def students_home_view(request):
     student = get_object_or_404(Etudiant, user_id=request.user.id)
-    days = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi']
-    labels = ['08:00 - 09:30', '09:40 - 11:10', '11:20 - 12:50', '13:00 - 14:30', '14:40 - 16:10', '16:20 - 17:50']
     group = student.groupe
     selected_semester_id = request.GET.get('semester')
     selected_semester = None
@@ -59,6 +166,7 @@ def students_home_view(request):
             if start_time == seance.start_time :
                 list_dimanche.append(seance)
                 append_time = False
+                break
         if append_time : 
             list_dimanche.append({"empty": True})
 
@@ -69,6 +177,7 @@ def students_home_view(request):
             if start_time == seance.start_time :
                 list_lundi.append(seance)
                 append_time = False
+                break
         if append_time : 
             list_lundi.append({"empty": True})
     list_mardi = []
@@ -78,6 +187,7 @@ def students_home_view(request):
             if start_time == seance.start_time :
                 list_mardi.append(seance)
                 append_time = False
+                break
         if append_time : 
             list_mardi.append({"empty": True})
     list_mercredi = []
@@ -87,6 +197,7 @@ def students_home_view(request):
             if start_time == seance.start_time :
                 list_mercredi.append(seance)
                 append_time = False
+                break
         if append_time : 
             list_mercredi.append({"empty": True})
     list_jeudi = []
@@ -96,6 +207,7 @@ def students_home_view(request):
             if start_time == seance.start_time :
                 list_jeudi.append(seance)
                 append_time = False
+                break
         if append_time : 
             list_jeudi.append({"empty": True})
 

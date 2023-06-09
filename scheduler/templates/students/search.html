@@ -1,5 +1,5 @@
 {% extends '../layouts/auth.html' %}
-{% block title %} EDT - Rechercher{% endblock %}
+{% block title %}EDT - Rechercher{% endblock %}
 {% block content %}
     <section class="max-w-md mx-auto">
         <form method="get"
@@ -8,31 +8,21 @@
             <label for="formation" class="block text-lg mb-2">formation:</label>
             <select name="formation"
                     id="formation"
-                    class="border border-gray-400 px-4 py-2 mb-4 rounded w-full">
+                    class="border border-gray-400 px-4 py-2 mb-4 rounded w-full"
+                    required>
                 {% for formation in formations %}
                     {% if selected_formation.id == formation.id %}
-                        <option value="{{ formation.id }}" selected>{{ formation.name }} : {{ formation.niveau }}</option>
+                        <option value="{{ formation.id }}" selected>{{ formation.name }} ({{ formation.niveau }})</option>
                     {% else %}
-                        <option value="{{ formation.id }}">{{ formation.name }} : {{ formation.niveau }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-            <label for="level" class="block text-lg mb-2">Niveau:</label>
-            <select name="level"
-                    id="level"
-                    class="border border-gray-400 px-4 py-2 mb-4 rounded w-full">
-                {% for level in levels %}
-                    {% if selected_level == level %}
-                        <option value="{{ level }}" selected>{{ level }}</option>
-                    {% else %}
-                        <option value="{{ level }}">{{ level }}</option>
+                        <option value="{{ formation.id }}">{{ formation.name }} ({{ formation.niveau }})</option>
                     {% endif %}
                 {% endfor %}
             </select>
             <label for="semester" class="block text-lg mb-2">Semestre:</label>
             <select name="semester"
                     id="semester"
-                    class="border border-gray-400 px-4 py-2 mb-4 rounded w-full">
+                    class="border border-gray-400 px-4 py-2 mb-4 rounded w-full"
+                    required>
                 {% for semester in semesters %}
                     {% if selected_semester.id == semester.id %}
                         <option value="{{ semester.id }}" selected>{{ semester.name }} : {{ semester.start }} - {{ semester.end }}</option>
@@ -41,7 +31,161 @@
                     {% endif %}
                 {% endfor %}
             </select>
-            <button type="submit" class="p-2 bg-gray-700 text-white rounded">Rechercher</button>
+            <button type="submit"
+                    class="p-2 bg-gray-700 hover:bg-gray-600 text-white rounded">
+                <i class="fa-regular fa-search fa-lg"></i>
+                <span>Rechercher</span>
+            </button>
         </form>
     </section>
+    {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2 max-w-md mx-auto"
+             role="alert">
+            <strong class="font-bold">Error:</strong>
+            <span class="block sm:inline">{{ error }}</span>
+        </div>
+    {% endif %}
+    {% if schedules %}
+        <div class="mt-8 max-w-5xl mx-auto">
+            <div>
+                <h2 class="italic text-lg">Formation : {{ selected_formation.name }}</h2>
+                <h2 class="italic text-md">Niveau: {{ selected_formation.niveau }}</h2>
+                <h2 class="italic text-md">
+                    Semester: {{ selected_semester.name }} : {{ selected_semester.start }} - {{ selected_semester.end }}
+                </h2>
+            </div>
+            {% for schedule in schedules %}
+                <section class="bg-gray-100 p-4 rounded shadow-md my-4 max-w-5xl mx-auto">
+                    <h2 class="italic text-2xl font-bold">Section: {{ schedule.section.name }}</h2>
+                    {% for groupe in schedule.groups %}
+                        <div class="overflow-x-auto p-2">
+                            <article class="p-2 my-4 bg-white" id="edt-{{groupe.id}}">
+                                <h3 class="italic font-bold">Groupe : {{ groupe.name }}</h3>
+                                <div class="mb-4 flex flex-row align-center justify-end gap-2">
+                                    <button class="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded text-sm"
+                                            onclick="downloadPDF('{{ groupe.id }}', '{{ selected_formation.name }}' , '{{ selected_formation.niveau }}' ,'{{ schedule.section.name }}','{{ groupe.name }}')">Download PDF</button>
+                                </div>
+                                <div class="min-w-max">
+                                    <div class="p-2">
+                                        <div class="grid grid-cols-7 gap-2">
+                                            <div class="text-center p-2"></div>
+                                            {% for label in labels %}<div class="font-semibold text-center p-2">{{ label }}</div>{% endfor %}
+                                        </div>
+                                        <div class="grid grid-cols-7 gap-2 my-1">
+                                            <div class="font-semibold text-center p-2">Dimanche</div>
+                                            {% for seance in groupe.dimanche %}
+                                                {% if seance.empty %}
+                                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                                                {% else %}
+                                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                                        <span class="font-bold">{{ seance.subject.name }}</span>
+                                                        <span>{{ seance.type }}</span>
+                                                        <span>{{ seance.salle.name }}</span>
+                                                        <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <div class="grid grid-cols-7 gap-2 my-1">
+                                            <div class="font-semibold text-center p-2">Lundi</div>
+                                            {% for seance in groupe.lundi %}
+                                                {% if seance.empty %}
+                                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                                                {% else %}
+                                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                                        <span class="font-bold">{{ seance.subject.name }}</span>
+                                                        <span>{{ seance.type }}</span>
+                                                        <span>{{ seance.salle.name }}</span>
+                                                        <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <div class="grid grid-cols-7 gap-2 my-1">
+                                            <div class="font-semibold text-center p-2">Mardi</div>
+                                            {% for seance in groupe.mardi %}
+                                                {% if seance.empty %}
+                                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                                                {% else %}
+                                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                                        <span class="font-bold">{{ seance.subject.name }}</span>
+                                                        <span>{{ seance.type }}</span>
+                                                        <span>{{ seance.salle.name }}</span>
+                                                        <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <div class="grid grid-cols-7 gap-2 my-1">
+                                            <div class="font-semibold text-center p-2">Mercredi</div>
+                                            {% for seance in groupe.mercredi %}
+                                                {% if seance.empty %}
+                                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                                                {% else %}
+                                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                                        <span class="font-bold">{{ seance.subject.name }}</span>
+                                                        <span>{{ seance.type }}</span>
+                                                        <span>{{ seance.salle.name }}</span>
+                                                        <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <div class="grid grid-cols-7 gap-2 my-1">
+                                            <div class="font-semibold text-center p-2">Jeudi</div>
+                                            {% for seance in groupe.jeudi %}
+                                                {% if seance.empty %}
+                                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
+                                                {% else %}
+                                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
+                                                        <span class="font-bold">{{ seance.subject.name }}</span>
+                                                        <span>{{ seance.type }}</span>
+                                                        <span>{{ seance.salle.name }}</span>
+                                                        <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    {% endfor %}
+                </section>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <script>
+        function downloadPDF(id, formation, niveau, section, groupe) {
+            const doc = new jspdf.jsPDF();
+            const element = document.getElementById('edt-'+id);
+
+            // Save the current height of the element and set it to the full scroll height
+            const originalHeight = element.style.height;
+            element.style.height = element.scrollHeight + 'px';
+
+            // Scroll the element into view
+            element.scrollIntoView();
+
+            // Wait for a brief moment to ensure the element is fully visible
+            setTimeout(() => {
+                html2canvas(element).then((canvas) => {
+                    const imgData = canvas.toDataURL('image/jpeg');
+
+                    // Calculate the desired dimensions for the image in the PDF
+                    const pdfWidth = doc.internal.pageSize.getWidth() - 30; // Adjust the margins if needed
+                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                    // Add the scaled image to the PDF
+                    doc.addImage(imgData, 'JPEG', 15, 15, pdfWidth, pdfHeight);
+                    doc.save(`formation_${formation}-niveau_${niveau}-section_${section}-groupe_${groupe}`);
+
+                    // Reset the height of the element to its original value
+                    element.style.height = originalHeight;
+                });
+            }, 500)
+        }
+    </script>
 {% endblock %}
