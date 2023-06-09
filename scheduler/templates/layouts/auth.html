@@ -11,6 +11,7 @@
     <title>
       {% block title %}{% endblock %}
     </title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'logo.png' %}"/>
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}"
           rel="stylesheet"
           type="text/css">
@@ -86,12 +87,8 @@
         <section id="drawer"
                  class="bg-gray-800 text-white basis-64 p-4 h-screen mt-12 overflow-auto">
           <article class="bg-gray-700 p-2 rounded mb-4 mt-2">
-            <h1 class="text-lg font-bold mb-1 truncate">{{ user.username }}</h1>
-            {% if user.user_type %}
-              <h2 class="text-sm truncate">{{ user.user_type }}</h2>
-            {% else %}
-              <h2 class="text-sm truncate">Admin</h2>
-            {% endif %}
+            <h1 class="text-center capitalize text-lg font-bold mb-1 truncate">{{ user.username }}</h1>
+            <img src="{% static 'logo.png' %}" class="m-auto" height="50px" width="150px" alt="Logo">
           </article>
           <ul class="space-y-1">
             <li>
