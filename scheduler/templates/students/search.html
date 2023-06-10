@@ -55,137 +55,278 @@
                 </h2>
             </div>
             {% for schedule in schedules %}
-                <section class="bg-gray-100 p-4 rounded shadow-md my-4 max-w-5xl mx-auto">
-                    <h2 class="italic text-2xl font-bold">Section: {{ schedule.section.name }}</h2>
-                    {% for groupe in schedule.groups %}
-                        <div class="overflow-x-auto p-2">
-                            <article class="p-2 my-4 bg-white" id="edt-{{groupe.id}}">
-                                <h3 class="italic font-bold">Groupe : {{ groupe.name }}</h3>
-                                <div class="mb-4 flex flex-row align-center justify-end gap-2">
-                                    <button class="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded text-sm"
-                                            onclick="downloadPDF('{{ groupe.id }}', '{{ selected_formation.name }}' , '{{ selected_formation.niveau }}' ,'{{ schedule.section.name }}','{{ groupe.name }}')">Download PDF</button>
-                                </div>
-                                <div class="min-w-max">
-                                    <div class="p-2">
-                                        <div class="grid grid-cols-7 gap-2">
-                                            <div class="text-center p-2"></div>
-                                            {% for label in labels %}<div class="font-semibold text-center p-2">{{ label }}</div>{% endfor %}
-                                        </div>
-                                        <div class="grid grid-cols-7 gap-2 my-1">
-                                            <div class="font-semibold text-center p-2">Dimanche</div>
-                                            {% for seance in groupe.dimanche %}
-                                                {% if seance.empty %}
-                                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-                                                {% else %}
-                                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                                                        <span class="font-bold">{{ seance.subject.name }}</span>
-                                                        <span>{{ seance.type }}</span>
-                                                        <span>{{ seance.salle.name }}</span>
-                                                        <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                        <div class="grid grid-cols-7 gap-2 my-1">
-                                            <div class="font-semibold text-center p-2">Lundi</div>
-                                            {% for seance in groupe.lundi %}
-                                                {% if seance.empty %}
-                                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-                                                {% else %}
-                                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                                                        <span class="font-bold">{{ seance.subject.name }}</span>
-                                                        <span>{{ seance.type }}</span>
-                                                        <span>{{ seance.salle.name }}</span>
-                                                        <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                        <div class="grid grid-cols-7 gap-2 my-1">
-                                            <div class="font-semibold text-center p-2">Mardi</div>
-                                            {% for seance in groupe.mardi %}
-                                                {% if seance.empty %}
-                                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-                                                {% else %}
-                                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                                                        <span class="font-bold">{{ seance.subject.name }}</span>
-                                                        <span>{{ seance.type }}</span>
-                                                        <span>{{ seance.salle.name }}</span>
-                                                        <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                        <div class="grid grid-cols-7 gap-2 my-1">
-                                            <div class="font-semibold text-center p-2">Mercredi</div>
-                                            {% for seance in groupe.mercredi %}
-                                                {% if seance.empty %}
-                                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-                                                {% else %}
-                                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                                                        <span class="font-bold">{{ seance.subject.name }}</span>
-                                                        <span>{{ seance.type }}</span>
-                                                        <span>{{ seance.salle.name }}</span>
-                                                        <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                        <div class="grid grid-cols-7 gap-2 my-1">
-                                            <div class="font-semibold text-center p-2">Jeudi</div>
-                                            {% for seance in groupe.jeudi %}
-                                                {% if seance.empty %}
-                                                    <div class="bg-blue-100 rounded p-1 flex flex-col gap-1 relative text-center">{{" "}}</div>
-                                                {% else %}
-                                                    <div class="bg-blue-200 rounded p-1 flex flex-col gap-1 relative text-center">
-                                                        <span class="font-bold">{{ seance.subject.name }}</span>
-                                                        <span>{{ seance.type }}</span>
-                                                        <span>{{ seance.salle.name }}</span>
-                                                        <span>{{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }}</span>
-                                                    </div>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
+                <section class="my-8 max-w-7xl mx-auto">
+                    <h2 class="max-w-md m-auto italic text-2xl font-bold border border-gray-700 p-2 text-center">Section: {{ schedule.section.name }}</h2>
+                    <article class="p-2">
+                        <div class="mb-2 flex flex-row align-center justify-end gap-2">
+                            <button class="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded text-sm"
+                                    onclick="downloadPDF('{{ schedule.section.id }}', '{{ selected_formation.name }}' , '{{ selected_formation.niveau }}' ,'{{ schedule.section.name }}')">
+                                Download PDF
+                            </button>
                         </div>
-                    {% endfor %}
+                        <div class="overflow-x-auto p-2">
+                            <div class="min-w-max p-4 rounded shadow-md bg-white"
+                                 id="edt-{{ schedule.section.id }}">
+                                <table class="border-collapse border border-gray-400 w-full">
+                                    <thead>
+                                        <th class="text-center p-2 border border-gray-400"></th>
+                                        <th class="font-semibold text-center p-2 border border-gray-400">Gpe</th>
+                                        {% for label in labels %}<th class="font-semibold text-center p-2 border border-gray-400">{{ label }}</th>{% endfor %}
+                                    </thead>
+                                    <tbody>
+                                        <tr style="height: 1px;">
+                                            <td style="height: inherit;" class="border border-gray-400 text-center p-2 font-semibold">Dimanche</td>
+                                            <td style="height: inherit;" class="border border-gray-400 text-center">
+                                                {% for group in schedule.groups %}
+                                                    <div class="border border-white p-2 bg-orange-400 font-bold">{{ group.name }}</div>
+                                                {% endfor %}
+                                            </td>
+                                            {% for seance in schedule.dimanche %}
+                                                {% if seance.type == "cours" %}
+                                                    <td style="height: inherit;" class="text-center p-2 flex flex-col gap-1">
+                                                        <span class="font-bold text-xs">{{ seance.subject.name }}</span>
+                                                        <span class="font-bold text-xs">({{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }})</span>
+                                                        <span class="font-bold text-xs">{{ seance.salle.name }}</span>
+                                                    </td>
+                                                {% else %}
+                                                    <td style="height: inherit;" class="border border-gray-400 text-center">
+                                                        <table class="text-center border-collapse w-full h-full">
+                                                            <tbody>
+                                                                {% for gpe in seance %}
+                                                                    <tr>
+                                                                        {% if gpe %}
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.type }}</td>
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">
+                                                                                {{ gpe.subject.name }}
+                                                                                <br />
+                                                                                ({{ gpe.enseignant.user.first_name }} {{ gpe.enseignant.user.last_name }})
+                                                                            </td>
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.salle.name }}</td>
+                                                                        {% else %}
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        {% endif %}
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr style="height: 1px;">
+                                            <td style="height: inherit;" class="border border-gray-400 font-semibold text-center p-2">Lundi</td>
+                                            <td style="height: inherit;" class="border border-gray-400 text-center">
+                                                {% for group in schedule.groups %}
+                                                    <div class="border border-white p-2 bg-orange-400 font-bold">{{ group.name }}</div>
+                                                {% endfor %}
+                                            </td>
+                                            {% for seance in schedule.lundi %}
+                                                {% if seance.type == "cours" %}
+                                                    <td style="height: inherit;" class="text-center p-2 flex flex-col gap-1">
+                                                        <span class="font-bold text-xs">{{ seance.subject.name }}</span>
+                                                        <span class="font-bold text-xs">({{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }})</span>
+                                                        <span class="font-bold text-xs">{{ seance.salle.name }}</span>
+                                                    </td>
+                                                {% else %}
+                                                    <td style="height: inherit;" class="border border-gray-400">
+                                                        <table class="text-center border-collapse w-full h-full">
+                                                            <tbody>
+                                                                {% for gpe in seance %}
+                                                                    <tr>
+                                                                        {% if gpe %}
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.type }}</td>
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">
+                                                                                {{ gpe.subject.name }}
+                                                                                <br />
+                                                                                ({{ gpe.enseignant.user.first_name }} {{ gpe.enseignant.user.last_name }})
+                                                                            </td>
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.salle.name }}</td>
+                                                                        {% else %}
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        {% endif %}
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr style="height: 1px;">
+                                            <td style="height: inherit;" class="border border-gray-400 font-semibold text-center p-2">Mardi</td>
+                                            <td style="height: inherit;" class="border border-gray-400 text-center">
+                                                {% for group in schedule.groups %}
+                                                    <div class="border border-white p-2 bg-orange-400 font-bold">{{ group.name }}</div>
+                                                {% endfor %}
+                                            </td>
+                                            {% for seance in schedule.mardi %}
+                                                {% if seance.type == "cours" %}
+                                                    <td style="height: inherit;" class="text-center p-2  flex flex-col gap-1">
+                                                        <span class="font-bold text-xs">{{ seance.subject.name }}</span>
+                                                        <span class="font-bold text-xs">({{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }})</span>
+                                                        <span class="font-bold text-xs">{{ seance.salle.name }}</span>
+                                                    </td>
+                                                {% else %}
+                                                    <td style="height: inherit;" class="border border-gray-400">
+                                                        <table class="text-center border-collapse w-full h-full">
+                                                            <tbody>
+                                                                {% for gpe in seance %}
+                                                                    <tr>
+                                                                        {% if gpe %}
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.type }}</td>
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">
+                                                                                {{ gpe.subject.name }}
+                                                                                <br />
+                                                                                ({{ gpe.enseignant.user.first_name }} {{ gpe.enseignant.user.last_name }})
+                                                                            </td>
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.salle.name }}</td>
+                                                                        {% else %}
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        {% endif %}
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr style="height: 1px;">
+                                            <td style="height: inherit;" class="border border-gray-400 font-semibold text-center p-2">Mercredi</td>
+                                            <td style="height: inherit;" class="border border-gray-400 text-center">
+                                                {% for group in schedule.groups %}
+                                                    <div class="border border-white p-2 bg-orange-400 font-bold">{{ group.name }}</div>
+                                                {% endfor %}
+                                            </td>
+                                            {% for seance in schedule.mercredi %}
+                                                {% if seance.type == "cours" %}
+                                                    <td style="height: inherit;" class="text-center p-2 flex flex-col gap-1">
+                                                        <span class="font-bold text-xs">{{ seance.subject.name }}</span>
+                                                        <span class="font-bold text-xs">({{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }})</span>
+                                                        <span class="font-bold text-xs">{{ seance.salle.name }}</span>
+                                                    </td>
+                                                {% else %}
+                                                    <td style="height: inherit;" class="border border-gray-400">
+                                                        <table class="text-center border-collapse w-full h-full">
+                                                            <tbody>
+                                                                {% for gpe in seance %}
+                                                                    <tr>
+                                                                        {% if gpe %}
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.type }}</td>
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">
+                                                                                {{ gpe.subject.name }}
+                                                                                <br />
+                                                                                ({{ gpe.enseignant.user.first_name }} {{ gpe.enseignant.user.last_name }})
+                                                                            </td>
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.salle.name }}</td>
+                                                                        {% else %}
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        {% endif %}
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr style="height: 1px;">
+                                            <td style="height: inherit;" class="border border-gray-400 font-semibold text-center p-2">Jeudi</td>
+                                            <td style="height: inherit;" class="border border-gray-400 text-center">
+                                                {% for group in schedule.groups %}
+                                                    <div class="border border-white p-2 bg-orange-400 font-bold">{{ group.name }}</div>
+                                                {% endfor %}
+                                            </td>
+                                            {% for seance in schedule.jeudi %}
+                                                {% if seance.type == "cours" %}
+                                                    <td style="height: inherit;" class="text-center p-2 flex flex-col gap-1">
+                                                        <span class="font-bold text-xs">{{ seance.subject.name }}</span>
+                                                        <span class="font-bold text-xs">({{ seance.enseignant.user.first_name }} {{ seance.enseignant.user.last_name }})</span>
+                                                        <span class="font-bold text-xs">{{ seance.salle.name }}</span>
+                                                    </td>
+                                                {% else %}
+                                                    <td style="height: inherit;" class="border border-gray-400">
+                                                        <table class="text-center border-collapse w-full h-full">
+                                                            <tbody>
+                                                                {% for gpe in seance %}
+                                                                    <tr>
+                                                                        {% if gpe %}
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.type }}</td>
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">
+                                                                                {{ gpe.subject.name }}
+                                                                                <br />
+                                                                                ({{ gpe.enseignant.user.first_name }} {{ gpe.enseignant.user.last_name }})
+                                                                            </td>
+                                                                            <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.salle.name }}</td>
+                                                                        {% else %}
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                        {% endif %}
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </article>
                 </section>
             {% endfor %}
         </div>
     {% endif %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js" integrity="sha512-01CJ9/g7e8cUmY0DFTMcUw/ikS799FHiOA0eyHsUWfOetgbx/t6oV4otQ5zXKQyIrQGTHSmRVPIgrgLcZi/WMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-        function downloadPDF(id, formation, niveau, section, groupe) {
+        function downloadPDF(id, formation, niveau, section) {
             const doc = new jspdf.jsPDF();
-            const element = document.getElementById('edt-'+id);
-
+            const element = document.getElementById('edt-' + id);
+          
             // Save the current height of the element and set it to the full scroll height
             const originalHeight = element.style.height;
-            element.style.height = element.scrollHeight + 'px';
-
+            const scrollHeight = element.scrollHeight;
+            element.style.height = scrollHeight + 'px';
+          
             // Scroll the element into view
             element.scrollIntoView();
-
+          
             // Wait for a brief moment to ensure the element is fully visible
             setTimeout(() => {
-                html2canvas(element).then((canvas) => {
-                    const imgData = canvas.toDataURL('image/jpeg');
-
+              domtoimage.toPng(element)
+                .then((dataUrl) => {
+                  const img = new Image();
+                  img.src = dataUrl;
+                  img.onload = () => {
                     // Calculate the desired dimensions for the image in the PDF
                     const pdfWidth = doc.internal.pageSize.getWidth() - 30; // Adjust the margins if needed
-                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-                    // Add the scaled image to the PDF
-                    doc.addImage(imgData, 'JPEG', 15, 15, pdfWidth, pdfHeight);
-                    doc.save(`formation_${formation}-niveau_${niveau}-section_${section}-groupe_${groupe}`);
-
+                    const pdfHeight = (scrollHeight * pdfWidth) / element.offsetWidth;
+          
+                    // Add the image to the PDF
+                    doc.addImage(img, 'PNG', 15, 15, pdfWidth, pdfHeight);
+                    doc.save(`formation_${formation}-niveau_${niveau}-section_${section}`);
+          
                     // Reset the height of the element to its original value
                     element.style.height = originalHeight;
+                  };
+                })
+                .catch((error) => {
+                  console.error('Error generating PDF:', error);
                 });
-            }, 500)
-        }
+            }, 500);
+          }
+          
     </script>
 {% endblock %}

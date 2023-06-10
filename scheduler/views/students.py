@@ -47,84 +47,100 @@ def students_search_view(request):
             all_sections = Section.objects.filter(formation=selected_formation)
 
             for section in all_sections:
-                all_groups = Groupe.objects.filter(section=section)
+                dimanche = seances.filter(day="dimanche", groupe__section=section)
+                lundi = seances.filter(day="lundi", groupe__section=section)
+                mardi = seances.filter(day="mardi", groupe__section=section)
+                mercredi = seances.filter(day="mercredi", groupe__section=section)
+                jeudi = seances.filter(day="jeudi", groupe__section=section)
 
-                groups = []
-                for groupe in all_groups:
-                    dimanche = seances.filter(day="dimanche", groupe=groupe)
-                    lundi = seances.filter(day="lundi", groupe=groupe)
-                    mardi = seances.filter(day="mardi", groupe=groupe)
-                    mercredi = seances.filter(day="mercredi", groupe=groupe)
-                    jeudi = seances.filter(day="jeudi", groupe=groupe)
-
-                    
-                    list_dimanche = []
-                    for start_time in start_times:
-                        append_time = True
-                        for seance in dimanche : 
-                            if start_time == seance.start_time :
+                groups = Groupe.objects.filter(section=section)
+                
+                list_dimanche = []
+                for start_time in start_times:
+                    append_time = True
+                    gpe = {groupe.name : False for groupe in groups}
+                    for seance in dimanche : 
+                        if seance.start_time == start_time:
+                            if seance.type == "cours":
                                 list_dimanche.append(seance)
                                 append_time = False
                                 break
-                        if append_time : 
-                            list_dimanche.append({"empty": True})
+                            else:
+                                gpe[seance.groupe.name] = seance
 
-                    list_lundi = []
-                    for start_time in start_times:
-                        append_time = True
-                        for seance in lundi : 
-                            if start_time == seance.start_time :
+                    if append_time : 
+                        list_dimanche.append([gpe[name] for name in gpe])
+
+                list_lundi = []
+                for start_time in start_times:
+                    append_time = True
+                    gpe = {groupe.name : False for groupe in groups}
+                    for seance in lundi : 
+                        if seance.start_time == start_time:
+                            if seance.type == "cours":
                                 list_lundi.append(seance)
                                 append_time = False
                                 break
-                        if append_time : 
-                            list_lundi.append({"empty": True})
-                    list_mardi = []
-                    for start_time in start_times:
-                        append_time = True
-                        for seance in mardi : 
-                            if start_time == seance.start_time :
+                            else:
+                                gpe[seance.groupe.name] = seance
+                    if append_time : 
+                        list_lundi.append([gpe[name] for name in gpe])
+
+                list_mardi = []
+                for start_time in start_times:
+                    append_time = True
+                    gpe = {groupe.name : False for groupe in groups}
+                    for seance in mardi : 
+                        if start_time == seance.start_time :
+                            if seance.type == "cours":
                                 list_mardi.append(seance)
                                 append_time = False
                                 break
-                        if append_time : 
-                            list_mardi.append({"empty": True})
-                    list_mercredi = []
-                    for start_time in start_times:
-                        append_time = True
-                        for seance in mercredi : 
-                            if start_time == seance.start_time :
+                            else:
+                                gpe[seance.groupe.name] = seance
+                    if append_time : 
+                        list_mardi.append([gpe[name] for name in gpe])
+
+                list_mercredi = []
+                for start_time in start_times:
+                    append_time = True
+                    gpe = {groupe.name : False for groupe in groups}
+                    for seance in mercredi : 
+                        if seance.start_time == start_time:
+                            if seance.type == "cours":
                                 list_mercredi.append(seance)
                                 append_time = False
                                 break
-                        if append_time : 
-                            list_mercredi.append({"empty": True})
-                    list_jeudi = []
-                    for start_time in start_times:
-                        append_time = True
-                        for seance in jeudi : 
-                            if start_time == seance.start_time :
+                            else:
+                                gpe[seance.groupe.name] = seance
+                    if append_time : 
+                        list_mercredi.append([gpe[name] for name in gpe])
+
+                list_jeudi = []
+                for start_time in start_times:
+                    append_time = True
+                    gpe = {groupe.name : False for groupe in groups}
+                    for seance in jeudi : 
+                        if seance.start_time == start_time:
+                            if seance.type == "cours":
                                 list_jeudi.append(seance)
                                 append_time = False
                                 break
-                        if append_time : 
-                            list_jeudi.append({"empty": True})
-                    
-                    groups.append( {
-                        "id" : groupe.pk,
-                        "name" : groupe.name,
-                        "dimanche" :list_dimanche,
-                        "lundi" :list_lundi,
-                        "mardi" :list_mardi,
-                        "mercredi" :list_mercredi,
-                        "jeudi" :list_jeudi,
-                    })
-                
+                            else:
+                                gpe[seance.groupe.name] = seance
+                    if append_time : 
+                        list_jeudi.append([gpe[name] for name in gpe])
+
                 schedules.append({
+                    "groups" : groups,
                     "section" : section,
-                    "groups" : groups
+                    "dimanche" :list_dimanche,
+                    "lundi" :list_lundi,
+                    "mardi" :list_mardi,
+                    "mercredi" :list_mercredi,
+                    "jeudi" :list_jeudi,
                 })
-        
+                        
         students_context = {
             "formations": formations,
             "semesters": semesters,
