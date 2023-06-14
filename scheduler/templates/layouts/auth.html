@@ -90,7 +90,7 @@
             <h1 class="text-center capitalize text-lg font-bold mb-1 truncate">{{ user.username }}</h1>
             <img src="{% static 'logo.png' %}" class="m-auto" height="50px" width="150px" alt="Logo">
           </article>
-          <ul class="space-y-1">
+          <ul class="space-y-1" style="max-height: calc(100% - 150px); overflow-y: auto;">
             <li>
               <a href="{% url 'admins' %}"
                  class="block p-3 rounded hover:bg-gray-700 truncate">Gestionnaires</a>
