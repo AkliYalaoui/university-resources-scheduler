@@ -64,10 +64,10 @@ def admin_details_view(request, admin_id):
             admin.last_name = last_name
             admin.email = email
             admin.save()
-            return redirect('admin_details', admin_id=admin_id)
+            return redirect('admins')
         except Exception as e:
             print(e)
-            return redirect(reverse('admin_details',args=[admin_id]) + '?error=An+error+occurred+while+updating+the+profile')
+            return redirect(reverse('admins') + '?error=An+error+occurred+while+updating+the+profile')
     elif request.method == 'GET':
         error = request.GET.get('error')
         admin_context = {

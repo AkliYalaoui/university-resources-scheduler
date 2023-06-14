@@ -38,8 +38,11 @@
                      class="text-red-600 hover:underline cursor-pointer"
                      value="supprimer">
             </form>
-            <a href="{% url 'formation_details' formation_id=formation.id %}"
-               class="text-blue-600 hover:underline">modifier</a>
+            <button data-id="{{formation.pk}}"
+            data-name="{{formation.name}}"
+            data-niveau="{{formation.niveau}}"
+            data-nb_semestre="{{formation.nb_semestre}}"
+               class="text-blue-600 hover:underline openEditModal">modifier</button>
           </td>
         </tr>
       {% empty %}
@@ -66,6 +69,43 @@
       {% endif %}
     </span>
   </div>
+  <!-- Edit Modal -->
+  <div id="editModal"
+             class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+            <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
+                <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                        id="closeEditModal">X</button>
+                <h2 class="mb-4" id="formationName"> </h2>
+                <form id="editForm"
+                      method="post"
+                      class="flex flex-col">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="put">
+                    <label for="name" class="block mb-2">Formation:</label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           value=""
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                           required>
+                    <label for="niveau" class="block mb-2">Niveau:</label>
+                    <select name="niveau"
+                            id="niveau"
+                            class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    </select>
+                    <label for="nb_semestre" class="block mb-2">Nombre de semestres</label>
+                    <input type="number"
+                           id="nb_semestre"
+                           name="nb_semestre"
+                           value=""
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <button type="submit"
+                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        Enregistrer
+                    </button>
+                </form>
+            </div>
+        </div>
   <!-- Modal -->
   <div id="modal"
        class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
@@ -99,13 +139,52 @@
     </div>
   </div>
   <script>
-      document?.getElementById("openModal")?.addEventListener("click", function() {
-          document?.getElementById("modal")?.classList?.remove("hidden");
-      });
-      document
-          ?.getElementById("closeModal")
-          ?.addEventListener("click", function() {
-              document?.getElementById("modal")?.classList?.add("hidden");
-          });
-  </script>
+    const openModalBtn = document.getElementById('openModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const modal = document.getElementById('modal');
+    const editModal = document.getElementById('editModal');
+    const openEditModalBtns = document.getElementsByClassName('openEditModal');
+    const closeEditModalBtn = document.getElementById('closeEditModal');
+    const editForm = document.getElementById('editForm');
+    const formationName = document.getElementById('formationName');
+
+    // Get the form fields
+    const nameInput = document.getElementById('name');
+    const niveauSelect = document.getElementById('niveau');
+    const nbInput = document.getElementById('nb_semestre');
+
+    openModalBtn?.addEventListener("click", () => modal?.classList?.remove("hidden"));
+    closeModalBtn?.addEventListener("click", () => modal?.classList?.add("hidden"));
+    Array.from(openEditModalBtns).forEach(button => {
+        button.addEventListener("click", () => {
+            const rowId = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
+            const niveau = button.getAttribute('data-niveau');
+            const nb_semestre = button.getAttribute('data-nb_semestre');
+
+            nameInput.value = name;
+            nbInput.value = nb_semestre;
+
+            const levels = ["L1", "L2", "L3", "M1", "M2"]
+            niveauSelect.innerHTML = '';
+            levels.forEach(function(level) {
+                let option = document.createElement('option');
+                option.value = level;
+                option.textContent = level;
+                if (level === niveau) {
+                    option.selected = true;
+                }
+                niveauSelect.appendChild(option);
+            });
+
+            // Update the salle name in the <h2> element
+              formationName.innerHTML = 'Modifier la formation <b>' + name + '</b>';
+            // Update the form action with the new salle_id
+            editForm.action = '/formations/' + rowId;
+
+            editModal?.classList?.remove("hidden");
+        })
+    });
+    closeEditModalBtn?.addEventListener("click", () => editModal?.classList?.add("hidden"));
+</script>
 {% endblock %}

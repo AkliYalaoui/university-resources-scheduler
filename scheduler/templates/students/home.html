@@ -23,6 +23,7 @@
                 <th class="border border-gray-400 px-4 py-2">Groupe</th>
                 <th class="border border-gray-400 px-4 py-2">Section</th>
                 <th class="border border-gray-400 px-4 py-2">Formation</th>
+                <th class="border border-gray-400 px-4 py-2">Niveau</th>
                 <th class="border border-gray-400 px-4 py-2">Action</th>
             </tr>
         </thead>
@@ -36,6 +37,7 @@
                     <td class="border border-gray-400 px-4 py-2 truncate">{{ student.groupe.name }}</td>
                     <td class="border border-gray-400 px-4 py-2 truncate">{{ student.groupe.section.name }}</td>
                     <td class="border border-gray-400 px-4 py-2 truncate">{{ student.groupe.section.formation.name }}</td>
+                    <td class="border border-gray-400 px-4 py-2 truncate">{{ student.groupe.section.formation.niveau }}</td>
                     <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
                         <form action="{% url 'student_details' student_id=student.user.id %}"
                               method="post">
@@ -46,8 +48,13 @@
                                    class="text-red-600 hover:underline cursor-pointer"
                                    value="supprimer">
                         </form>
-                        <a href="{% url 'student_details' student_id=student.user.id %}"
-                           class="text-blue-600 hover:underline">modifier</a>
+                        <button data-id="{{student.user.id}}"
+                        data-username="{{ student.user.username }}"
+                        data-first_name="{{ student.user.first_name }}"
+                        data-last_name="{{ student.user.last_name }}"
+                        data-email="{{ student.user.email }}"
+                        data-group="{{ student.groupe.pk }}"
+                           class="text-blue-600 hover:underline openEditModal">modifier</button>
                     </td>
                 </tr>
             {% empty %}
@@ -74,6 +81,55 @@
             {% endif %}
         </span>
     </div>
+    <!-- EDIT Modal -->
+    <div id="editModal"
+             class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+            <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
+                <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                        id="closeEditModal">X</button>
+                <h2 class="mb-4" id="studentName"></h2>
+                <form id="editForm"
+                      method="post"
+                      class="flex flex-col">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="put">
+                    <label for="username" class="block mb-2">Nom d'utilisateur:</label>
+                    <input type="text"
+                           id="username"
+                           name="username"
+                           value=""
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                           required>
+                    <label for="first_name" class="block mb-2">Prénom:</label>
+                    <input type="text"
+                           id="first_name"
+                           name="first_name"
+                           value=""
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <label for="last_name" class="block mb-2">Nom:</label>
+                    <input type="text"
+                           id="last_name"
+                           name="last_name"
+                           value=""
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <label for="email" class="block mb-2">Email:</label>
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           value=""
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <label for="group">Groupe :</label>
+                    <select name="group"
+                            id="group"
+                            class="border border-gray-300 rounded px-4 py-2 w-full mb-4">
+                    </select>
+                    <button type="submit"
+                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        Enregistrer
+                    </button>
+                </form>
+            </div>
+        </div>
     <!-- Modal -->
     <div id="modal"
          class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
@@ -125,11 +181,78 @@
         </div>
     </div>
     <script>
-        document?.getElementById("openModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.remove("hidden");
+        const openModalBtn = document.getElementById('openModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const modal = document.getElementById('modal');
+
+        const editModal = document.getElementById('editModal');
+        const openEditModalBtns = document.getElementsByClassName('openEditModal');
+        const closeEditModalBtn = document.getElementById('closeEditModal');
+        const editForm = document.getElementById('editForm');
+        const studentName = document.getElementById('studentName');
+
+        // Get the form fields
+        const userNameInput = document.getElementById('username');
+        const firstNameInput = document.getElementById('first_name');
+        const lastNameInput = document.getElementById('last_name');
+        const emailInput = document.getElementById('email');
+        const groupSelect = document.getElementById('group');
+
+        openModalBtn?.addEventListener("click", () => modal?.classList?.remove("hidden"));
+        closeModalBtn?.addEventListener("click", () => modal?.classList?.add("hidden"));
+        Array.from(openEditModalBtns).forEach(button => {
+            button.addEventListener("click", async () => {
+                const rowId = button.getAttribute('data-id');
+                const userName = button.getAttribute('data-username');
+                const firstName = button.getAttribute('data-first_name');
+                const lastName = button.getAttribute('data-last_name');
+                const email = button.getAttribute('data-email');
+                const group = button.getAttribute('data-group');
+
+                userNameInput.value = userName;
+                firstNameInput.value = firstName;
+                lastNameInput.value = lastName;
+                emailInput.value = email;
+
+
+                const res = await fetch(`/students/${rowId}`);
+                const data = await res.json();
+                const groups = JSON.parse(data.groups);
+                const sections = JSON.parse(data.sections);
+                const formations = JSON.parse(data.formations);
+                console.log({groups, sections, formations});
+
+                groupSelect.innerHTML = '';
+                groups.forEach(function(g) {
+                    let option = document.createElement('option');
+                    option.value = g.pk;
+                    let section = getSection(g.fields.section, sections)
+                    option.textContent = getFormationName(section.fields.formation, formations) + ": " + section?.fields?.name + "(" + g.fields.name + ")" ;
+                    if (g.pk == group) {
+                        option.selected = true;
+                    }
+                    groupSelect.appendChild(option);
+                });
+
+                // Update the salle name in the <h2> element
+                studentName.innerHTML = "Modifier l'etudiant <b>" + userName + "</b>";
+                // Update the form action with the new salle_id
+                editForm.action = '/students/' + rowId;
+
+                editModal?.classList?.remove("hidden");
+            })
         });
-        document?.getElementById("closeModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.add("hidden");
-        });
+        closeEditModalBtn?.addEventListener("click", () => editModal?.classList?.add("hidden"));
+
+        function getFormationName(formationId, formations) {
+            const formation = formations.find(formation => formation.pk === formationId);
+            return formation ? formation.fields.name + "  "+ formation.fields.niveau : 'Unknown Formation';
+        }
+
+        function getSection(sectionId, sections) {
+            const section = sections.find(section => section.pk === sectionId);
+            return section;
+        }
+
     </script>
 {% endblock %}

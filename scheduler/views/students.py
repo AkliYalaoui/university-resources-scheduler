@@ -6,6 +6,10 @@ from ..models import Etudiant,Groupe, Semestre, Seance, Formation, Section
 from django.core.paginator import Paginator
 from django.urls import reverse
 import datetime
+from django.core.serializers import serialize
+from django.http import JsonResponse
+
+
 
 CustomUser = get_user_model()
 
@@ -304,16 +308,22 @@ def student_details_view(request, student_id):
 
             student.groupe_id = group_id
             student.save()
-            return redirect('student_details', student_id=student_id)
+            return redirect('students')
         except Exception as e:
             print(e)
-            return redirect(reverse('student_details',args=[student_id]) + '?error=An+error+occurred+while+updating+the+profile')
+            return redirect(reverse('students') + '?error=An+error+occurred+while+updating+the+profile')
     elif request.method == 'GET':
         groups = Groupe.objects.all()
-        error = request.GET.get('error')
-        student_context = {
-            'student': student,
-            "groups": groups,
-            "error": error,
-        }
-        return render(request=request, template_name="students/details.html", context=student_context)
+        groups_json = serialize('json', groups)
+        sections = Section.objects.all()
+        sections_json = serialize('json', sections)
+        formations = Formation.objects.all()
+        formations_json = serialize('json', formations)
+        return JsonResponse({'groups': groups_json,"sections": sections_json, "formations": formations_json})
+        # error = request.GET.get('error')
+        # student_context = {
+        #     'student': student,
+        #     "groups": groups,
+        #     "error": error,
+        # }
+        # return render(request=request, template_name="students/details.html", context=student_context)

@@ -5,6 +5,8 @@ from ..models import Formation, Semestre, Module
 from ..forms import  ModuleForm
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.http import JsonResponse
+from django.core.serializers import serialize
 
 
 @login_required
@@ -68,18 +70,24 @@ def module_details_view(request, module_id):
             module.formation = Formation.objects.get(id=formation_id)
 
             module.save()
-            return redirect('module_details', module_id=module_id)
+            return redirect('modules')
         except Exception as e:
             print(e)
-            return redirect(reverse('module_details',args=[module_id]) + '?error=An+error+occurred+while+updating+the+module')
+            return redirect(reverse('modules') + '?error=An+error+occurred+while+updating+the+module')
     elif request.method == 'GET':
-        error = request.GET.get('error')
         formations = Formation.objects.all()
         semesters = Semestre.objects.all()
-        module_context = {
-            'module': module,
-            'formations': formations,
-            'semesters': semesters,
-            'error': error,
-        }
-        return render(request=request, template_name="modules/details.html", context=module_context)
+        formations_json = serialize('json', formations)
+        semesters_json = serialize('json', semesters)
+        return JsonResponse({'formations': formations_json, "semesters": semesters_json})
+
+        # error = request.GET.get('error')
+        # formations = Formation.objects.all()
+        # semesters = Semestre.objects.all()
+        # module_context = {
+        #     'module': module,
+        #     'formations': formations,
+        #     'semesters': semesters,
+        #     'error': error,
+        # }
+        # return render(request=request, template_name="modules/details.html", context=module_context)

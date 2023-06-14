@@ -54,10 +54,10 @@ def formation_details_view(request, formation_id):
             formation.niveau = niveau
             formation.nb_semestre = nb_semestre
             formation.save()
-            return redirect('formation_details', formation_id=formation_id)
+            return redirect('formations')
         except Exception as e:
             print(e)
-            return redirect(reverse('formation_details',args=[formation_id]) + '?error=An+error+occurred+while+updating+the+formation')
+            return redirect(reverse('formations') + '?error=An+error+occurred+while+updating+the+formation')
         
     elif request.method == 'GET':
         error = request.GET.get('error')

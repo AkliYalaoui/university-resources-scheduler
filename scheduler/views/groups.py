@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from ..decorators import admin_required
-from ..models import Section, Groupe, Semestre, Salle, Module, Enseignant, Seance, Etudiant
+from ..models import Section, Groupe, Semestre, Salle, Module, Enseignant, Seance, Etudiant, Formation
 from ..forms import GroupForm, ProgramForm
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import datetime
 from django.urls import reverse
+from django.core.serializers import serialize
 
 
 start_times = [datetime.time(8, 00),
@@ -116,7 +117,7 @@ def groups_view(request):
 @admin_required
 def group_details_view(request, group_id):
     group = get_object_or_404(Groupe, id=group_id)
-   
+
     if request.method == 'POST' and request.POST["_method"] == "delete":
         group.delete()
         return redirect('groups')
@@ -129,34 +130,44 @@ def group_details_view(request, group_id):
             group.section = Section.objects.get(id=section_id)
 
             group.save()
-            return redirect('group_details', group_id=group_id)
+            return redirect('groups')
         except Exception as e:
             print(e)
-            return redirect(reverse('group_details', args=[group_id]) + '?error=An+error+occurred+while+updating+the+group')
+            return redirect(reverse('groups') + '?error=An+error+occurred+while+updating+the+group')
     elif request.method == 'GET':
-        error = request.GET.get('error')
         sections = Section.objects.all()
-    
-        group_context = {
-            'group': group,
-            'sections': sections,
-            'error': error,
-        }
-        return render(request=request, template_name="groups/details.html", context=group_context)
-    
+        sections_json = serialize('json', sections)
+        formations = Formation.objects.all()
+        formations_json = serialize('json', formations)
+        return JsonResponse({'sections': sections_json, "formations": formations_json})
+
+        # error = request.GET.get('error')
+        # sections = Section.objects.all()
+
+        # group_context = {
+        #     'group': group,
+        #     'sections': sections,
+        #     'error': error,
+        # }
+        # return render(request=request, template_name="groups/details.html", context=group_context)
+
+
 @login_required
 @admin_required
 def group_edt_view(request, group_id):
     group = get_object_or_404(Groupe, id=group_id)
     days = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi']
-    labels = ['08:00 - 09:30', '09:40 - 11:10', '11:20 - 12:50', '13:00 - 14:30', '14:40 - 16:10', '16:20 - 17:50']
-   
+    labels = ['08:00 - 09:30', '09:40 - 11:10', '11:20 - 12:50',
+              '13:00 - 14:30', '14:40 - 16:10', '16:20 - 17:50']
+
     if request.method == 'POST' and request.POST["_method"] == "post":
         try:
             modified_post = request.POST.copy()
             time_id = request.POST["creaneau"]
-            start_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[0].get("start_time_ob")
-            end_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[0].get("end_time_ob")
+            start_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[
+                0].get("start_time_ob")
+            end_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[
+                0].get("end_time_ob")
             modified_post["start_time"] = start_time
             modified_post["end_time"] = end_time
 
@@ -217,7 +228,7 @@ def group_edt_view(request, group_id):
         semesters = Semestre.objects.all()
         seances = Seance.objects.filter(
             groupe=group, semester=selected_semester).order_by('start_time')
-        
+
         dimanche = seances.filter(day="dimanche")
         lundi = seances.filter(day="lundi")
         mardi = seances.filter(day="mardi")
@@ -227,53 +238,53 @@ def group_edt_view(request, group_id):
         list_dimanche = []
         for start_time in start_times:
             append_time = True
-            for seance in dimanche : 
-                if start_time == seance.start_time :
+            for seance in dimanche:
+                if start_time == seance.start_time:
                     list_dimanche.append(seance)
                     append_time = False
                     break
-            if append_time : 
+            if append_time:
                 list_dimanche.append({"empty": True})
 
         list_lundi = []
         for start_time in start_times:
             append_time = True
-            for seance in lundi : 
-                if start_time == seance.start_time :
+            for seance in lundi:
+                if start_time == seance.start_time:
                     list_lundi.append(seance)
                     append_time = False
                     break
-            if append_time : 
+            if append_time:
                 list_lundi.append({"empty": True})
         list_mardi = []
         for start_time in start_times:
             append_time = True
-            for seance in mardi : 
-                if start_time == seance.start_time :
+            for seance in mardi:
+                if start_time == seance.start_time:
                     list_mardi.append(seance)
                     append_time = False
                     break
-            if append_time : 
+            if append_time:
                 list_mardi.append({"empty": True})
         list_mercredi = []
         for start_time in start_times:
             append_time = True
-            for seance in mercredi : 
-                if start_time == seance.start_time :
+            for seance in mercredi:
+                if start_time == seance.start_time:
                     list_mercredi.append(seance)
                     append_time = False
                     break
-            if append_time : 
+            if append_time:
                 list_mercredi.append({"empty": True})
         list_jeudi = []
         for start_time in start_times:
             append_time = True
-            for seance in jeudi : 
-                if start_time == seance.start_time :
+            for seance in jeudi:
+                if start_time == seance.start_time:
                     list_jeudi.append(seance)
                     append_time = False
                     break
-            if append_time : 
+            if append_time:
                 list_jeudi.append({"empty": True})
 
         group_context = {
@@ -305,7 +316,7 @@ def allowed_sessions_view(request, group_id, semester_id):
         for seance in jour_sessions:
             filtered_times = list(
                 filter(lambda t: t.get("start_time_ob") != seance.start_time, filtered_times))
-            
+
         print(filtered_times)
 
     filtered_modules = []
@@ -336,8 +347,10 @@ def allowed_sessions_view(request, group_id, semester_id):
     if "get_teachers" in request.GET:
         module_id = request.GET["module"]
         time_id = request.GET["creaneau"]
-        end_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[0].get("end_time_ob")
-        start_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[0].get("start_time_ob")
+        end_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[
+            0].get("end_time_ob")
+        start_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[
+            0].get("start_time_ob")
         module = Module.objects.get(id=module_id)
         teachers = Enseignant.objects.exclude(
             Q(seance__day=request.GET["day"]) & Q(seance__start_time__lte=start_time) & Q(
@@ -361,8 +374,10 @@ def allowed_sessions_view(request, group_id, semester_id):
     seance_types = []
     if "get_types" in request.GET:
         time_id = request.GET["creaneau"]
-        end_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[0].get("end_time_ob")
-        start_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[0].get("start_time_ob")
+        end_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[
+            0].get("end_time_ob")
+        start_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[
+            0].get("start_time_ob")
         conflicting_sessions = Seance.objects.filter(day=request.GET["day"], start_time__lt=end_time,
                                                      end_time__gt=start_time,  groupe__section=group.section)
 
@@ -380,8 +395,10 @@ def allowed_sessions_view(request, group_id, semester_id):
     filtered_salles = []
     if "get_rooms" in request.GET:
         time_id = request.GET["creaneau"]
-        end_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[0].get("end_time_ob")
-        start_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[0].get("start_time_ob")
+        end_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[
+            0].get("end_time_ob")
+        start_time = list(filter(lambda item: item["value"] == int(time_id), all_times))[
+            0].get("start_time_ob")
         occupied_salle_ids = Seance.objects.filter(
             day=request.GET["day"],
             start_time__lte=end_time,

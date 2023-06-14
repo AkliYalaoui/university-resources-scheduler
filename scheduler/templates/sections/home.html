@@ -39,8 +39,10 @@
                                    class="text-red-600 hover:underline cursor-pointer"
                                    value="supprimer">
                         </form>
-                        <a href="{% url 'section_details' section_id=section.id %}"
-                           class="text-blue-600 hover:underline">modifier</a>
+                        <button data-id="{{section.pk}}"
+                        data-name="{{section.name}}"
+                        data-formation="{{section.formation.pk}}"
+                           class="text-blue-600 hover:underline openEditModal">modifier</button>
                     </td>
                 </tr>
             {% empty %}
@@ -67,6 +69,37 @@
             {% endif %}
         </span>
     </div>
+    <!-- EDIT Modal -->
+    <div id="editModal"
+             class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+            <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
+                <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                        id="closeEditModal">X</button>
+                <h2 class="mb-4" id="sectionName"></h2>
+                <form id="editForm"
+                      method="post"
+                      class="flex flex-col">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="put">
+                    <label for="name" class="block mb-2">Section:</label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           value=""
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                           required>
+                    <label for="formation">Formation :</label>
+                    <select name="formation"
+                            id="formation"
+                            class="border border-gray-300 rounded px-4 py-2 w-full mb-4">
+                    </select>
+                    <button type="submit"
+                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        Enregistrer
+                    </button>
+                </form>
+            </div>
+        </div>
     <!-- Modal -->
     <div id="modal"
          class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
@@ -94,11 +127,54 @@
         </div>
     </div>
     <script>
-        document?.getElementById("openModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.remove("hidden");
+        const openModalBtn = document.getElementById('openModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const modal = document.getElementById('modal');
+
+        const editModal = document.getElementById('editModal');
+        const openEditModalBtns = document.getElementsByClassName('openEditModal');
+        const closeEditModalBtn = document.getElementById('closeEditModal');
+        const editForm = document.getElementById('editForm');
+        const sectionName = document.getElementById('sectionName');
+
+        // Get the form fields
+        const nameInput = document.getElementById('name');
+        const formationSelect = document.getElementById('formation');
+
+        openModalBtn?.addEventListener("click", () => modal?.classList?.remove("hidden"));
+        closeModalBtn?.addEventListener("click", () => modal?.classList?.add("hidden"));
+        Array.from(openEditModalBtns).forEach(button => {
+            button.addEventListener("click", async () => {
+                const rowId = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const formation = button.getAttribute('data-formation');
+
+                nameInput.value = name;
+
+                const res = await fetch(`/sections/${rowId}`);
+                const data = await res.json();
+                const formations = JSON.parse(data.formations);
+                console.log({formations});
+
+                formationSelect.innerHTML = '';
+                formations.forEach(function(f) {
+                    let option = document.createElement('option');
+                    option.value = f.pk;
+                    option.textContent = f.fields.name +  " : " + f.fields.niveau ;
+                    if (f.pk == formation) {
+                        option.selected = true;
+                    }
+                    formationSelect.appendChild(option);
+                });
+
+                // Update the salle name in the <h2> element
+                sectionName.innerHTML = 'Modifier la section <b>' + name + '</b>';
+                // Update the form action with the new salle_id
+                editForm.action = '/sections/' + rowId;
+
+                editModal?.classList?.remove("hidden");
+            })
         });
-        document?.getElementById("closeModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.add("hidden");
-        });
+        closeEditModalBtn?.addEventListener("click", () => editModal?.classList?.add("hidden"));
     </script>
 {% endblock %}

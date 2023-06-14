@@ -1,58 +1,59 @@
 {% extends '../layouts/auth.html' %}
 {% block title %}Groupe{% endblock %}
 {% block content %}
-
-<h2 class="text-lg sm:text-3xl font-bold mb-4"># Liste des groupes</h2>
-{% if error %}
-<div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
-     role="alert">
-       <strong class="font-bold">Error:</strong>
-       <span class="block sm:inline">{{ error }}</span>
-</div>
-{% endif %}
+    <h2 class="text-lg sm:text-3xl font-bold mb-4"># Liste des groupes</h2>
+    {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
+             role="alert">
+            <strong class="font-bold">Error:</strong>
+            <span class="block sm:inline">{{ error }}</span>
+        </div>
+    {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
             id="openModal">Ajouter</button>
-            <div class="overflow-x-auto">
-    <table class="border-collapse border border-gray-400 w-full">
-        <thead>
-            <tr>
-                <th class="border border-gray-400 px-4 py-2">Nom</th>
-                <th class="border border-gray-400 px-4 py-2">Section</th>
-                <th class="border border-gray-400 px-4 py-2">Formation</th>
-                <th class="border border-gray-400 px-4 py-2">Niveau</th>
-                <th class="border border-gray-400 px-4 py-2">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for group in groups %}
+    <div class="overflow-x-auto">
+        <table class="border-collapse border border-gray-400 w-full">
+            <thead>
                 <tr>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ group.name }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ group.section.name }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ group.section.formation.name }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ group.section.formation.niveau }}</td>
-                    <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
-                        <form action="{% url 'group_details' group_id=group.id %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="_method" value="delete">
-                            <input type="submit"
-                                    onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
-                                   class="text-red-600 hover:underline cursor-pointer"
-                                   value="supprimer">
-                        </form>
-                        <a href="{% url 'group_details' group_id=group.id %}"
-                           class="text-blue-600 hover:underline">modifier</a>
-                        <a href="{% url 'group_edt' group_id=group.id %}"
-                           class="text-green-600 hover:underline">consulter</a>
-                    </td>
+                    <th class="border border-gray-400 px-4 py-2">Nom</th>
+                    <th class="border border-gray-400 px-4 py-2">Section</th>
+                    <th class="border border-gray-400 px-4 py-2">Formation</th>
+                    <th class="border border-gray-400 px-4 py-2">Niveau</th>
+                    <th class="border border-gray-400 px-4 py-2">Actions</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="4" class="p-2 text-center">Aucun groupe à afficher</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-            </div>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                    <tr>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ group.name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ group.section.name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ group.section.formation.name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ group.section.formation.niveau }}</td>
+                        <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+                            <form action="{% url 'group_details' group_id=group.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="_method" value="delete">
+                                <input type="submit"
+                                       onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
+                                       class="text-red-600 hover:underline cursor-pointer"
+                                       value="supprimer">
+                            </form>
+                            <button data-id="{{ group.id }}"
+                                    data-name="{{ group.name }}"
+                                    data-section="{{ group.section.pk }}"
+                                    class="text-blue-600 hover:underline openEditModal">Modifier</button>
+                            <a href="{% url 'group_edt' group_id=group.id %}"
+                                class="text-green-700 hover:underline">consulter</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="p-2 text-center">Aucun groupe à afficher</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <div class="pagination flex items-center justify-center mt-10">
         <span class="step-links">
             {% if groups.has_previous %}
@@ -68,6 +69,34 @@
                    class="text-blue-500 hover:text-blue-700 ml-3">dernière</a>
             {% endif %}
         </span>
+    </div>
+    <!-- EDIT Modal -->
+    <div id="editModal"
+         class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+        <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
+            <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                    id="closeEditModal">X</button>
+            <h2 class="mb-4" id="groupName"></h2>
+            <form id="editForm" method="post" class="flex flex-col">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="put">
+                <label for="name" class="block mb-2">Groupe:</label>
+                <input type="text"
+                       id="name"
+                       name="name"
+                       value=""
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                       required>
+                <label for="section">Section :</label>
+                <select name="section"
+                        id="section"
+                        class="border border-gray-300 rounded px-4 py-2 w-full mb-4"></select>
+                <button type="submit"
+                        class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                    Enregistrer
+                </button>
+            </form>
+        </div>
     </div>
     <!-- Modal -->
     <div id="modal"
@@ -89,7 +118,9 @@
                         id="section"
                         class="border border-gray-400 px-4 py-2 mb-4 rounded">
                     {% for section in sections %}
-                        <option value="{{ section.id }}">{{ section.name }} : {{ section.formation.name }} - {{ section.formation.niveau }}</option>
+                        <option value="{{ section.id }}">
+                            {{ section.name }} : {{ section.formation.name }} - {{ section.formation.niveau }}
+                        </option>
                     {% endfor %}
                 </select>
                 <button type="submit"
@@ -98,13 +129,59 @@
         </div>
     </div>
     <script>
-        document?.getElementById("openModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.remove("hidden");
+        const openModalBtn = document.getElementById('openModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const modal = document.getElementById('modal');
+        const editModal = document.getElementById('editModal');
+        const openEditModalBtns = document.getElementsByClassName('openEditModal');
+        const closeEditModalBtn = document.getElementById('closeEditModal');
+        const editForm = document.getElementById('editForm');
+        const groupName = document.getElementById('groupName');
+
+        // Get the form fields
+        const nameInput = document.getElementById('name');
+        const sectionSelect = document.getElementById('section');
+
+        openModalBtn?.addEventListener("click", () => modal?.classList?.remove("hidden"));
+        closeModalBtn?.addEventListener("click", () => modal?.classList?.add("hidden"));
+        Array.from(openEditModalBtns).forEach(button => {
+            button.addEventListener("click", async () => {
+                const rowId = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const section = button.getAttribute('data-section');
+
+                nameInput.value = name;
+
+                const res = await fetch(`/groups/${rowId}`);
+                const data = await res.json();
+                const sections = JSON.parse(data.sections);
+                const formations = JSON.parse(data.formations);
+                console.log({sections, formations});
+
+                sectionSelect.innerHTML = '';
+                sections.forEach(function(s) {
+                    let option = document.createElement('option');
+                    option.value = s.pk;
+                    option.textContent = s.fields.name +  " " + getFormationName(s.fields.formation, formations);
+                    if (s.pk == section) {
+                        option.selected = true;
+                    }
+                    sectionSelect.appendChild(option);
+                });
+
+                // Update the salle name in the <h2> element
+                groupName.innerHTML = 'Modifier le groupe <b>' + name + '</b>';
+                // Update the form action with the new salle_id
+                editForm.action = '/groups/' + rowId;
+
+                editModal?.classList?.remove("hidden");
+            })
         });
-        document
-            ?.getElementById("closeModal")
-            ?.addEventListener("click", function() {
-                document?.getElementById("modal")?.classList?.add("hidden");
-            });
+        closeEditModalBtn?.addEventListener("click", () => editModal?.classList?.add("hidden"));
+
+        function getFormationName(formationId, formations) {
+            const formation = formations.find(formation => formation.pk === formationId);
+            return formation ? formation.fields.name + ":"+ formation.fields.niveau : 'Unknown Formation';
+          }
     </script>
 {% endblock %}

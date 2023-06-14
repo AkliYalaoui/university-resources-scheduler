@@ -11,43 +11,46 @@
     {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
             id="openModal">Ajouter</button>
-            <div class="overflow-x-auto">
-    <table class="border-collapse border border-gray-400 w-full">
-        <thead>
-            <tr>
-                <th class="border border-gray-400 px-4 py-2">Nom</th>
-                <th class="border border-gray-400 px-4 py-2">Type</th>
-                <th class="border border-gray-400 px-4 py-2">Capacité</th>
-                <th class="border border-gray-400 px-4 py-2">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for salle in salles %}
+    <div class="overflow-x-auto">
+        <table class="border-collapse border border-gray-400 w-full">
+            <thead>
                 <tr>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ salle.name }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ salle.type|upper }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ salle.capacity }}</td>
-                    <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
-                        <form action="{% url 'salle_details' salle_id=salle.id %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="_method" value="delete">
-                            <input type="submit"
-                                   onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
-                                   class="text-red-600 hover:underline cursor-pointer"
-                                   value="supprimer">
-                        </form>
-                        <a href="{% url 'salle_details' salle_id=salle.id %}"
-                           class="text-blue-600 hover:underline">modifier</a>
-                    </td>
+                    <th class="border border-gray-400 px-4 py-2">Nom</th>
+                    <th class="border border-gray-400 px-4 py-2">Type</th>
+                    <th class="border border-gray-400 px-4 py-2">Capacité</th>
+                    <th class="border border-gray-400 px-4 py-2">Actions</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="4" class="p-2 text-center">Aucune salle trouvée</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-            </div>
+            </thead>
+            <tbody>
+                {% for salle in salles %}
+                    <tr>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ salle.name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ salle.type|upper }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ salle.capacity }}</td>
+                        <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+                            <form action="{% url 'salle_details' salle_id=salle.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="_method" value="delete">
+                                <input type="submit"
+                                       onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
+                                       class="text-red-600 hover:underline cursor-pointer"
+                                       value="supprimer">
+                            </form>
+                            <button data-id="{{ salle.id }}"
+                                    data-name="{{ salle.name }}"
+                                    data-type="{{ salle.type }}"
+                                    data-capacity="{{ salle.capacity }}"
+                                    class="text-blue-600 hover:underline openEditModal">modifier</button>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="p-2 text-center">Aucune salle trouvée</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <div class="pagination flex items-center justify-center mt-10">
         <span class="step-links">
             {% if salles.has_previous %}
@@ -64,7 +67,41 @@
             {% endif %}
         </span>
     </div>
-    <!-- Modal -->
+    <!-- EDIT Modal -->
+    <div id="editModal"
+         class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+        <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
+            <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                    id="closeEditModal">X</button>
+            <h2 class="mb-4" id="salleName"></h2>
+            <form id="editForm" method="post" class="flex flex-col">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="put">
+                <label for="name" class="block mb-2">Salle:</label>
+                <input type="text"
+                       id="name"
+                       name="name"
+                       value=""
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                       required>
+                <label for="type" class="block mb-2">Type:</label>
+                <select name="type"
+                        id="type"
+                        class="border border-gray-400 px-4 py-2 mb-4 rounded"></select>
+                <label for="capacity" class="block mb-2">Capacité:</label>
+                <input type="number"
+                       id="capacity"
+                       name="capacity"
+                       value="{{ salle.capacity }}"
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                <button type="submit"
+                        class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                    Enregistrer
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- ADD Modal -->
     <div id="modal"
          class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
         <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
@@ -97,11 +134,52 @@
         </div>
     </div>
     <script>
-        document?.getElementById("openModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.remove("hidden");
+        const openModalBtn = document.getElementById('openModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const modal = document.getElementById('modal');
+        const editModal = document.getElementById('editModal');
+        const openEditModalBtns = document.getElementsByClassName('openEditModal');
+        const closeEditModalBtn = document.getElementById('closeEditModal');
+        const editForm = document.getElementById('editForm');
+        const salleName = document.getElementById('salleName');
+
+        // Get the form fields
+        const nameInput = document.getElementById('name');
+        const typeSelect = document.getElementById('type');
+        const capacityInput = document.getElementById('capacity');
+
+        openModalBtn?.addEventListener("click", () => modal?.classList?.remove("hidden"));
+        closeModalBtn?.addEventListener("click", () => modal?.classList?.add("hidden"));
+        Array.from(openEditModalBtns).forEach(button => {
+            button.addEventListener("click", () => {
+                const rowId = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const selectedType = button.getAttribute('data-type');
+                const capacity = button.getAttribute('data-capacity');
+
+                nameInput.value = name;
+                capacityInput.value = capacity;
+
+                const types = ["td", "tp", "amphitheater"]
+                typeSelect.innerHTML = '';
+                types.forEach(function(type) {
+                    let option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    if (type === selectedType) {
+                        option.selected = true;
+                    }
+                    typeSelect.appendChild(option);
+                });
+
+                // Update the salle name in the <h2> element
+                salleName.innerHTML = 'Modifier la salle <b>' + name + '</b>';
+                // Update the form action with the new salle_id
+                editForm.action = '/salles/' + rowId;
+
+                editModal?.classList?.remove("hidden");
+            })
         });
-        document?.getElementById("closeModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.add("hidden");
-        });
+        closeEditModalBtn?.addEventListener("click", () => editModal?.classList?.add("hidden"));
     </script>
 {% endblock %}

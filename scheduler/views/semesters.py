@@ -57,10 +57,10 @@ def semester_details_view(request, semester_id):
             semester.end = end
             semester.session = session
             semester.save()
-            return redirect('semester_details', semester_id=semester_id)
+            return redirect('semesters')
         except Exception as e:
             print(e)
-            return redirect(reverse('semester_details',args=[semester_id]) + '?error=An+error+occurred+while+updating+the+semester')
+            return redirect(reverse('semesters') + '?error=An+error+occurred+while+updating+the+semester')
     elif request.method == 'GET':
         sessions = ["février", "juin"]
         error = request.GET.get('error')

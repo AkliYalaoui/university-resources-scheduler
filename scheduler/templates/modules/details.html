@@ -10,10 +10,10 @@
               <span class="block sm:inline">{{ error }}</span>
             </div>
           {% endif %}
-            <div class="mb-2 flex flex-row align-center justify-end gap-2">
+            <!-- <div class="mb-2 flex flex-row align-center justify-end gap-2">
                 <button class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
                         id="openModal">Modifier</button>
-            </div>
+            </div> -->
             <div class="p-2 rounded bg-blue-100 grid grid-cols-1 sm:grid-cols-2 gap-3 ">
                 <p class="truncate">
                     Module : <b>{{ module.name }}</b>
@@ -32,70 +32,6 @@
                 </p>
             </div>
         </header>
-        <div id="modal"
-             class="fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-            <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
-                <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
-                        id="closeModal">X</button>
-                <h2 class="mb-4">
-                    Modifier le module <b>{{ module.name }}</b>
-                </h2>
-                <form action="{% url 'module_details' module_id=module.id %}"
-                      method="post"
-                      class="flex flex-col">
-                    {% csrf_token %}
-                    <input type="hidden" name="_method" value="put">
-                    <label for="name" class="block mb-2">Module:</label>
-                    <input type="text"
-                           id="name"
-                           name="name"
-                           value="{{ module.name }}"
-                           class="border border-gray-400 px-4 py-2 mb-4 rounded"
-                           required>
-                    <label for="weekly_volume" class="block mb-2">Volume hébdomadaire:</label>
-                    <input type="number"
-                           id="niveau"
-                           name="weekly_volume"
-                           value="{{ module.weekly_volume }}"
-                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                    <label for="formation">Formation :</label>
-                    <select name="formation"
-                            id="formation"
-                            class="border border-gray-300 rounded px-4 py-2 w-full mb-4">
-                        {% for formation in formations %}
-                            {% if formation.id == module.formation.id %}
-                                <option value="{{ formation.id }}" selected>{{ formation.name }} - {{ formation.niveau }}</option>
-                            {% else %}
-                                <option value="{{ formation.id }}">{{ formation.name }} - {{ formation.niveau }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                    <label for="semester">Semestre :</label>
-                    <select name="semester"
-                            id="semester"
-                            class="border border-gray-300 rounded px-4 py-2 w-full mb-4">
-                        {% for semester in semesters %}
-                            {% if semester.id == module.semester.id %}
-                                <option value="{{ semester.id }}" selected>{{ semester.name }}</option>
-                            {% else %}
-                                <option value="{{ semester.id }}">{{ semester.name }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                    <button type="submit"
-                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                        Enregistrer
-                    </button>
-                </form>
-            </div>
-        </div>
+        
     {% endif %}
-    <script>
-        document?.getElementById("openModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.remove("hidden");
-        });
-        document?.getElementById("closeModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.add("hidden");
-        });
-    </script>
 {% endblock %}

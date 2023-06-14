@@ -6,6 +6,9 @@ from ..models import  Semestre, Module, Enseignant, Seance
 from django.core.paginator import Paginator
 from django.urls import reverse
 import datetime
+from django.http import JsonResponse
+from django.core.serializers import serialize
+
 
 CustomUser = get_user_model()
 
@@ -171,25 +174,34 @@ def teacher_details_view(request, teacher_id):
             teacher.grade = grade
             teacher.daily_load = daily_load
             teacher.save()
-            return redirect('teacher_details', teacher_id=teacher_id)
+            return redirect('teachers')
         except Exception as e:
             print(e)
-            return redirect(reverse('teacher_details',args=[teacher_id]) + '?error=An+error+occurred+while+updating+the+profile')
+            return redirect(reverse('teachers') + '?error=An+error+occurred+while+updating+the+profile')
         
     elif request.method == 'POST' and request.POST["_method"] == "post":
         selected_modules = request.POST.getlist("modules")
         teacher.modules.set(selected_modules)
         teacher.save()
-        return redirect('teacher_details', teacher_id=teacher_id)
+        return redirect('teachers')
     elif request.method == 'GET':
-        error = request.GET.get('error')
-        modules = Module.objects.all()
-        teacher_modules = teacher.modules.all
-        print(teacher_modules)
-        teacher_context = {
-            'teacher': teacher,
-            "teacher_modules": teacher_modules,
-            "modules": modules,
-            "error": error,
-        }
-        return render(request=request, template_name="teachers/details.html", context=teacher_context)
+            modules = Module.objects.all()
+            teacher_modules = teacher.modules.all()
+            modules_json = serialize('json', modules)
+            teacher_modules_json = serialize('json', teacher_modules)
+            return JsonResponse({'modules': modules_json, "teacher_modules": teacher_modules_json})
+    
+        # error = request.GET.get('error')
+        # modules = Module.objects.all()
+        # teacher_modules = teacher.modules.all
+        # print(teacher_modules)
+        # teacher_context = {
+        #     'teacher': teacher,
+        #     "teacher_modules": teacher_modules,
+        #     "modules": modules,
+        #     "error": error,
+        # }
+        # return render(request=request, template_name="teachers/details.html", context=teacher_context)
+    
+
+

@@ -54,10 +54,10 @@ def salle_details_view(request, salle_id):
             salle.type = type
             salle.capacity = capacity
             salle.save()
-            return redirect('salle_details', salle_id=salle_id)
+            return redirect('salles')
         except Exception as e:
             print(e)
-            return redirect(reverse('salle_details', args=[salle_id]) + '?error=An+error+occurred+while+updating+the+salle')
+            return redirect(reverse('salles') + '?error=An+error+occurred+while+updating+the+salle')
     elif request.method == 'GET':
         error = request.GET.get('error')
         types = ["td", "tp", "amphitheater"]

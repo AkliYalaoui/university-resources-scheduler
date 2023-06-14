@@ -43,8 +43,17 @@
                                        class="text-red-600 hover:underline cursor-pointer"
                                        value="supprimer">
                             </form>
-                            <a href="{% url 'teacher_details' teacher_id=teacher.user.id %}"
-                               class="text-blue-600 hover:underline">modifier</a>
+                            <button data-id="{{ teacher.user.id }}"
+                                    data-username="{{ teacher.user.username }}"
+                                    data-first_name="{{ teacher.user.first_name }}"
+                                    data-last_name="{{ teacher.user.last_name }}"
+                                    data-email="{{ teacher.user.email }}"
+                                    data-grade="{{ teacher.grade }}"
+                                    data-daily_load="{{ teacher.daily_load }}"
+                                    class="text-blue-600 hover:underline openEditModal">modifier</button>
+                            <button data-id="{{ teacher.user.id }}"
+                                    data-username="{{ teacher.user.username }}"
+                                    class="text-green-700 hover:underline openModuleModal">modules</button>
                         </td>
                     </tr>
                 {% empty %}
@@ -70,6 +79,59 @@
                    class="text-blue-500 hover:text-blue-700 ml-3">dernière</a>
             {% endif %}
         </span>
+    </div>
+    <!-- EDIT Modal -->
+    <div id="editModal"
+         class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+        <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
+            <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                    id="closeEditModal">X</button>
+            <h2 class="mb-4" id="teacherName"></h2>
+            <form id="editForm" method="post" class="flex flex-col">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="put">
+                <label for="username" class="block mb-2">Nom d'utilisateur:</label>
+                <input type="text"
+                       id="username"
+                       name="username"
+                       value=""
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                       required>
+                <label for="first_name" class="block mb-2">Prénom:</label>
+                <input type="text"
+                       id="first_name"
+                       name="first_name"
+                       value=""
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                <label for="last_name" class="block mb-2">Nom:</label>
+                <input type="text"
+                       id="last_name"
+                       name="last_name"
+                       value=""
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                <label for="email" class="block mb-2">Email:</label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       value=""
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                <label for="daily_load" class="block mb-2">Charge journalière:</label>
+                <input type="number"
+                       id="daily_load"
+                       name="daily_load"
+                       value=""
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                <label for="grade" class="block mb-2">Grade:</label>
+                <input type="grade"
+                       id="grade"
+                       name="grade"
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                <button type="submit"
+                        class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                    Enregistrer
+                </button>
+            </form>
+        </div>
     </div>
     <!-- Modal -->
     <div id="modal"
@@ -121,12 +183,120 @@
             </form>
         </div>
     </div>
+    <!-- Module Modal -->
+    <div id="modulesModal"
+         class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+        <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
+            <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                    id="closeModules">X</button>
+            <h2 class="mb-4" id="moduleH2"></h2>
+            <form id="moduleForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="post">
+                <label for="modules" class="block font-medium mb-1">Modules</label>
+                <select name="modules"
+                        id="modules"
+                        multiple
+                        class="border-gray-700 border focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-md shadow-sm">
+                </select>
+                <div class="flex justify-end mt-2">
+                    <button type="submit"
+                            class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md">sauvegarder</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script>
-        document?.getElementById("openModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.remove("hidden");
+        const openModalBtn = document.getElementById('openModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const modal = document.getElementById('modal');
+
+        const editModal = document.getElementById('editModal');
+        const openEditModalBtns = document.getElementsByClassName('openEditModal');
+        const closeEditModalBtn = document.getElementById('closeEditModal');
+        const editForm = document.getElementById('editForm');
+        const teacherName = document.getElementById('teacherName');
+        
+        const modulesModal = document.getElementById('modulesModal');
+        const openModuleModalBtns = document.getElementsByClassName('openModuleModal');
+        const closeModulesBtn = document.getElementById('closeModules');
+        const moduleForm = document.getElementById('moduleForm');
+        const moduleH2 = document.getElementById('moduleH2');
+
+        // Get the form fields
+        const userNameInput = document.getElementById('username');
+        const firstNameInput = document.getElementById('first_name');
+        const lastNameInput = document.getElementById('last_name');
+        const emailInput = document.getElementById('email');
+        const gradeInput = document.getElementById('grade');
+        const dailyLoadInput = document.getElementById('daily_load');
+
+        const modulesSelect = document.getElementById('modules');
+
+        openModalBtn?.addEventListener("click", () => modal?.classList?.remove("hidden"));
+        closeModalBtn?.addEventListener("click", () => modal?.classList?.add("hidden"));
+        Array.from(openEditModalBtns).forEach(button => {
+            button.addEventListener("click", () => {
+                const rowId = button.getAttribute('data-id');
+                const userName = button.getAttribute('data-username');
+                const firstName = button.getAttribute('data-first_name');
+                const lastName = button.getAttribute('data-last_name');
+                const email = button.getAttribute('data-email');
+                const grade = button.getAttribute('data-grade');
+                const dailyLoad = button.getAttribute('data-daily_load');
+
+                userNameInput.value = userName;
+                firstNameInput.value = firstName;
+                lastNameInput.value = lastName;
+                emailInput.value = email;
+                gradeInput.value = grade;
+                dailyLoadInput.value = parseInt(dailyLoad);
+
+
+                // Update the salle name in the <h2> element
+                teacherName.innerHTML = "Modifier l'enseignant <b>" + userName + "</b>";
+                // Update the form action with the new salle_id
+                editForm.action = '/teachers/' + rowId;
+
+                editModal?.classList?.remove("hidden");
+            })
         });
-        document?.getElementById("closeModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.add("hidden");
-        });
+        closeEditModalBtn?.addEventListener("click", () => editModal?.classList?.add("hidden"));
+
+        Array.from(openModuleModalBtns).forEach(button => {
+            button.addEventListener("click", async function() {
+                const rowId = button.getAttribute('data-id');
+                const userName = button.getAttribute('data-username');
+
+                // Fetch the modules data using AJAX
+                const res = await fetch(`/teachers/${rowId}`);
+                const data = await res.json();
+                const modules = JSON.parse(data.modules);
+                const teacher_modules = JSON.parse(data.teacher_modules);
+                console.log({modules,teacher_modules});
+
+               
+                modulesSelect.innerHTML = '';
+                modules.forEach(function(module) {
+                    let option = document.createElement('option');
+                    option.value = module.pk;
+                    option.textContent = module.fields.name;
+                    if(teacher_modules.some(
+                        teacherModule => teacherModule.pk === module.pk
+                      ))
+                      option.selected = true;
+                   
+                    modulesSelect.appendChild(option);
+                });
+
+                // Update the  name in the <h2> element
+                moduleH2.innerHTML = "Modules de l'enseignant <b>" + userName + "</b>";
+                // Update the form action with the new id
+                moduleForm.action = '/teachers/' + rowId;
+                modulesModal?.classList?.remove("hidden");
+            });
+        })
+
+        closeModulesBtn?.addEventListener("click", () => modulesModal?.classList?.add("hidden"));
     </script>
 {% endblock %}

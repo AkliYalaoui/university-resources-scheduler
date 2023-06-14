@@ -39,8 +39,12 @@
                                    class="text-red-600 hover:underline cursor-pointer"
                                    value="supprimer">
                         </form>
-                        <a href="{% url 'semester_details' semester_id=semester.id %}"
-                           class="text-blue-600 hover:underline">modifier</a>
+                        <button data-id="{{semester.pk}}"
+                        data-name="{{semester.name}}"
+                        data-session="{{semester.session}}"
+                        data-start="{{semester.start}}"
+                        data-end="{{semester.end}}"
+                           class="text-blue-600 hover:underline openEditModal">modifier</button>
                     </td>
                 </tr>
             {% empty %}
@@ -67,6 +71,49 @@
             {% endif %}
         </span>
     </div>
+    <!-- EDIT Modal -->
+    <div id="editModal"
+             class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+            <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
+                <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                        id="closeEditModal">X</button>
+                <h2 class="mb-4" id="semesterName"></h2>
+                <form id="editForm"
+                      method="post"
+                      class="flex flex-col">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="put">
+                    <label for="name" class="block mb-2">Nom:</label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           value=""
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                           required>
+                    <label for="session" class="block mb-2">Session:</label>
+                    <select name="session"
+                            id="session"
+                            class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    </select>
+                    <label for="start" class="block mb-2">Début:</label>
+                    <input type="date"
+                           id="start"
+                           name="start"
+                           value=""
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <label for="end" class="block mb-2">Fin:</label>
+                    <input type="date"
+                           id="end"
+                           name="end"
+                           value=""
+                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                    <button type="submit"
+                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        Enregistrer
+                    </button>
+                </form>
+            </div>
+        </div>
     <!-- Modal -->
     <div id="modal"
          class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
@@ -106,11 +153,55 @@
         </div>
     </div>
     <script>
-        document?.getElementById("openModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.remove("hidden");
+        const openModalBtn = document.getElementById('openModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const modal = document.getElementById('modal');
+        const editModal = document.getElementById('editModal');
+        const openEditModalBtns = document.getElementsByClassName('openEditModal');
+        const closeEditModalBtn = document.getElementById('closeEditModal');
+        const editForm = document.getElementById('editForm');
+        const semesterName = document.getElementById('semesterName');
+    
+        // Get the form fields
+        const nameInput = document.getElementById('name');
+        const sessionSelect = document.getElementById('session');
+        const startInput = document.getElementById('start');
+        const endInput = document.getElementById('end');
+    
+        openModalBtn?.addEventListener("click", () => modal?.classList?.remove("hidden"));
+        closeModalBtn?.addEventListener("click", () => modal?.classList?.add("hidden"));
+        Array.from(openEditModalBtns).forEach(button => {
+            button.addEventListener("click", () => {
+                const rowId = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const session = button.getAttribute('data-session');
+                const start = button.getAttribute('data-start');
+                const end = button.getAttribute('data-end');
+    
+                nameInput.value = name;
+                startInput.value = start;
+                endInput.value = end;
+    
+                const sessions = ["février", "juin"]
+                sessionSelect.innerHTML = '';
+                sessions.forEach(function(month) {
+                    let option = document.createElement('option');
+                    option.value = month;
+                    option.textContent = month;
+                    if (month === session) {
+                        option.selected = true;
+                    }
+                    sessionSelect.appendChild(option);
+                });
+    
+                // Update the salle name in the <h2> element
+                semesterName.innerHTML = 'Modifier le semestre <b>' + name + '</b>';
+                // Update the form action with the new salle_id
+                editForm.action = '/semesters/' + rowId;
+    
+                editModal?.classList?.remove("hidden");
+            })
         });
-        document?.getElementById("closeModal")?.addEventListener("click", function() {
-            document?.getElementById("modal")?.classList?.add("hidden");
-        });
+        closeEditModalBtn?.addEventListener("click", () => editModal?.classList?.add("hidden"));
     </script>
 {% endblock %}

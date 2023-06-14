@@ -5,6 +5,8 @@ from ..models import Formation, Section
 from ..forms import SectionForm
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.core.serializers import serialize
+from django.http import JsonResponse
 
 
 @login_required
@@ -59,17 +61,20 @@ def section_details_view(request, section_id):
             section.formation = Formation.objects.get(id=formation_id)
 
             section.save()
-            return redirect('section_details', section_id=section_id)
+            return redirect('sections')
         except Exception as e:
             print(e)
-            return redirect(reverse('section_details',args=[section_id]) + '?error=An+error+occurred+while+updating+the+section')
+            return redirect(reverse('sections') + '?error=An+error+occurred+while+updating+the+section')
         
     elif request.method == 'GET':
-        error = request.GET.get('error')
         formations = Formation.objects.all()
-        section_context = {
-            'section': section,
-            'formations': formations,
-            'error': error,
-        }
-        return render(request=request, template_name="sections/details.html", context=section_context)
+        formations_json = serialize('json', formations)
+        return JsonResponse({'formations': formations_json})
+        # error = request.GET.get('error')
+        # formations = Formation.objects.all()
+        # section_context = {
+        #     'section': section,
+        #     'formations': formations,
+        #     'error': error,
+        # }
+        # return render(request=request, template_name="sections/details.html", context=section_context)
