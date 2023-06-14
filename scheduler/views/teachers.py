@@ -8,7 +8,7 @@ from django.urls import reverse
 import datetime
 from django.http import JsonResponse
 from django.core.serializers import serialize
-
+from .emails import send_password_create_email, send_password_update_email
 
 CustomUser = get_user_model()
 
@@ -128,6 +128,8 @@ def teachers_view(request):
 
             teacher = Enseignant.objects.create(
                 user=user, grade=grade, daily_load=daily_load)
+            
+            send_password_create_email("Enseignant", email, username, password)
             return redirect('teachers')
         except Exception as e:
             print(e)
@@ -164,11 +166,15 @@ def teacher_details_view(request, teacher_id):
             first_name = request.POST['first_name']
             last_name = request.POST['last_name']
             email = request.POST['email']
+            password = request.POST['password']
 
             teacher.user.username = username
             teacher.user.first_name = first_name
             teacher.user.last_name = last_name
             teacher.user.email = email
+            if password:
+                teacher.user.set_password(password)
+                send_password_update_email(first_name, email, username, password)
             teacher.user.save()
 
             teacher.grade = grade

@@ -8,7 +8,7 @@ from django.urls import reverse
 import datetime
 from django.core.serializers import serialize
 from django.http import JsonResponse
-
+from .emails import send_password_create_email, send_password_update_email
 
 
 CustomUser = get_user_model()
@@ -263,6 +263,7 @@ def students_view(request):
             selected_group = Groupe.objects.get(id=selected_group_id)
 
             etudiant = Etudiant.objects.create(user=user, groupe=selected_group)
+            send_password_create_email("Etudiant", email, username, password)
             return redirect('students')
         except Exception as e:
             print(e)
@@ -299,11 +300,15 @@ def student_details_view(request, student_id):
             first_name = request.POST['first_name']
             last_name = request.POST['last_name']
             email = request.POST['email']
+            password = request.POST['password']
 
             student.user.username = username
             student.user.first_name = first_name
             student.user.last_name = last_name
             student.user.email = email
+            if password:
+                student.user.set_password(password)
+                send_password_update_email(first_name, email, username, password)
             student.user.save()
 
             student.groupe_id = group_id

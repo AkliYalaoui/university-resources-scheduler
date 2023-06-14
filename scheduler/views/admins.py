@@ -4,10 +4,9 @@ from django.contrib.auth.decorators import login_required
 from ..decorators import admin_required
 from django.core.paginator import Paginator
 from django.urls import reverse
-
+from .emails import send_password_create_email, send_password_update_email
 
 CustomUser = get_user_model()
-
 
 @login_required
 @admin_required
@@ -21,6 +20,8 @@ def admins_view(request):
             password = request.POST['password']
             user = CustomUser.objects.create_user(
                 username=username, password=password, email=email, first_name=first_name, last_name=last_name, is_superuser=True, user_type='admin')
+            
+            send_password_create_email("gestionnaire", email, username, password)
             print(user)
             return redirect('admins')
         except Exception as e:
@@ -58,11 +59,15 @@ def admin_details_view(request, admin_id):
             first_name = request.POST['first_name']
             last_name = request.POST['last_name']
             email = request.POST['email']
+            password = request.POST['password']
 
             admin.username = username
             admin.first_name = first_name
             admin.last_name = last_name
             admin.email = email
+            if password:
+                admin.set_password(password)
+                send_password_update_email(first_name, email, username, password)
             admin.save()
             return redirect('admins')
         except Exception as e:

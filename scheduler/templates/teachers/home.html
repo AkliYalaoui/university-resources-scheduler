@@ -115,6 +115,12 @@
                        name="email"
                        value=""
                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
+                <label for="email" class="block mb-2">Mot de passe:</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                       placeholder="Laisser vide si vous souhaitez pas le modifier">
                 <label for="daily_load" class="block mb-2">Charge journalière:</label>
                 <input type="number"
                        id="daily_load"
@@ -173,11 +179,12 @@
                        id="grade"
                        name="grade"
                        class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                <input type="hidden"
+                <label for="password" class="block mb-2">Mot de passe:</label>
+                <input type="password"
                        id="password"
                        name="password"
-                       required
-                       value="azerty123456">
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                       required>
                 <button type="submit"
                         class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Ajouter</button>
             </form>
@@ -216,7 +223,7 @@
         const closeEditModalBtn = document.getElementById('closeEditModal');
         const editForm = document.getElementById('editForm');
         const teacherName = document.getElementById('teacherName');
-        
+
         const modulesModal = document.getElementById('modulesModal');
         const openModuleModalBtns = document.getElementsByClassName('openModuleModal');
         const closeModulesBtn = document.getElementById('closeModules');
@@ -273,19 +280,22 @@
                 const data = await res.json();
                 const modules = JSON.parse(data.modules);
                 const teacher_modules = JSON.parse(data.teacher_modules);
-                console.log({modules,teacher_modules});
+                console.log({
+                    modules,
+                    teacher_modules
+                });
 
-               
+
                 modulesSelect.innerHTML = '';
                 modules.forEach(function(module) {
                     let option = document.createElement('option');
                     option.value = module.pk;
                     option.textContent = module.fields.name;
-                    if(teacher_modules.some(
-                        teacherModule => teacherModule.pk === module.pk
-                      ))
-                      option.selected = true;
-                   
+                    if (teacher_modules.some(
+                            teacherModule => teacherModule.pk === module.pk
+                        ))
+                        option.selected = true;
+
                     modulesSelect.appendChild(option);
                 });
 
