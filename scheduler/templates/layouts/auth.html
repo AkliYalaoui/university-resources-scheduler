@@ -54,6 +54,11 @@
             <i class="fa-regular fa-search fa-lg"></i>
             <span>Rechercher</span>
           </a>
+          {% elif user.user_type == "teacher" %}
+          <a href="{% url 'teachers_search' %}">
+            <i class="fa-regular fa-search fa-lg"></i>
+            <span>Rechercher</span>
+          </a>
           {% endif %}
           <div class="relative">
             <button id="profileMenuButton" class="text-gray-800 focus:outline-none">

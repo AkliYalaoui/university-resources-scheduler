@@ -46,7 +46,13 @@
         </div>
     {% endif %}
     {% if schedules %}
-        <div class="mt-8 max-w-5xl mx-auto">
+    <div class="mb-2 flex flex-row align-center justify-end gap-2">
+        <button class="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded text-sm"
+                onclick="downloadPDF('{{ selected_semester.name }}','{{ selected_formation.name }}' , '{{ selected_formation.niveau }}')">
+            Download PDF
+        </button>
+    </div>
+        <div class="w-full overflow-x-auto bg-white p-2" id="edt">
             <div>
                 <h2 class="italic text-lg">Formation : {{ selected_formation.name }}</h2>
                 <h2 class="italic text-md">Niveau: {{ selected_formation.niveau }}</h2>
@@ -58,15 +64,8 @@
                 <section class="my-8 max-w-7xl mx-auto">
                     <h2 class="max-w-md m-auto italic text-2xl font-bold border border-gray-700 p-2 text-center">Section: {{ schedule.section.name }}</h2>
                     <article class="p-2">
-                        <div class="mb-2 flex flex-row align-center justify-end gap-2">
-                            <button class="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded text-sm"
-                                    onclick="downloadPDF('{{ schedule.section.id }}', '{{ selected_formation.name }}' , '{{ selected_formation.niveau }}' ,'{{ schedule.section.name }}')">
-                                Download PDF
-                            </button>
-                        </div>
-                        <div class="overflow-x-auto p-2">
-                            <div class="min-w-max p-4 rounded shadow-md bg-white"
-                                 id="edt-{{ schedule.section.id }}">
+                        <div class="p-2">
+                            <div class="min-w-max p-4 rounded shadow-md bg-white">
                                 <table class="border-collapse border border-gray-400 w-full">
                                     <thead>
                                         <th class="text-center p-2 border border-gray-400"></th>
@@ -288,45 +287,20 @@
             {% endfor %}
         </div>
     {% endif %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js" integrity="sha512-01CJ9/g7e8cUmY0DFTMcUw/ikS799FHiOA0eyHsUWfOetgbx/t6oV4otQ5zXKQyIrQGTHSmRVPIgrgLcZi/WMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
     <script>
-        function downloadPDF(id, formation, niveau, section) {
-            const doc = new jspdf.jsPDF();
-            const element = document.getElementById('edt-' + id);
+        function downloadPDF(semester, formation, niveau) {
+            const element = document.getElementById('edt');
           
-            // Save the current height of the element and set it to the full scroll height
-            const originalHeight = element.style.height;
-            const scrollHeight = element.scrollHeight;
-            element.style.height = scrollHeight + 'px';
-          
-            // Scroll the element into view
-            element.scrollIntoView();
-          
-            // Wait for a brief moment to ensure the element is fully visible
-            setTimeout(() => {
-              domtoimage.toPng(element)
-                .then((dataUrl) => {
-                  const img = new Image();
-                  img.src = dataUrl;
-                  img.onload = () => {
-                    // Calculate the desired dimensions for the image in the PDF
-                    const pdfWidth = doc.internal.pageSize.getWidth() - 30; // Adjust the margins if needed
-                    const pdfHeight = (scrollHeight * pdfWidth) / element.offsetWidth;
-          
-                    // Add the image to the PDF
-                    doc.addImage(img, 'PNG', 15, 15, pdfWidth, pdfHeight);
-                    doc.save(`formation_${formation}-niveau_${niveau}-section_${section}`);
-          
-                    // Reset the height of the element to its original value
-                    element.style.height = originalHeight;
-                  };
-                })
-                .catch((error) => {
-                  console.error('Error generating PDF:', error);
-                });
-            }, 500);
-          }
-          
+            html2pdf()
+              .set({
+                filename: `semester_${semester}-formation_${formation}-niveau_${niveau}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
+                jsPDF: { unit: 'pt', format: 'a4', orientation: 'landscape' }
+              })
+              .from(element)
+              .save();
+          }          
     </script>
 {% endblock %}

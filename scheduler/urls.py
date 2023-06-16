@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views.auth import login_view, logout_view, profile_view
 from .views.students import students_home_view, students_view, student_details_view, students_search_view
-from .views.teachers import teachers_home_view, teachers_view, teacher_details_view
+from .views.teachers import teachers_home_view, teachers_view, teacher_details_view, teachers_search_view, teachers_suggest_view
 # from .views.grades import grades_view, grade_details_view
 from .views.admins import admins_view, admin_details_view
 from .views.formations import formations_view, formation_details_view
@@ -18,7 +18,9 @@ urlpatterns = [
     path("", home_view, name="home"),
     path("workspaces/students", students_home_view, name="students_workspaces"),
     path("workspaces/teachers", teachers_home_view, name="teachers_workspaces"),
-    path("workspaces/schedules", students_search_view, name="students_search"),
+    path("workspaces/students/schedules", students_search_view, name="students_search"),
+    path("workspaces/teachers/schedules", teachers_search_view, name="teachers_search"),
+    path("workspaces/teachers/suggestions", teachers_suggest_view, name="teachers_suggest"),
     path("admins/", admins_view, name="admins"),
     path("admins/<int:admin_id>", admin_details_view, name="admin_details"),
     path("students/", students_view, name="students"),
