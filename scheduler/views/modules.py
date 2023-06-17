@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.http import JsonResponse
 from django.core.serializers import serialize
+from django.db.models import Q
 
 
 @login_required
@@ -33,9 +34,29 @@ def modules_view(request):
 
     else:
         error = request.GET.get('error')
+        search_query = request.GET.get('search')
+        sort_param = request.GET.get('sort')
+
         formations = Formation.objects.all()
         semesters = Semestre.objects.all()
-        modules = Module.objects.all().order_by("formation__niveau")
+        modules = Module.objects.all()
+
+        if search_query:
+            modules = modules.filter(
+                Q(name__icontains=search_query) |
+                Q(weekly_volume__icontains=search_query) |
+                Q(semester__name__icontains=search_query) |
+                Q(formation__name__icontains=search_query) |
+                Q(formation__niveau__icontains=search_query) 
+            )
+        else:
+            search_query = ""
+
+        if sort_param:
+            modules = modules.order_by(sort_param)
+        else:
+            modules = modules.order_by('formation__niveau')
+
 
         paginator = Paginator(modules, 20)
         page_number = request.GET.get('page')
@@ -45,6 +66,7 @@ def modules_view(request):
             'formations': formations,
             'semesters': semesters,
             'modules': modules,
+            'search_query': search_query,
             'error': error,
         }
         return render(request=request, template_name="modules/home.html", context=modules_context)

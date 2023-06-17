@@ -5,6 +5,7 @@ from ..models import Salle
 from ..forms import SalleForm
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.db.models import Q
 
 
 @login_required
@@ -24,14 +25,33 @@ def salles_view(request):
 
     else:
         error = request.GET.get('error')
-        salles = Salle.objects.all().order_by("type")
+        search_query = request.GET.get('search')
+        sort_param = request.GET.get('sort')
+
+        salles = Salle.objects.all()
         types = ["td", "tp", "amphitheater"]
+
+        if search_query:
+            salles = salles.filter(
+                Q(name__icontains=search_query) |
+                Q(type__icontains=search_query) |
+                Q(capacity__icontains=search_query)
+            )
+        else:
+            search_query = ""
+
+        if sort_param:
+            salles = salles.order_by(sort_param)
+        else:
+            salles = salles.order_by('type')
+
         paginator = Paginator(salles, 20)
         page_number = request.GET.get('page')
         salles = paginator.get_page(page_number)
         salles_context = {
             "salles": salles,
             "types": types,
+            "search_query": search_query,
             "error": error,
         }
         return render(request=request, template_name="salles/home.html", context=salles_context)

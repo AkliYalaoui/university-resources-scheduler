@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.core.serializers import serialize
 from django.http import JsonResponse
+from django.db.models import Q
 
 
 @login_required
@@ -30,8 +31,25 @@ def sections_view(request):
 
     else:
         error = request.GET.get('error')
+        search_query = request.GET.get('search')
+        sort_param = request.GET.get('sort')
+
         formations = Formation.objects.all()
-        sections = Section.objects.all().order_by('formation__niveau')
+        sections = Section.objects.all()
+
+        if search_query:
+            sections = sections.filter(
+                Q(name__icontains=search_query) |
+                Q(formation__name__icontains=search_query) |
+                Q(formation__niveau__icontains=search_query) 
+            )
+        else:
+            search_query = ""
+
+        if sort_param:
+            sections = sections.order_by(sort_param)
+        else:
+            sections = sections.order_by('formation__niveau')
 
         paginator = Paginator(sections, 20)
         page_number = request.GET.get('page')
@@ -40,6 +58,7 @@ def sections_view(request):
         formations_context = {
             'formations': formations,
             'sections': sections,
+            'search_query': search_query,
             'error': error,
         }
         return render(request=request, template_name="sections/home.html", context=formations_context)

@@ -5,6 +5,8 @@ from ..decorators import admin_required
 from django.core.paginator import Paginator
 from django.urls import reverse
 from .emails import send_password_create_email, send_password_update_email
+from django.db.models import Q
+
 
 CustomUser = get_user_model()
 
@@ -30,13 +32,33 @@ def admins_view(request):
 
     else:
         error = request.GET.get('error')
-        admins = CustomUser.objects.filter(is_superuser=True).order_by('username')
+        search_query = request.GET.get('search')
+        sort_param = request.GET.get('sort')
+
+        admins = CustomUser.objects.filter(is_superuser=True)
+
+        if search_query:
+            admins = admins.filter(
+                Q(username__icontains=search_query) |
+                Q(first_name__icontains=search_query) |
+                Q(last_name__icontains=search_query) |
+                Q(email__icontains=search_query)
+            )
+        else:
+            search_query = ""
+
+        if sort_param:
+            admins = admins.order_by(sort_param)
+        else:
+            admins = admins.order_by('username')
+                                         
         paginator = Paginator(admins, 20)
         page_number = request.GET.get('page')
         admins = paginator.get_page(page_number)
 
         admins_context = {
             'admins': admins,
+            'search_query': search_query,
             "error": error
         }
         return render(request=request, template_name="admins/home.html", context=admins_context)

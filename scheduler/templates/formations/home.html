@@ -11,48 +11,71 @@
   {% endif %}
   <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
           id="openModal">Ajouter</button>
-          <div class="overflow-x-auto">
-  <table class="border-collapse border border-gray-400 w-full">
-    <thead>
-      <tr>
-        <th class="border border-gray-400 px-4 py-2">Nom</th>
-        <th class="border border-gray-400 px-4 py-2">Niveau</th>
-        <th class="border border-gray-400 px-4 py-2">Nombre de semestres</th>
-        <th class="border border-gray-400 px-4 py-2">Actions</th>
-        <!-- Add other columns as needed -->
-      </tr>
-    </thead>
-    <tbody>
-      {% for formation in page_obj %}
+  <div class="overflow-x-auto">
+    <!-- Search Form -->
+    <form action="{% url 'formations' %}"
+          method="get"
+          class="mb-4 w-full max-w-lg flex flex-row">
+      <input type="text"
+             name="search"
+             value="{{ search_query }}"
+             placeholder="Rechercher une formation..."
+             class="border border-gray-400 px-4 py-2 rounded flex-1">
+      <button type="submit"
+              class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded ml-2">
+        <i class="fa-regular fa-search fa-lg"></i>
+      </button>
+    </form>
+    <table class="border-collapse border border-gray-400 w-full">
+      <thead>
         <tr>
-          <td class="border border-gray-400 px-4 py-2 truncate">{{ formation.name }}</td>
-          <td class="border border-gray-400 px-4 py-2 truncate">{{ formation.niveau }}</td>
-          <td class="border border-gray-400 px-4 py-2 truncate">{{ formation.nb_semestre }}</td>
-          <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
-            <form action="{% url 'formation_details' formation_id=formation.id %}"
-                  method="post">
-              {% csrf_token %}
-              <input type="hidden" name="_method" value="delete">
-              <input type="submit"
-                     onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
-                     class="text-red-600 hover:underline cursor-pointer"
-                     value="supprimer">
-            </form>
-            <button data-id="{{formation.pk}}"
-            data-name="{{formation.name}}"
-            data-niveau="{{formation.niveau}}"
-            data-nb_semestre="{{formation.nb_semestre}}"
-               class="text-blue-600 hover:underline openEditModal">modifier</button>
-          </td>
+          <th class="border border-gray-400 px-4 py-2">
+            <a class="hover:underline text-blue-400"
+               href="?search={{ search_query }}&sort=name">Nom</a>
+          </th>
+          <th class="border border-gray-400 px-4 py-2">
+            <a class="hover:underline text-blue-400"
+               href="?search={{ search_query }}&sort=niveau">Niveau</a>
+          </th>
+          <th class="border border-gray-400 px-4 py-2">
+            <a class="hover:underline text-blue-400"
+               href="?search={{ search_query }}&sort=nb_semestre">Nombre de semestres</a>
+          </th>
+          <th class="border border-gray-400 px-4 py-2">Actions</th>
+          <!-- Add other columns as needed -->
         </tr>
-      {% empty %}
-        <tr>
-          <td colspan="4" class="p-2 text-center">Aucune formation à afficher</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+      </thead>
+      <tbody>
+        {% for formation in page_obj %}
+          <tr>
+            <td class="border border-gray-400 px-4 py-2 truncate">{{ formation.name }}</td>
+            <td class="border border-gray-400 px-4 py-2 truncate">{{ formation.niveau }}</td>
+            <td class="border border-gray-400 px-4 py-2 truncate">{{ formation.nb_semestre }}</td>
+            <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+              <form action="{% url 'formation_details' formation_id=formation.id %}"
+                    method="post">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="delete">
+                <input type="submit"
+                       onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
+                       class="text-red-600 hover:underline cursor-pointer"
+                       value="supprimer">
+              </form>
+              <button data-id="{{ formation.pk }}"
+                      data-name="{{ formation.name }}"
+                      data-niveau="{{ formation.niveau }}"
+                      data-nb_semestre="{{ formation.nb_semestre }}"
+                      class="text-blue-600 hover:underline openEditModal">modifier</button>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4" class="p-2 text-center">Aucune formation à afficher</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
   <div class="pagination flex items-center justify-center mt-10">
     <span class="step-links">
       {% if page_obj.has_previous %}
@@ -71,41 +94,36 @@
   </div>
   <!-- Edit Modal -->
   <div id="editModal"
-             class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-            <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
-                <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
-                        id="closeEditModal">X</button>
-                <h2 class="mb-4" id="formationName"> </h2>
-                <form id="editForm"
-                      method="post"
-                      class="flex flex-col">
-                    {% csrf_token %}
-                    <input type="hidden" name="_method" value="put">
-                    <label for="name" class="block mb-2">Formation:</label>
-                    <input type="text"
-                           id="name"
-                           name="name"
-                           value=""
-                           class="border border-gray-400 px-4 py-2 mb-4 rounded"
-                           required>
-                    <label for="niveau" class="block mb-2">Niveau:</label>
-                    <select name="niveau"
-                            id="niveau"
-                            class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                    </select>
-                    <label for="nb_semestre" class="block mb-2">Nombre de semestres</label>
-                    <input type="number"
-                           id="nb_semestre"
-                           name="nb_semestre"
-                           value=""
-                           class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                    <button type="submit"
-                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                        Enregistrer
-                    </button>
-                </form>
-            </div>
-        </div>
+       class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+    <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
+      <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+              id="closeEditModal">X</button>
+      <h2 class="mb-4" id="formationName"></h2>
+      <form id="editForm" method="post" class="flex flex-col">
+        {% csrf_token %}
+        <input type="hidden" name="_method" value="put">
+        <label for="name" class="block mb-2">Formation:</label>
+        <input type="text"
+               id="name"
+               name="name"
+               value=""
+               class="border border-gray-400 px-4 py-2 mb-4 rounded"
+               required>
+        <label for="niveau" class="block mb-2">Niveau:</label>
+        <select name="niveau"
+                id="niveau"
+                class="border border-gray-400 px-4 py-2 mb-4 rounded"></select>
+        <label for="nb_semestre" class="block mb-2">Nombre de semestres</label>
+        <input type="number"
+               id="nb_semestre"
+               name="nb_semestre"
+               value=""
+               class="border border-gray-400 px-4 py-2 mb-4 rounded">
+        <button type="submit"
+                class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Enregistrer</button>
+      </form>
+    </div>
+  </div>
   <!-- Modal -->
   <div id="modal"
        class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
@@ -139,52 +157,52 @@
     </div>
   </div>
   <script>
-    const openModalBtn = document.getElementById('openModal');
-    const closeModalBtn = document.getElementById('closeModal');
-    const modal = document.getElementById('modal');
-    const editModal = document.getElementById('editModal');
-    const openEditModalBtns = document.getElementsByClassName('openEditModal');
-    const closeEditModalBtn = document.getElementById('closeEditModal');
-    const editForm = document.getElementById('editForm');
-    const formationName = document.getElementById('formationName');
+      const openModalBtn = document.getElementById('openModal');
+      const closeModalBtn = document.getElementById('closeModal');
+      const modal = document.getElementById('modal');
+      const editModal = document.getElementById('editModal');
+      const openEditModalBtns = document.getElementsByClassName('openEditModal');
+      const closeEditModalBtn = document.getElementById('closeEditModal');
+      const editForm = document.getElementById('editForm');
+      const formationName = document.getElementById('formationName');
 
-    // Get the form fields
-    const nameInput = document.getElementById('name');
-    const niveauSelect = document.getElementById('niveau');
-    const nbInput = document.getElementById('nb_semestre');
+      // Get the form fields
+      const nameInput = document.getElementById('name');
+      const niveauSelect = document.getElementById('niveau');
+      const nbInput = document.getElementById('nb_semestre');
 
-    openModalBtn?.addEventListener("click", () => modal?.classList?.remove("hidden"));
-    closeModalBtn?.addEventListener("click", () => modal?.classList?.add("hidden"));
-    Array.from(openEditModalBtns).forEach(button => {
-        button.addEventListener("click", () => {
-            const rowId = button.getAttribute('data-id');
-            const name = button.getAttribute('data-name');
-            const niveau = button.getAttribute('data-niveau');
-            const nb_semestre = button.getAttribute('data-nb_semestre');
+      openModalBtn?.addEventListener("click", () => modal?.classList?.remove("hidden"));
+      closeModalBtn?.addEventListener("click", () => modal?.classList?.add("hidden"));
+      Array.from(openEditModalBtns).forEach(button => {
+          button.addEventListener("click", () => {
+              const rowId = button.getAttribute('data-id');
+              const name = button.getAttribute('data-name');
+              const niveau = button.getAttribute('data-niveau');
+              const nb_semestre = button.getAttribute('data-nb_semestre');
 
-            nameInput.value = name;
-            nbInput.value = nb_semestre;
+              nameInput.value = name;
+              nbInput.value = nb_semestre;
 
-            const levels = ["L1", "L2", "L3", "M1", "M2"]
-            niveauSelect.innerHTML = '';
-            levels.forEach(function(level) {
-                let option = document.createElement('option');
-                option.value = level;
-                option.textContent = level;
-                if (level === niveau) {
-                    option.selected = true;
-                }
-                niveauSelect.appendChild(option);
-            });
+              const levels = ["L1", "L2", "L3", "M1", "M2"]
+              niveauSelect.innerHTML = '';
+              levels.forEach(function(level) {
+                  let option = document.createElement('option');
+                  option.value = level;
+                  option.textContent = level;
+                  if (level === niveau) {
+                      option.selected = true;
+                  }
+                  niveauSelect.appendChild(option);
+              });
 
-            // Update the salle name in the <h2> element
+              // Update the salle name in the <h2> element
               formationName.innerHTML = 'Modifier la formation <b>' + name + '</b>';
-            // Update the form action with the new salle_id
-            editForm.action = '/formations/' + rowId;
+              // Update the form action with the new salle_id
+              editForm.action = '/formations/' + rowId;
 
-            editModal?.classList?.remove("hidden");
-        })
-    });
-    closeEditModalBtn?.addEventListener("click", () => editModal?.classList?.add("hidden"));
-</script>
+              editModal?.classList?.remove("hidden");
+          })
+      });
+      closeEditModalBtn?.addEventListener("click", () => editModal?.classList?.add("hidden"));
+  </script>
 {% endblock %}

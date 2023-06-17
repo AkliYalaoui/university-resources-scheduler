@@ -98,8 +98,26 @@ def groups_view(request):
 
     else:
         error = request.GET.get('error')
+        search_query = request.GET.get('search')
+        sort_param = request.GET.get('sort')
+
         sections = Section.objects.all()
-        groups = Groupe.objects.all().order_by("section__formation__niveau")
+        groups = Groupe.objects.all()
+
+        if search_query:
+            groups = groups.filter(
+                Q(name__icontains=search_query) |
+                Q(section__name__icontains=search_query) |
+                Q(section__formation__name__icontains=search_query) |
+                Q(section__formation__niveau__icontains=search_query) 
+            )
+        else:
+            search_query = ""
+
+        if sort_param:
+            groups = groups.order_by(sort_param)
+        else:
+            groups = groups.order_by('section__formation__niveau')
 
         paginator = Paginator(groups, 20)
         page_number = request.GET.get('page')
@@ -108,6 +126,7 @@ def groups_view(request):
         groups_context = {
             'sections': sections,
             'groups': groups,
+            'search_query': search_query,
             'error': error,
         }
         return render(request=request, template_name="groups/home.html", context=groups_context)

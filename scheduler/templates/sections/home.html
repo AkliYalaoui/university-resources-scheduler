@@ -1,57 +1,78 @@
 {% extends '../layouts/auth.html' %}
 {% block title %}Section{% endblock %}
 {% block content %}
-
-<h2 class="text-lg sm:text-3xl font-bold mb-4"># Liste des sections</h2>
-{% if error %}
-<div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
-     role="alert">
-       <strong class="font-bold">Error:</strong>
-       <span class="block sm:inline">{{ error }}</span>
-</div>
-{% endif %}
-
+    <h2 class="text-lg sm:text-3xl font-bold mb-4"># Liste des sections</h2>
+    {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 p-2 rounded my-2"
+             role="alert">
+            <strong class="font-bold">Error:</strong>
+            <span class="block sm:inline">{{ error }}</span>
+        </div>
+    {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
             id="openModal">Ajouter</button>
-            <div class="overflow-x-auto">
-    <table class="border-collapse border border-gray-400 w-full">
-        <thead>
-            <tr>
-                <th class="border border-gray-400 px-4 py-2">Nom</th>
-                <th class="border border-gray-400 px-4 py-2">Formation</th>
-                <th class="border border-gray-400 px-4 py-2">Niveau</th>
-                <th class="border border-gray-400 px-4 py-2">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for section in sections %}
+    <!-- Search Form -->
+    <form action="{% url 'sections' %}"
+          method="get"
+          class="mb-4 w-full max-w-lg flex flex-row">
+        <input type="text"
+               name="search"
+               value="{{ search_query }}"
+               placeholder="Rechercher une section..."
+               class="border border-gray-400 px-4 py-2 rounded flex-1">
+        <button type="submit"
+                class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded ml-2">
+            <i class="fa-regular fa-search fa-lg"></i>
+        </button>
+    </form>
+    <div class="overflow-x-auto">
+        <table class="border-collapse border border-gray-400 w-full">
+            <thead>
                 <tr>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ section.name }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ section.formation.name }}</td>
-                    <td class="border border-gray-400 px-4 py-2 truncate">{{ section.formation.niveau }}</td>
-                    <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
-                        <form action="{% url 'section_details' section_id=section.id %}"
-                              method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="_method" value="delete">
-                            <input type="submit"
-                                    onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
-                                   class="text-red-600 hover:underline cursor-pointer"
-                                   value="supprimer">
-                        </form>
-                        <button data-id="{{section.pk}}"
-                        data-name="{{section.name}}"
-                        data-formation="{{section.formation.pk}}"
-                           class="text-blue-600 hover:underline openEditModal">modifier</button>
-                    </td>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400"
+                           href="?search={{ search_query }}&sort=name">Nom</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400"
+                           href="?search={{ search_query }}&sort=formation__name">Formation</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400"
+                           href="?search={{ search_query }}&sort=formation__niveau">Niveau</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">Actions</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="3" class="p-2 text-center">Aucune section à afficher</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for section in sections %}
+                    <tr>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ section.name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ section.formation.name }}</td>
+                        <td class="border border-gray-400 px-4 py-2 truncate">{{ section.formation.niveau }}</td>
+                        <td class="border border-gray-400 px-4 py-2 flex flex-row gap-1">
+                            <form action="{% url 'section_details' section_id=section.id %}"
+                                  method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="_method" value="delete">
+                                <input type="submit"
+                                       onclick="return confirm('Etes vous sur de vouloir supprimer cette ressource?');"
+                                       class="text-red-600 hover:underline cursor-pointer"
+                                       value="supprimer">
+                            </form>
+                            <button data-id="{{ section.pk }}"
+                                    data-name="{{ section.name }}"
+                                    data-formation="{{ section.formation.pk }}"
+                                    class="text-blue-600 hover:underline openEditModal">modifier</button>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="p-2 text-center">Aucune section à afficher</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     <div class="pagination flex items-center justify-center mt-10">
         <span class="step-links">
@@ -71,35 +92,32 @@
     </div>
     <!-- EDIT Modal -->
     <div id="editModal"
-             class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-            <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
-                <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
-                        id="closeEditModal">X</button>
-                <h2 class="mb-4" id="sectionName"></h2>
-                <form id="editForm"
-                      method="post"
-                      class="flex flex-col">
-                    {% csrf_token %}
-                    <input type="hidden" name="_method" value="put">
-                    <label for="name" class="block mb-2">Section:</label>
-                    <input type="text"
-                           id="name"
-                           name="name"
-                           value=""
-                           class="border border-gray-400 px-4 py-2 mb-4 rounded"
-                           required>
-                    <label for="formation">Formation :</label>
-                    <select name="formation"
-                            id="formation"
-                            class="border border-gray-300 rounded px-4 py-2 w-full mb-4">
-                    </select>
-                    <button type="submit"
-                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                        Enregistrer
-                    </button>
-                </form>
-            </div>
+         class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+        <div class="bg-white w-full max-w-md p-6 rounded shadow-lg max-h-screen overflow-y-auto">
+            <button class="block ml-auto h-6 w-6 rounded-full bg-red-700 text-white"
+                    id="closeEditModal">X</button>
+            <h2 class="mb-4" id="sectionName"></h2>
+            <form id="editForm" method="post" class="flex flex-col">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="put">
+                <label for="name" class="block mb-2">Section:</label>
+                <input type="text"
+                       id="name"
+                       name="name"
+                       value=""
+                       class="border border-gray-400 px-4 py-2 mb-4 rounded"
+                       required>
+                <label for="formation">Formation :</label>
+                <select name="formation"
+                        id="formation"
+                        class="border border-gray-300 rounded px-4 py-2 w-full mb-4"></select>
+                <button type="submit"
+                        class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                    Enregistrer
+                </button>
+            </form>
         </div>
+    </div>
     <!-- Modal -->
     <div id="modal"
          class="hidden fixed z-50 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
@@ -119,7 +137,9 @@
                 <select name="formation"
                         id="formation"
                         class="border border-gray-400 px-4 py-2 mb-4 rounded">
-                    {% for formation in formations %}<option value="{{ formation.id }}">{{ formation.name }} - {{formation.niveau}} </option>{% endfor %}
+                    {% for formation in formations %}
+                        <option value="{{ formation.id }}">{{ formation.name }} - {{ formation.niveau }}</option>
+                    {% endfor %}
                 </select>
                 <button type="submit"
                         class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Ajouter</button>
@@ -154,13 +174,15 @@
                 const res = await fetch(`/sections/${rowId}`);
                 const data = await res.json();
                 const formations = JSON.parse(data.formations);
-                console.log({formations});
+                console.log({
+                    formations
+                });
 
                 formationSelect.innerHTML = '';
                 formations.forEach(function(f) {
                     let option = document.createElement('option');
                     option.value = f.pk;
-                    option.textContent = f.fields.name +  " : " + f.fields.niveau ;
+                    option.textContent = f.fields.name + " : " + f.fields.niveau;
                     if (f.pk == formation) {
                         option.selected = true;
                     }

@@ -5,6 +5,7 @@ from ..models import Formation
 from ..forms import FormationForm
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.db.models import Q
 
 
 @login_required
@@ -24,13 +25,32 @@ def formations_view(request):
 
     else:
         error = request.GET.get('error')
+        search_query = request.GET.get('search')
+        sort_param = request.GET.get('sort')
+
         levels = ["L1", "L2", "L3", "M1", "M2"]
-        formations = Formation.objects.all().order_by('niveau')
+        formations = Formation.objects.all()
+
+        if search_query:
+            formations = formations.filter(
+                Q(name__icontains=search_query) |
+                Q(niveau__icontains=search_query) |
+                Q(nb_semestre__icontains=search_query) 
+            )
+        else:
+            search_query = ""
+
+        if sort_param:
+            formations = formations.order_by(sort_param)
+        else:
+            formations = formations.order_by('niveau')
+        
         paginator = Paginator(formations, 20)
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
         formations_context = {
             "page_obj": page_obj,
+            "search_query": search_query,
             "levels": levels,
             "error": error,
         }

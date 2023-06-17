@@ -9,6 +9,7 @@ import datetime
 from django.core.serializers import serialize
 from django.http import JsonResponse
 from .emails import send_password_create_email, send_password_update_email
+from django.db.models import Q
 
 
 CustomUser = get_user_model()
@@ -271,9 +272,28 @@ def students_view(request):
 
     else:
         error = request.GET.get('error')
-        groups = Groupe.objects.all()
-        students = Etudiant.objects.all().order_by('user__username')
+        search_query = request.GET.get('search')
+        sort_param = request.GET.get('sort')
 
+        groups = Groupe.objects.all()
+        students = Etudiant.objects.all()
+
+        if search_query:
+            students = students.filter(
+                Q(user__username__icontains=search_query) |
+                Q(user__first_name__icontains=search_query) |
+                Q(user__last_name__icontains=search_query) |
+                Q(user__email__icontains=search_query) 
+            )
+        else:
+            search_query = ""
+        
+
+        if sort_param:
+            students = students.order_by(sort_param)
+        else:
+            students = students.order_by('user__username')
+        
         paginator = Paginator(students, 20)
         page_number = request.GET.get('page')
         students = paginator.get_page(page_number)
@@ -281,6 +301,7 @@ def students_view(request):
         students_context = {
             'groups': groups,
             'students': students,
+            'search_query': search_query,
             'error': error,
         }
         return render(request=request, template_name="students/home.html", context=students_context)

@@ -11,13 +11,36 @@
     {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
             id="openModal">Ajouter</button>
+    <!-- Search Form -->
+    <form action="{% url 'salles' %}"
+          method="get"
+          class="mb-4 w-full max-w-lg flex flex-row">
+        <input type="text"
+               name="search"
+               value="{{ search_query }}"
+               placeholder="Rechercher une salle..."
+               class="border border-gray-400 px-4 py-2 rounded flex-1">
+        <button type="submit"
+                class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded ml-2">
+            <i class="fa-regular fa-search fa-lg"></i>
+        </button>
+    </form>
     <div class="overflow-x-auto">
         <table class="border-collapse border border-gray-400 w-full">
             <thead>
                 <tr>
-                    <th class="border border-gray-400 px-4 py-2">Nom</th>
-                    <th class="border border-gray-400 px-4 py-2">Type</th>
-                    <th class="border border-gray-400 px-4 py-2">Capacité</th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400"
+                           href="?search={{ search_query }}&sort=name">Nom</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400"
+                           href="?search={{ search_query }}&sort=type">Type</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400"
+                           href="?search={{ search_query }}&sort=capacity">Capacité</a>
+                    </th>
                     <th class="border border-gray-400 px-4 py-2">Actions</th>
                 </tr>
             </thead>

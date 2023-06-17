@@ -11,18 +11,49 @@
     {% endif %}
     <button class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded mb-4 ml-auto block"
             id="openModal">Ajouter</button>
+    
+      <!-- Search Form -->
+      <form action="{% url 'students' %}"
+      method="get"
+      class="mb-4 w-full max-w-lg flex flex-row">
+    <input type="text"
+           name="search"
+           value="{{search_query}}"
+           placeholder="Rechercher un étudiant..."
+           class="border border-gray-400 px-4 py-2 rounded flex-1">
+    <button type="submit"
+            class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded ml-2">
+            <i class="fa-regular fa-search fa-lg"></i>
+    </button>
+</form>
     <div class="overflow-x-auto">
         <table class="border-collapse border border-gray-400 w-full">
             <thead>
                 <tr>
-                    <th class="border border-gray-400 px-4 py-2">Nom d'utilisateur</th>
-                    <th class="border border-gray-400 px-4 py-2">Prénom</th>
-                    <th class="border border-gray-400 px-4 py-2">Nom</th>
-                    <th class="border border-gray-400 px-4 py-2">Email</th>
-                    <th class="border border-gray-400 px-4 py-2">Groupe</th>
-                    <th class="border border-gray-400 px-4 py-2">Section</th>
-                    <th class="border border-gray-400 px-4 py-2">Formation</th>
-                    <th class="border border-gray-400 px-4 py-2">Niveau</th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400" href="?search={{search_query}}&sort=user__username">Nom d'utilisateur</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400" href="?search={{search_query}}&sort=user__first_name">Prénom</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400" href="?search={{search_query}}&sort=user__last_name">Nom</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400" href="?search={{search_query}}&sort=user__email">Email</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400" href="?search={{search_query}}&sort=groupe__name">Groupe</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400" href="?search={{search_query}}&sort=groupe__section__name">Section</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400" href="?search={{search_query}}&sort=groupe__section__formation__name">Formation</a>
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2">
+                        <a class="hover:underline text-blue-400" href="?search={{search_query}}&sort=groupe__section__formation__niveau">Niveau</a>
+                    </th>
                     <th class="border border-gray-400 px-4 py-2">Action</th>
                 </tr>
             </thead>
