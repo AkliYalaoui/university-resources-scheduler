@@ -46,38 +46,46 @@
         </div>
     {% endif %}
     {% if schedules %}
-    <div class="mb-2 flex flex-row align-center justify-end gap-2">
-        <button class="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded text-sm"
-                onclick="downloadPDF('{{ selected_semester.name }}','{{ selected_formation.name }}' , '{{ selected_formation.niveau }}')">
-            Download PDF
-        </button>
-    </div>
-        <div class="w-full overflow-x-auto bg-white p-2" id="edt">
-            <div>
-                <h2 class="italic text-lg">Formation : {{ selected_formation.name }}</h2>
-                <h2 class="italic text-md">Niveau: {{ selected_formation.niveau }}</h2>
-                <h2 class="italic text-md">
-                    Semester: {{ selected_semester.name }} : {{ selected_semester.start }} - {{ selected_semester.end }}
-                </h2>
+        {% for schedule in schedules %}
+            <div class="mb-2 flex flex-row align-center justify-end gap-2">
+                <button class="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded text-sm"
+                        onclick="downloadPDF('{{ schedule.section.pk }}','{{ selected_semester.name }}','{{ selected_formation.name }}' , '{{ selected_formation.niveau }}')">
+                    Download PDF
+                </button>
             </div>
-            {% for schedule in schedules %}
-                <section class="my-8 max-w-7xl mx-auto">
-                    <h2 class="max-w-md m-auto italic text-2xl font-bold border border-gray-700 p-2 text-center">Section: {{ schedule.section.name }}</h2>
+            <div class="w-full overflow-x-auto bg-white p-2"
+                 id="edt-{{ schedule.section.pk }}">
+                <div>
+                    <h2 class="italic text-lg">Formation : {{ selected_formation.name }}</h2>
+                    <h2 class="italic text-md">Niveau: {{ selected_formation.niveau }}</h2>
+                    <h2 class="italic text-md">
+                        Semester: {{ selected_semester.name }} : {{ selected_semester.start }} - {{ selected_semester.end }}
+                    </h2>
+                </div>
+                <section class="my-8 mx-auto">
+                    <h2 class="max-w-md m-auto italic text-2xl font-bold border border-gray-700 p-2 text-center">
+                        Section: {{ schedule.section.name }}
+                    </h2>
                     <article class="p-2">
                         <div class="p-2">
                             <div class="min-w-max p-4 rounded shadow-md bg-white">
                                 <table class="border-collapse border border-gray-400 w-full">
                                     <thead>
                                         <th class="text-center p-2 border border-gray-400"></th>
-                                        <th class="font-semibold text-center p-2 border border-gray-400">Gpe</th>
-                                        {% for label in labels %}<th class="font-semibold text-center p-2 border border-gray-400">{{ label }}</th>{% endfor %}
+                                        <th class="font-semibold text-center p-2 border border-gray-400 text-xs">Gpe</th>
+                                        {% for label in labels %}
+                                            <th class="font-semibold text-xs text-center p-2 border border-gray-400">{{ label }}</th>
+                                        {% endfor %}
                                     </thead>
                                     <tbody>
                                         <tr style="height: 1px;">
-                                            <td style="height: inherit;" class="border border-gray-400 text-center p-2 font-semibold">Dimanche</td>
+                                            <td style="height: inherit"
+                                                class="border border-gray-400 text-center p-2 font-semibold text-xs">
+                                                Dimanche
+                                            </td>
                                             <td style="height: inherit;" class="border border-gray-400 text-center">
                                                 {% for group in schedule.groups %}
-                                                    <div class="border border-white p-2 bg-orange-400 font-bold">{{ group.name }}</div>
+                                                    <div class="border border-white p-2 bg-orange-400 font-bold text-xs">{{ group.name }}</div>
                                                 {% endfor %}
                                             </td>
                                             {% for seance in schedule.dimanche %}
@@ -102,9 +110,9 @@
                                                                             </td>
                                                                             <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.salle.name }}</td>
                                                                         {% else %}
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
                                                                         {% endif %}
                                                                     </tr>
                                                                 {% endfor %}
@@ -115,10 +123,13 @@
                                             {% endfor %}
                                         </tr>
                                         <tr style="height: 1px;">
-                                            <td style="height: inherit;" class="border border-gray-400 font-semibold text-center p-2">Lundi</td>
+                                            <td style="height: inherit"
+                                                class="border border-gray-400 font-semibold text-center p-2 text-xs">
+                                                Lundi
+                                            </td>
                                             <td style="height: inherit;" class="border border-gray-400 text-center">
                                                 {% for group in schedule.groups %}
-                                                    <div class="border border-white p-2 bg-orange-400 font-bold">{{ group.name }}</div>
+                                                    <div class="border border-white p-2 bg-orange-400 font-bold text-xs">{{ group.name }}</div>
                                                 {% endfor %}
                                             </td>
                                             {% for seance in schedule.lundi %}
@@ -143,9 +154,9 @@
                                                                             </td>
                                                                             <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.salle.name }}</td>
                                                                         {% else %}
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
                                                                         {% endif %}
                                                                     </tr>
                                                                 {% endfor %}
@@ -156,10 +167,13 @@
                                             {% endfor %}
                                         </tr>
                                         <tr style="height: 1px;">
-                                            <td style="height: inherit;" class="border border-gray-400 font-semibold text-center p-2">Mardi</td>
+                                            <td style="height: inherit"
+                                                class="border border-gray-400 font-semibold text-center p-2 text-xs">
+                                                Mardi
+                                            </td>
                                             <td style="height: inherit;" class="border border-gray-400 text-center">
                                                 {% for group in schedule.groups %}
-                                                    <div class="border border-white p-2 bg-orange-400 font-bold">{{ group.name }}</div>
+                                                    <div class="border border-white p-2 bg-orange-400 font-bold text-xs">{{ group.name }}</div>
                                                 {% endfor %}
                                             </td>
                                             {% for seance in schedule.mardi %}
@@ -197,10 +211,13 @@
                                             {% endfor %}
                                         </tr>
                                         <tr style="height: 1px;">
-                                            <td style="height: inherit;" class="border border-gray-400 font-semibold text-center p-2">Mercredi</td>
+                                            <td style="height: inherit"
+                                                class="border border-gray-400 font-semibold text-center p-2 text-xs">
+                                                Mercredi
+                                            </td>
                                             <td style="height: inherit;" class="border border-gray-400 text-center">
                                                 {% for group in schedule.groups %}
-                                                    <div class="border border-white p-2 bg-orange-400 font-bold">{{ group.name }}</div>
+                                                    <div class="border border-white p-2 bg-orange-400 font-bold text-xs">{{ group.name }}</div>
                                                 {% endfor %}
                                             </td>
                                             {% for seance in schedule.mercredi %}
@@ -225,9 +242,9 @@
                                                                             </td>
                                                                             <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.salle.name }}</td>
                                                                         {% else %}
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
                                                                         {% endif %}
                                                                     </tr>
                                                                 {% endfor %}
@@ -238,10 +255,13 @@
                                             {% endfor %}
                                         </tr>
                                         <tr style="height: 1px;">
-                                            <td style="height: inherit;" class="border border-gray-400 font-semibold text-center p-2">Jeudi</td>
+                                            <td style="height: inherit"
+                                                class="border border-gray-400 font-semibold text-center p-2 text-xs">
+                                                Jeudi
+                                            </td>
                                             <td style="height: inherit;" class="border border-gray-400 text-center">
                                                 {% for group in schedule.groups %}
-                                                    <div class="border border-white p-2 bg-orange-400 font-bold">{{ group.name }}</div>
+                                                    <div class="border border-white p-2 bg-orange-400 font-bold text-xs">{{ group.name }}</div>
                                                 {% endfor %}
                                             </td>
                                             {% for seance in schedule.jeudi %}
@@ -266,9 +286,9 @@
                                                                             </td>
                                                                             <td class="border border-white p-2 bg-orange-400 font-bold break-words text-xs">{{ gpe.salle.name }}</td>
                                                                         {% else %}
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
-                                                                        <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
+                                                                            <td class="bg-blue-200 p-2 border border-white"></td>
                                                                         {% endif %}
                                                                     </tr>
                                                                 {% endfor %}
@@ -284,23 +304,63 @@
                         </div>
                     </article>
                 </section>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
     {% endif %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
     <script>
-        function downloadPDF(semester, formation, niveau) {
-            const element = document.getElementById('edt');
+        function downloadPDF(sectionPk, semesterName, formationName, formationNiveau) {
+            const element = document.getElementById('edt-' + sectionPk);
+            const body = element.cloneNode(true);
+            const styles = window.getComputedStyle(element);
           
-            html2pdf()
-              .set({
-                filename: `semester_${semester}-formation_${formation}-niveau_${niveau}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
-                jsPDF: { unit: 'pt', format: 'a4', orientation: 'landscape' }
-              })
-              .from(element)
-              .save();
-          }          
+            const wnd = window.open('about:blank', '', '_blank');
+            wnd.document.write(`
+              <html>
+                <head>
+                  <script src="https://cdn.tailwindcss.com"></\script>
+                  <style>
+                    ${getStylesAsText(styles)}
+                  </style>
+                </head>
+                <body></body>
+              </html>
+            `);
+          
+            const newBody = wnd.document.querySelector('body');
+            copyStylesToChildren(element, newBody);
+          
+            newBody.appendChild(body);
+          }
+          
+          function copyStylesToChildren(sourceElement, targetElement) {
+            const sourceChildren = sourceElement.children;
+            const targetChildren = targetElement.children;
+          
+            for (let i = 0; i < sourceChildren.length; i++) {
+              const sourceChild = sourceChildren[i];
+              const targetChild = targetChildren[i];
+          
+              if (targetChild) {
+                const childStyles = window.getComputedStyle(sourceChild);
+                for (const prop of childStyles) {
+                  targetChild.style.setProperty(prop, childStyles.getPropertyValue(prop));
+                }
+          
+                if (sourceChild.children.length > 0) {
+                  copyStylesToChildren(sourceChild, targetChild);
+                }
+              }
+            }
+          }
+          
+          function getStylesAsText(styles) {
+            let stylesText = 'body{';
+            for (const prop of styles) {
+              stylesText += `${prop}: ${styles.getPropertyValue(prop)}; `;
+            }
+            stylesText += "}"
+            return stylesText;
+          }
+          
     </script>
 {% endblock %}
